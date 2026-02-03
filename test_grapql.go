@@ -1,129 +1,134 @@
 package main
 
 import (
-	_"github.com/go-sql-driver/mysql"
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
-
 	"log"
-	"net/http"
-	"main/mysql"
 	"main/models"
+	"net/http"
+	"strconv"
 )
 
-var trabajadorType = graphql.NewObject(
-	graphql.ObjectConfig{
-		Name: "Trabajador",
-		Fields: graphql.Fields{
-			"id": &graphql.Field{
-				Type: graphql.Int,
-			},
-			"nombre": &graphql.Field{
-				Type: graphql.String,
-			},
-			"login": &graphql.Field{
-				Type: graphql.String,
-			},
-			"password": &graphql.Field{
-				Type: graphql.String,
-			},
-			"admin": &graphql.Field{
-				Type: graphql.Boolean,
-			},
-		},
-	},
-)
-
-var mutationType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Mutation",
-	Fields: graphql.Fields{
-		/* Create new product item
-		http://localhost:8080/product?query=mutation+_{create(name:"Inca Kola",info:"Inca Kola is a soft drink that was created in Peru in 1935 by British immigrant Joseph Robinson Lindley using lemon verbena (wiki)",price:1.99){id,name,info,price}}
-		*/
-		"create": &graphql.Field{
-			Type:        trabajadorType,
-			Description: "Crea un nuevo trabajador",
-			Args: graphql.FieldConfigArgument{
-				"nombre": &graphql.ArgumentConfig{
-					Type: graphql.NewNonNull(graphql.String),
-				},
-				"login": &graphql.ArgumentConfig{
-					Type: graphql.String,
-				},
-				"password": &graphql.ArgumentConfig{
-					Type: graphql.NewNonNull(graphql.Float),
-				},
-				"admin": &graphql.ArgumentConfig{
+func createTrabajadorType() *graphql.Object {
+	return graphql.NewObject(
+		graphql.ObjectConfig{
+			Name: "Trabajador",
+			Fields: graphql.Fields{
+				"id": &graphql.Field{
 					Type: graphql.Int,
 				},
+				"nombre": &graphql.Field{
+					Type: graphql.String,
+				},
+				"login": &graphql.Field{
+					Type: graphql.String,
+				},
+				"password": &graphql.Field{
+					Type: graphql.String,
+				},
+				"admin": &graphql.Field{
+					Type: graphql.Boolean,
+				},
 			},
-			Resolve: func(params graphql.ResolveParams) (any, error) {
-				// trabajador de la archivo con los modelos
-				trabajador := models.Trabajador{
-					Nombre:  params.Args["nombre"].(string),
-					Login:  params.Args["login"].(string),
-					Password:  params.Args["password"].(string),
-					Admin:  params.Args["admin"].(bool),
-				}
-				return trabajador, nil
+		})
+}
+
+func queryTrabajadorType(trabajadorType *graphql.Object) *graphql.Object {
+	return graphql.NewObject(
+		graphql.ObjectConfig{
+			Name: "Query",
+			Fields: graphql.Fields{
+				"trabajador": &graphql.Field{
+					Type:        graphql.NewList(trabajadorType),
+					Description: "Retorna la lista de trabajadores",
+					Args: graphql.FieldConfigArgument{
+						"limit": &graphql.ArgumentConfig{
+							Type: graphql.Int,
+						},
+						"offset": &graphql.ArgumentConfig{
+							Type: graphql.Int,
+						},
+						"admin": &graphql.ArgumentConfig{
+							Type: graphql.Boolean,
+						},
+					},
+					Resolve: func(p graphql.ResolveParams) (any, error) {
+						limit, _ := p.Args["limit"].(int)
+						if limit <= 0 || limit > 20 {
+							limit = 10
+						}
+						offset, _ := p.Args["offset"].(int)
+						if offset < 0 {
+							offset = 0
+						}
+						admin, _ := p.Args["admin"].(bool)
+						if admin == true {
+							// TODO: filtrar por admin
+						}
+						return getTrabajadores(limit, offset, admin)
+					},
+				},
 			},
 		},
+	)
+}
 
-	},
-})
+func getTrabajadores(limit int, offset int, admin bool) ([]models.Trabajador, error) {
+	var trabajadores []models.Trabajador
+	registros, err := base_datos.Query("SELECT id, nombre, login, password, admin FROM trabajador limit " + strconv.Itoa(limit) + " offset " + strconv.Itoa(offset))
+	if err != nil {
+		return nil, err
+	}
+	defer registros.Close()
 
-var schema, _ = graphql.NewSchema(
-	graphql.SchemaConfig{
-		//Query:    queryType,
-		Mutation: mutationType,
-	},
-)
+	for registros.Next() {
+		var aux models.Trabajador
+		if err := registros.Scan(&aux.Id, &aux.Nombre, &aux.Login, &aux.Password, &aux.Admin); err != nil {
+			return nil, err
+		}
+		trabajadores = append(trabajadores, aux)
+	}
+	return trabajadores, nil
+}
+
+var base_datos *sql.DB
+
+func conectarBD() {
+	var err error
+	base_datos, err = sql.Open(
+		"mysql",
+		"root:16944577aA@tcp(localhost:3306)/museo_proyecto",
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 func coco() {
-
-	
-	base_datos := mysql.ConexionBD()
-	defer base_datos.Close()
-
-	h := handler.New(&handler.Config{
-		Schema: &schema,
-		Pretty: true,
+	// conectar a la base de datos
+	conectarBD()
+	// crear el esquema GraphQL
+	trabajadorType := createTrabajadorType()
+	schema, err := graphql.NewSchema(
+		graphql.SchemaConfig{
+			Query: queryTrabajadorType(trabajadorType),
+		})
+	if err != nil {
+		log.Fatalf("error al crear el esquema: %v", err)
+	}
+	// manejador GraphQL
+	handler := handler.New(&handler.Config{
+		Schema:   &schema,
+		Pretty:   true,
 		GraphiQL: true, // habilita GraphQL en el navegador
 	})
-
-	
-
-	http.Handle("/graphql", h)
+	// iniciar el servidor HTTP
 	port := "8080"
+	http.Handle("/graphql", handler)
 	log.Println("Servidor GraphQL corriendo en http://localhost:" + port + "/graphql")
 	log.Println(http.ListenAndServe(":"+port, nil))
 
 	// en efecto, no se lo que hago
 }
-
-/*
-
-func AgregarArtista(c *gin.Context) {
-	db := mysql.ConexionBD()
-	defer db.Close()
-	var input models.Artista
-	middleware.PanicButton(c.ShouldBindJSON(&input))
-
-	id := mysql.Insertar(db, `
-		INSERT INTO artista (nombre, fecha_nacimiento, nacionalidad, biografia, foto)
-		VALUES (?, ?, ?, ?, ?)`,
-		input.Nombre,
-		input.Fecha_nacimiento,
-		input.Nacionalidad,
-		input.Biografia,
-		input.Foto,
-	)
-
-	c.JSON(http.StatusOK, gin.H{
-		"mensaje": "Artista agregado",
-		"id":      id,
-	})
-}
-
-*/
-
