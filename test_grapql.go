@@ -67,7 +67,7 @@ func queryTrabajadorType(trabajadorType *graphql.Object) *graphql.Object {
 						if admin == true {
 							// TODO: filtrar por admin
 						}
-						return getTrabajadores(limit, offset, admin)
+						return getTrabajadores(limit, offset)
 					},
 				},
 			},
@@ -75,7 +75,7 @@ func queryTrabajadorType(trabajadorType *graphql.Object) *graphql.Object {
 	)
 }
 
-func getTrabajadores(limit int, offset int, admin bool) ([]models.Trabajador, error) {
+func getTrabajadores(limit int, offset int) ([]models.Trabajador, error) {
 	var trabajadores []models.Trabajador
 	registros, err := base_datos.Query("SELECT id, nombre, login, password, admin FROM trabajador limit " + strconv.Itoa(limit) + " offset " + strconv.Itoa(offset))
 	if err != nil {
