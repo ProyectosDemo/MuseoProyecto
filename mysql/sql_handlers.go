@@ -5,7 +5,7 @@ import (
 	"main/middleware"
 )
 
-func ConexionBD() *sql.DB {
+func ConectarBD() *sql.DB {
 	db, err := sql.Open(
 		"mysql",
 		"root:16944577aA@tcp(localhost:3306)/museo_proyecto",
