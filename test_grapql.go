@@ -16,7 +16,7 @@ func createTrabajadorType() *graphql.Object {
 		graphql.ObjectConfig{
 			Name: "Trabajador",
 			Fields: graphql.Fields{
-				"id": &graphql.Field{
+				"id_trabajador": &graphql.Field{
 					Type: graphql.Int,
 				},
 				"nombre": &graphql.Field{
@@ -70,7 +70,7 @@ func queryTrabajadorType(trabajadorType *graphql.Object) *graphql.Object {
 
 func getTrabajadores(limit int, offset int) ([]models.Trabajador, error) {
 	var trabajadores []models.Trabajador
-	registros, err := base_datos.Query("SELECT id, nombre, login, password, admin FROM trabajador limit " + strconv.Itoa(limit) + " offset " + strconv.Itoa(offset))
+	registros, err := base_datos.Query("SELECT id_trabajador, nombre, login, password, admin FROM trabajador limit " + strconv.Itoa(limit) + " offset " + strconv.Itoa(offset))
 	if err != nil {
 		return nil, err
 	}
