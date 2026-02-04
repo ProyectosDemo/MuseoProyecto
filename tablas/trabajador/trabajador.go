@@ -1,7 +1,7 @@
 package tablas
 
 import (
-	"database/sql"
+	"main/mysql"
 	"strconv"
 	"github.com/graphql-go/graphql"
 	_ "github.com/go-sql-driver/mysql"
@@ -69,7 +69,7 @@ func QueryTrabajadorType(trabajadorType *graphql.Object) *graphql.Object {
 
 func GetTrabajadores(limit int, offset int) ([]models.Trabajador, error) {
 	var trabajadores []models.Trabajador
-	registros, err := base_datos.Query("SELECT id, nombre, login, password, admin FROM trabajador limit " + strconv.Itoa(limit) + " offset " + strconv.Itoa(offset))
+	registros, err := mysql.GetBD().Query("SELECT id, nombre, login, password, admin FROM trabajador limit " + strconv.Itoa(limit) + " offset " + strconv.Itoa(offset))
 	middleware.PanicButton(err)
 	defer registros.Close()
 
@@ -83,4 +83,4 @@ func GetTrabajadores(limit int, offset int) ([]models.Trabajador, error) {
 	return trabajadores, nil
 }
 
-var base_datos *sql.DB
+
