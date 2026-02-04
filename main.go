@@ -1,8 +1,10 @@
 package main
+import 
+	"main/grapql"
 
 func main() {
 	// jose estuvo aqui
-	coco()
+	grapql.Coco()
 	/*
 		// ----------------------  main ----------------------
 		router := gin.Default()

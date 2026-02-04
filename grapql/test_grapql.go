@@ -1,4 +1,4 @@
-package main
+package grapql
 
 import (
 	"database/sql"
@@ -99,7 +99,7 @@ func conectarBD() {
 	}
 }
 
-func coco() {
+func Coco() {
 	// conectar a la base de datos
 	conectarBD()
 	// crear el esquema GraphQL
