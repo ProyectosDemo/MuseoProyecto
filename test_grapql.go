@@ -50,9 +50,6 @@ func queryTrabajadorType(trabajadorType *graphql.Object) *graphql.Object {
 						"offset": &graphql.ArgumentConfig{
 							Type: graphql.Int,
 						},
-						"admin": &graphql.ArgumentConfig{
-							Type: graphql.Boolean,
-						},
 					},
 					Resolve: func(p graphql.ResolveParams) (any, error) {
 						limit, _ := p.Args["limit"].(int)
@@ -62,10 +59,6 @@ func queryTrabajadorType(trabajadorType *graphql.Object) *graphql.Object {
 						offset, _ := p.Args["offset"].(int)
 						if offset < 0 {
 							offset = 0
-						}
-						admin, _ := p.Args["admin"].(bool)
-						if admin == true {
-							// TODO: filtrar por admin
 						}
 						return getTrabajadores(limit, offset)
 					},
@@ -111,6 +104,7 @@ func coco() {
 	conectarBD()
 	// crear el esquema GraphQL
 	trabajadorType := createTrabajadorType()
+
 	schema, err := graphql.NewSchema(
 		graphql.SchemaConfig{
 			Query: queryTrabajadorType(trabajadorType),
