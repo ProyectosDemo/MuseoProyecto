@@ -7,12 +7,11 @@ import (
 
 var base_datos *sql.DB
 
-
 func ConectarBD() {
 	var err error
 	base_datos, err = sql.Open(
 		"mysql",
-		"root:16944577aA@tcp(localhost:3306)/museo_proyecto",
+		"root:Delfin#100@tcp(localhost:3306)/museo_proyecto",
 	)
 	middleware.PanicButton(err)
 }
@@ -20,7 +19,6 @@ func ConectarBD() {
 func GetBD() *sql.DB {
 	return base_datos
 }
-
 
 func Insertar(db *sql.DB, query string, args ...any) int64 {
 	result, err := db.Exec(query, args...)
@@ -31,7 +29,6 @@ func Insertar(db *sql.DB, query string, args ...any) int64 {
 
 	return id
 }
-
 
 func Leer(db *sql.DB, query string, args ...any) *sql.Rows {
 	rows, err := db.Query(query, args...)
