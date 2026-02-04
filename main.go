@@ -2,6 +2,7 @@ package main
 
 func main() {
 	// jose estuvo aqui
+	// comentario
 	coco()
 	/*
 		// ----------------------  main ----------------------
