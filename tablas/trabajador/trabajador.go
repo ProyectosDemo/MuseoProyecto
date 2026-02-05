@@ -67,6 +67,57 @@ func QueryTrabajadorType(trabajadorType *graphql.Object) *graphql.Object {
 	)
 }
 
+func MutationTrabajadorType(trabajadorType *graphql.Object) *graphql.Object {
+	return graphql.NewObject(
+		graphql.ObjectConfig{
+			Name: "Mutation",
+			Fields: graphql.Fields{
+				"crearTrabajador": &graphql.Field{
+					Type:        trabajadorType,
+					Description: "Crear un nuevo trabajador",
+					Args: graphql.FieldConfigArgument{
+						"nombre": &graphql.ArgumentConfig{
+							Type: graphql.NewNonNull(graphql.String),
+						},
+						"login": &graphql.ArgumentConfig{
+							Type: graphql.NewNonNull(graphql.String),
+						},
+						"password": &graphql.ArgumentConfig{
+							Type: graphql.NewNonNull(graphql.String),
+						},
+						"admin": &graphql.ArgumentConfig{
+							Type: graphql.NewNonNull(graphql.Boolean),
+						},
+					},
+					Resolve: func(p graphql.ResolveParams) (any, error) {
+						nombre := p.Args["nombre"].(string)
+						login := p.Args["login"].(string)
+						password := p.Args["password"].(string)
+						admin := p.Args["admin"].(bool)
+
+						id := mysql.Insertar(
+							mysql.GetBD(),
+							"INSERT INTO trabajador (nombre, login, password, admin) VALUES (?, ?, ?, ?)",
+							nombre,
+							login,
+							password,
+							admin,
+						)
+
+						return models.Trabajador{
+							Id:       id,
+							Nombre:   nombre,
+							Login:    login,
+							Password: password,
+							Admin:    admin,
+						}, nil
+					},
+				},
+			},
+		},
+	)
+}
+
 func GetTrabajadores(limit int, offset int) ([]models.Trabajador, error) {
 	var trabajadores []models.Trabajador
 	registros, err := mysql.GetBD().Query("SELECT id_trabajador, nombre, login, password, admin FROM trabajador limit " + strconv.Itoa(limit) + " offset " + strconv.Itoa(offset))

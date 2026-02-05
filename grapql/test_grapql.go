@@ -20,7 +20,8 @@ func Coco() {
 
 	schema, err := graphql.NewSchema(
 		graphql.SchemaConfig{
-			Query: tablas.QueryTrabajadorType(trabajadorType),
+			Query:    tablas.QueryTrabajadorType(trabajadorType),
+			Mutation: tablas.MutationTrabajadorType(trabajadorType),
 		})
 	middleware.PanicButton(err)
 	// manejador GraphQL
