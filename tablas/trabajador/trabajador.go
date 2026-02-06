@@ -1,4 +1,4 @@
-package tablas
+package trabajador
 
 import (
 	"main/middleware"
