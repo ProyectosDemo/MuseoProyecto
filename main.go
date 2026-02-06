@@ -4,12 +4,7 @@ import
 
 func main() {
 	// jose estuvo aqui
-<<<<<<< HEAD
-	// comentario
-	coco()
-=======
 	grapql.Coco()
->>>>>>> 9c719f6548c1f5215988a52a21953ac4ab0a05cd
 	/*
 		// ----------------------  main ----------------------
 		router := gin.Default()
