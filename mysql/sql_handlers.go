@@ -5,15 +5,22 @@ import (
 	"main/middleware"
 )
 
-func ConexionBD() *sql.DB {
-	db, err := sql.Open(
+var base_datos *sql.DB
+
+func ConectarBD() {
+	var err error
+	base_datos, err = sql.Open(
 		"mysql",
+		//solo descomenta la tuya y comenta la mia
+		//"root:Delfin#100@tcp(localhost:3306)/museo_proyecto"
 		"root:16944577aA@tcp(localhost:3306)/museo_proyecto",
 	)
 	middleware.PanicButton(err)
-	return db
 }
 
+func GetBD() *sql.DB {
+	return base_datos
+}
 
 func Insertar(db *sql.DB, query string, args ...any) int64 {
 	result, err := db.Exec(query, args...)
@@ -24,7 +31,6 @@ func Insertar(db *sql.DB, query string, args ...any) int64 {
 
 	return id
 }
-
 
 func Leer(db *sql.DB, query string, args ...any) *sql.Rows {
 	rows, err := db.Query(query, args...)

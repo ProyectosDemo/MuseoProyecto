@@ -5,16 +5,8 @@ import
 func main() {
 	// jose estuvo aqui
 	grapql.Coco()
-	/*
-		// ----------------------  main ----------------------
-		router := gin.Default()
-		router.Use(middleware.ErrorHandler())
-		// Rutas para la tabla Trabajador
-		router.GET("/trabajadores", tablas.LeerTrabajadores)
-		router.POST("/trabajador", tablas.AgregarTrabajador)
-		// Rutas para otras tablas pueden ser añadidas aqui
+	//demo estuvo aqui, cambios principales en test_grapql.go, cliente.go y trabajador.go
 
-		fmt.Println("Servidor corriendo en http://localhost:8080")
-		router.Run(":8080")
-	*/
+
+	
 }
