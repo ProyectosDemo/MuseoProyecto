@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Trabajador struct {
 	Id       int64  `json:"id_trabajador"`
 	Nombre   string `json:"nombre"`
@@ -19,12 +21,12 @@ type Cliente struct {
 }
 
 type Artista struct {
-	Id_artista       int64  `json:"id_artista"`
-	Nombre           string `json:"nombre"`
-	Fecha_nacimiento string `json:"fecha_nacimiento"`
-	Nacionalidad     string `json:"nacionalidad"`
-	Biografia        string `json:"biografia"`
-	Foto             string `json:"foto"`
+	Id_artista       int64     `json:"id_artista"`
+	Nombre           string    `json:"nombre"`
+	Fecha_nacimiento time.Time `json:"fecha_nacimiento"`
+	Nacionalidad     string    `json:"nacionalidad"`
+	Biografia        string    `json:"biografia"`
+	Foto             string    `json:"foto"`
 }
 
 type Genero struct {
