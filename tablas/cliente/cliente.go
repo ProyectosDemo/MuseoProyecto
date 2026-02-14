@@ -110,3 +110,119 @@ func GetClientes(limit int, offset int) ([]models.Cliente, error) {
 	}
 	return clientes, nil
 }
+
+
+func DeleteClienteField(clienteType *graphql.Object) *graphql.Field {
+	return &graphql.Field{
+		Type:        clienteType,
+		Description: "Eliminar un cliente por ID",
+		Args: graphql.FieldConfigArgument{
+			"id_cliente": &graphql.ArgumentConfig{
+				Type: graphql.NewNonNull(graphql.Int),
+			},
+		},
+		Resolve: func(p graphql.ResolveParams) (any, error) {
+			id := p.Args["id_cliente"].(int)
+
+			var cliente models.Cliente
+			err := mysql.GetBD().QueryRow(
+				"SELECT id_cliente, nombre, email, telefono, login, password, codigo_seguridad FROM cliente WHERE id_cliente = ?",
+				id,
+			).Scan(&cliente.Id, &cliente.Nombre, &cliente.Email, &cliente.Telefono,
+				&cliente.Login, &cliente.Password, &cliente.CodigoSeguridad)
+
+			if err != nil {
+				return nil, err
+			}
+
+			_, err = mysql.GetBD().Exec(
+				"DELETE FROM cliente WHERE id_cliente = ?",
+				id,
+			)
+
+			if err != nil {
+				return nil, err
+			}
+
+			return cliente, nil
+		},
+	}
+}
+
+func UpdateClienteField(clienteType *graphql.Object) *graphql.Field {
+	return &graphql.Field{
+		Type:        clienteType,
+		Description: "Actualizar un cliente por ID",
+		Args: graphql.FieldConfigArgument{
+			"id_cliente": &graphql.ArgumentConfig{
+				Type: graphql.NewNonNull(graphql.Int),
+			},
+			"nombre": &graphql.ArgumentConfig{
+				Type: graphql.String,
+			},
+			"email": &graphql.ArgumentConfig{
+				Type: graphql.String,
+			},
+			"telefono": &graphql.ArgumentConfig{
+				Type: graphql.String,
+			},
+			"login": &graphql.ArgumentConfig{
+				Type: graphql.String,
+			},
+			"password": &graphql.ArgumentConfig{
+				Type: graphql.String,
+			},
+			"codigo_seguridad": &graphql.ArgumentConfig{
+				Type: graphql.String,
+			},
+		},
+		Resolve: func(p graphql.ResolveParams) (any, error) {
+			id := p.Args["id_cliente"].(int)
+
+			// Valores opcionales
+			nombre, _ := p.Args["nombre"].(string)
+			email, _ := p.Args["email"].(string)
+			telefono, _ := p.Args["telefono"].(string)
+			login, _ := p.Args["login"].(string)
+			password, _ := p.Args["password"].(string)
+			codigoSeguridad, _ := p.Args["codigo_seguridad"].(string)
+
+			// mantiene original si es vacio o invalido
+			_, err := mysql.GetBD().Exec(`
+				UPDATE cliente
+				SET nombre = COALESCE(NULLIF(?, ''), nombre),
+				    email = COALESCE(NULLIF(?, ''), email),
+				    telefono = COALESCE(NULLIF(?, ''), telefono),
+					login = COALESCE(NULLIF(?, ''), login),
+				    password = COALESCE(NULLIF(?, ''), password),
+				    codigo_seguridad = COALESCE(NULLIF(?, ''), codigo_seguridad)
+				WHERE id_cliente = ?
+			`,
+				nombre,
+				email,
+				telefono,
+				login,
+				password,
+				codigoSeguridad,
+				id,
+			)
+			if err != nil {
+				return nil, err
+			}
+
+			// Traer el cliente actualizado
+			var cliente models.Cliente
+			err = mysql.GetBD().QueryRow(
+				"SELECT id_cliente, nombre, email, telefono, login, password, codigo_seguridad FROM cliente WHERE id_cliente = ?",
+				id,
+			).Scan(&cliente.Id, &cliente.Nombre, &cliente.Email, &cliente.Telefono,
+				&cliente.Login, &cliente.Password, &cliente.CodigoSeguridad)
+
+			if err != nil {
+				return nil, err
+			}
+
+			return cliente, nil
+		},
+	}
+}

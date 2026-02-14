@@ -96,3 +96,104 @@ func GetTrabajadores(limit int, offset int) ([]models.Trabajador, error) {
 	}
 	return trabajadores, nil
 }
+
+func DeleteTrabajadorField(trabajadorType *graphql.Object) *graphql.Field {
+	return &graphql.Field{
+		Type:        trabajadorType,
+		Description: "Eliminar un trabajador por ID",
+		Args: graphql.FieldConfigArgument{
+			"id_trabajador": &graphql.ArgumentConfig{
+				Type: graphql.NewNonNull(graphql.Int),
+			},
+		},
+		Resolve: func(p graphql.ResolveParams) (any, error) {
+			id := p.Args["id_trabajador"].(int)
+
+			var trabajador models.Trabajador
+			err := mysql.GetBD().QueryRow(
+				"SELECT id_trabajador, nombre, login, password, admin FROM trabajador WHERE id_trabajador = ?",
+				id,
+			).Scan(&trabajador.Id, &trabajador.Nombre, &trabajador.Login, &trabajador.Password, &trabajador.Admin)
+
+			if err != nil {
+				return nil, err
+			}
+
+			_, err = mysql.GetBD().Exec(
+				"DELETE FROM trabajador WHERE id_trabajador = ?",
+				id,
+			)
+
+			if err != nil {
+				return nil, err
+			}
+
+			return trabajador, nil
+		},
+	}
+}
+
+func UpdateTrabajadorField(trabajadorType *graphql.Object) *graphql.Field {
+	return &graphql.Field{
+		Type:        trabajadorType,
+		Description: "Actualizar un trabajador por ID",
+		Args: graphql.FieldConfigArgument{
+			"id_trabajador": &graphql.ArgumentConfig{
+				Type: graphql.NewNonNull(graphql.Int),
+			},
+			"nombre": &graphql.ArgumentConfig{
+				Type: graphql.String,
+			},
+			"login": &graphql.ArgumentConfig{
+				Type: graphql.String,
+			},
+			"password": &graphql.ArgumentConfig{
+				Type: graphql.String,
+			},
+			"admin": &graphql.ArgumentConfig{
+				Type: graphql.Boolean,
+			},
+		},
+		Resolve: func(p graphql.ResolveParams) (any, error) {
+			id := p.Args["id_trabajador"].(int)
+
+			// Valores opcionales
+			nombre, _ := p.Args["nombre"].(string)
+			login, _ := p.Args["login"].(string)
+			password, _ := p.Args["password"].(string)
+			admin, adminOk := p.Args["admin"].(bool)
+
+			// mantenemos original si es vacio o invalido
+			_, err := mysql.GetBD().Exec(`
+				UPDATE trabajador
+				SET nombre = COALESCE(NULLIF(?, ''), nombre),
+				    login = COALESCE(NULLIF(?, ''), login),
+				    password = COALESCE(NULLIF(?, ''), password),
+				    admin = COALESCE(?, admin)
+				WHERE id_trabajador = ?
+			`,
+				nombre,
+				login,
+				password,
+				func() any { if adminOk { return admin } else { return nil } }(),
+				id,
+			)
+			if err != nil {
+				return nil, err
+			}
+
+			// Traer el trabajador actualizado
+			var trabajador models.Trabajador
+			err = mysql.GetBD().QueryRow(
+				"SELECT id_trabajador, nombre, login, password, admin FROM trabajador WHERE id_trabajador = ?",
+				id,
+			).Scan(&trabajador.Id, &trabajador.Nombre, &trabajador.Login, &trabajador.Password, &trabajador.Admin)
+
+			if err != nil {
+				return nil, err
+			}
+
+			return trabajador, nil
+		},
+	}
+}

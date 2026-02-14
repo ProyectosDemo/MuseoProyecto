@@ -34,8 +34,12 @@ func Coco() {
 	rootMutation := graphql.NewObject(graphql.ObjectConfig{
 		Name: "Mutation",
 		Fields: graphql.Fields{
-			"crearTrabajador": trabajador.CreateTrabajadorField(trabajadorType),
 			"crearCliente":    cliente.CreateClienteField(clienteType),
+			"eliminarCliente": cliente.DeleteClienteField(clienteType),
+			"actualizarCliente": cliente.UpdateClienteField(clienteType),
+			"crearTrabajador": trabajador.CreateTrabajadorField(trabajadorType),
+			"eliminarTrabajador": trabajador.DeleteTrabajadorField(trabajadorType),
+			"actualizarTrabajador": trabajador.UpdateTrabajadorField(trabajadorType),
 		},
 	})
 
