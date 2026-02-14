@@ -8,6 +8,7 @@ import (
 	"main/tablas/trabajador"
 	"main/tablas/cliente"
 	"main/tablas/artista"
+	"main/tablas/genero"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -22,6 +23,7 @@ func Coco() {
 	trabajadorType := trabajador.CreateTrabajadorType()
 	clienteType := cliente.CreateClienteType()
 	artistaType := artista.CreateArtistaType()
+	generoType := genero.CreateGeneroType()
 
 	// Añadir cuantos queries quieras
 	rootQuery := graphql.NewObject(graphql.ObjectConfig{
@@ -30,6 +32,7 @@ func Coco() {
 			"trabajador": trabajador.GetTrabajadorField(trabajadorType),
 			"cliente":    cliente.GetClienteField(clienteType),
 			"artista":    artista.GetArtistaField(artistaType),
+			"genero":     genero.GetGenerosField(generoType),
 		},
 	})
 
@@ -48,6 +51,10 @@ func Coco() {
 			"crearArtista": artista.CreateArtistaField(artistaType),
 			"eliminarArtista": artista.DeleteArtistaField(artistaType),
 			"actualizarArtista": artista.UpdateArtistaField(artistaType),
+
+			"crearGenero": genero.CreateGeneroField(generoType),
+			"eliminarGenero": genero.DeleteGeneroField(generoType),
+			"actualizarGenero": genero.UpdateGeneroField(generoType),
 		},
 	})
 
