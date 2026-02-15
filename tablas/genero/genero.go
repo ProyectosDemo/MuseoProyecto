@@ -107,18 +107,14 @@ func DeleteGeneroField(generoType *graphql.Object) *graphql.Field {
 				id_genero,
 			).Scan(&genero.Id_genero, &genero.Nombre)
 
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			_, err = mysql.GetBD().Exec(
 				"DELETE FROM genero WHERE id_genero = ?",
 				id_genero,
 			)
 
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			return genero, nil
 		},
@@ -147,9 +143,7 @@ func UpdateGeneroField(generoType *graphql.Object) *graphql.Field {
 				id_genero,
 			).Scan(&genero.Id_genero, &genero.Nombre)
 
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			// Actualizar solo si vienen valores
 			if nombre, ok := p.Args["nombre"].(string); ok && nombre != "" {
@@ -166,9 +160,7 @@ func UpdateGeneroField(generoType *graphql.Object) *graphql.Field {
 				id_genero,
 			)
 
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			return genero, nil
 		},

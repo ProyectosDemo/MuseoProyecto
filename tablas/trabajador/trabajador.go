@@ -115,18 +115,14 @@ func DeleteTrabajadorField(trabajadorType *graphql.Object) *graphql.Field {
 				id,
 			).Scan(&trabajador.Id, &trabajador.Nombre, &trabajador.Login, &trabajador.Password, &trabajador.Admin)
 
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			_, err = mysql.GetBD().Exec(
 				"DELETE FROM trabajador WHERE id_trabajador = ?",
 				id,
 			)
 
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			return trabajador, nil
 		},
@@ -178,9 +174,7 @@ func UpdateTrabajadorField(trabajadorType *graphql.Object) *graphql.Field {
 				func() any { if adminOk { return admin } else { return nil } }(),
 				id,
 			)
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			// Traer el trabajador actualizado
 			var trabajador models.Trabajador
@@ -189,9 +183,7 @@ func UpdateTrabajadorField(trabajadorType *graphql.Object) *graphql.Field {
 				id,
 			).Scan(&trabajador.Id, &trabajador.Nombre, &trabajador.Login, &trabajador.Password, &trabajador.Admin)
 
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			return trabajador, nil
 		},

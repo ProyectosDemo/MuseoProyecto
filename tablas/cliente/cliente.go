@@ -131,18 +131,14 @@ func DeleteClienteField(clienteType *graphql.Object) *graphql.Field {
 			).Scan(&cliente.Id, &cliente.Nombre, &cliente.Email, &cliente.Telefono,
 				&cliente.Login, &cliente.Password, &cliente.CodigoSeguridad)
 
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			_, err = mysql.GetBD().Exec(
 				"DELETE FROM cliente WHERE id_cliente = ?",
 				id,
 			)
 
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			return cliente, nil
 		},
@@ -206,9 +202,7 @@ func UpdateClienteField(clienteType *graphql.Object) *graphql.Field {
 				codigoSeguridad,
 				id,
 			)
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			// Traer el cliente actualizado
 			var cliente models.Cliente
@@ -218,9 +212,7 @@ func UpdateClienteField(clienteType *graphql.Object) *graphql.Field {
 			).Scan(&cliente.Id, &cliente.Nombre, &cliente.Email, &cliente.Telefono,
 				&cliente.Login, &cliente.Password, &cliente.CodigoSeguridad)
 
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			return cliente, nil
 		},

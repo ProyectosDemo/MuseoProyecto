@@ -77,9 +77,7 @@ func CreateArtistaField(artistaType *graphql.Object) *graphql.Field {
 
 			// Convertir string a time.Time
 			fechaNacimiento, err := time.Parse("2006-01-02", fechaNacimientoStr)
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			id := mysql.Insertar(
 				mysql.GetBD(),
@@ -141,18 +139,14 @@ func DeleteArtistaField(artistaType *graphql.Object) *graphql.Field {
 			).Scan(&artista.Id_artista, &artista.Nombre, &artista.Fecha_nacimiento, &artista.Nacionalidad,
 				&artista.Biografia, &artista.Foto)
 
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			_, err = mysql.GetBD().Exec(
 				"DELETE FROM artista WHERE id_artista = ?",
 				id,
 			)
 
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			return artista, nil
 		},
@@ -194,9 +188,7 @@ func UpdateArtistaField(artistaType *graphql.Object) *graphql.Field {
 			).Scan(&artista.Id_artista, &artista.Nombre, &artista.Fecha_nacimiento,
 				&artista.Nacionalidad, &artista.Biografia, &artista.Foto)
 
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			// Actualizar solo si vienen valores
 			if nombre, ok := p.Args["nombre"].(string); ok && nombre != "" {
@@ -205,9 +197,7 @@ func UpdateArtistaField(artistaType *graphql.Object) *graphql.Field {
 
 			if fechaStr, ok := p.Args["fecha_nacimiento"].(string); ok && fechaStr != "" {
 				fechaParseada, err := time.Parse("2006-01-02", fechaStr)
-				if err != nil {
-					return nil, err
-				}
+				middleware.PanicButton(err)
 				artista.Fecha_nacimiento = fechaParseada
 			}
 
@@ -241,9 +231,7 @@ func UpdateArtistaField(artistaType *graphql.Object) *graphql.Field {
 				id_artista,
 			)
 
-			if err != nil {
-				return nil, err
-			}
+			middleware.PanicButton(err)
 
 			return artista, nil
 		},
