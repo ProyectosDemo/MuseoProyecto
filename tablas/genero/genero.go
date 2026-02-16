@@ -166,3 +166,16 @@ func UpdateGeneroField(generoType *graphql.Object) *graphql.Field {
 		},
 	}
 }
+
+func GetGeneroByID(id int) (models.Genero, error) {
+    var genero models.Genero
+    err := mysql.GetBD().QueryRow(
+        "SELECT id_genero, nombre FROM genero WHERE id_genero = ?",
+        id,
+    ).Scan(&genero.Id_genero, &genero.Nombre)
+
+    if err != nil {
+        return models.Genero{}, err
+    }
+    return genero, nil
+}

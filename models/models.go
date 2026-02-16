@@ -45,7 +45,7 @@ type Obra struct {
 	Id_artista     int64   `json:"id_artista"`
 	Id_genero      int64   `json:"id_genero"`
 	Precio         float64 `json:"precio"`
-	Fecha_creacion string  `json:"fecha_creacion"`
+	Fecha_creacion time.Time  `json:"fecha_creacion"`
 	Estatus        string  `json:"estatus"`
 	Foto           string  `json:"foto"`
 	Material       string  `json:"material"`

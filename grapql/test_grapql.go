@@ -9,6 +9,7 @@ import (
 	"main/tablas/cliente"
 	"main/tablas/artista"
 	"main/tablas/genero"
+	"main/tablas/obra"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -21,18 +22,20 @@ func Coco() {
 
 	// Crear tipos para cada tabla
 	trabajadorType := trabajador.CreateTrabajadorType()
-	clienteType := cliente.CreateClienteType()
-	artistaType := artista.CreateArtistaType()
-	generoType := genero.CreateGeneroType()
+	clienteType    := cliente.CreateClienteType()
+	artistaType    := artista.CreateArtistaType()
+	generoType     := genero.CreateGeneroType()
+	obraType       := obra.CreateObraType(artistaType, generoType)
 
 	// Añadir cuantos queries quieras
 	rootQuery := graphql.NewObject(graphql.ObjectConfig{
 		Name: "Query",
 		Fields: graphql.Fields{
 			"trabajador": trabajador.GetTrabajadorField(trabajadorType),
-			"cliente":    cliente.GetClienteField(clienteType),
-			"artista":    artista.GetArtistaField(artistaType),
-			"genero":     genero.GetGenerosField(generoType),
+			"cliente"   : cliente.GetClienteField(clienteType),
+			"artista"   : artista.GetArtistaField(artistaType),
+			"genero"    : genero.GetGenerosField(generoType),
+			"obra"      : obra.GetObrasField(obraType),
 		},
 	})
 
@@ -55,6 +58,10 @@ func Coco() {
 			"crearGenero": genero.CreateGeneroField(generoType),
 			"eliminarGenero": genero.DeleteGeneroField(generoType),
 			"actualizarGenero": genero.UpdateGeneroField(generoType),
+
+			"crearObra": obra.CreateObraField(obraType),
+			"eliminarObra": obra.DeleteObraField(obraType),
+			"actualizarObra": obra.UpdateObraField(obraType),
 		},
 	})
 

@@ -9,7 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/graphql-go/graphql"
 )
-
+//artistaType
 // Podemos copiar estas funciones en las demas tablas, cambiando los campos, es casi lo mismo de antes, pero estas funciones trabajan con field ahora
 
 func CreateArtistaType() *graphql.Object {
@@ -236,4 +236,18 @@ func UpdateArtistaField(artistaType *graphql.Object) *graphql.Field {
 			return artista, nil
 		},
 	}
+}
+
+func GetArtistaByID(id int) (models.Artista, error) {
+    var artista models.Artista
+    err := mysql.GetBD().QueryRow(
+        "SELECT id_artista, nombre, fecha_nacimiento, nacionalidad, biografia, foto FROM artista WHERE id_artista = ?",
+        id,
+    ).Scan(&artista.Id_artista, &artista.Nombre, &artista.Fecha_nacimiento,
+        &artista.Nacionalidad, &artista.Biografia, &artista.Foto)
+
+    if err != nil {
+        return models.Artista{}, err
+    }
+    return artista, nil
 }
