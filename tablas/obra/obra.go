@@ -109,8 +109,21 @@ func CreateObraField(obraType *graphql.Object) *graphql.Field {
 			peso := p.Args["peso"].(float64)
 			dimensiones := p.Args["dimensiones"].(string)
 
+			// validacion de entrada
+			errores := []string{}
 			if !artista.ArtistaExiste(id_artista) {
-				println("Error: El artista con ID " + strconv.Itoa(id_artista) + " no existe.")
+				errores = append(errores, "Error: El artista con ID "+strconv.Itoa(id_artista)+" no existe.")
+			}
+
+			if !genero.GeneroExiste(id_genero) {
+				errores = append(errores, "Error: El género con ID "+strconv.Itoa(id_genero)+" no existe.")
+			}
+
+			var i int
+			if len(errores) != 0 {
+				for i = 0; i < len(errores); i++ {
+					println(errores[i])
+				}
 				return nil, nil
 			}
 

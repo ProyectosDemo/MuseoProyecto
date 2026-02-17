@@ -5,6 +5,7 @@ import (
 	"main/models"
 	"main/mysql"
 	"strconv"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/graphql-go/graphql"
 )
@@ -15,12 +16,21 @@ func CreateGeneroType() *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name: "Genero",
 		Fields: graphql.Fields{
-			"id_genero":  &graphql.Field{Type: graphql.Int},
-			"nombre":     &graphql.Field{Type: graphql.String},
+			"id_genero": &graphql.Field{Type: graphql.Int},
+			"nombre":    &graphql.Field{Type: graphql.String},
 		},
 	})
 }
 
+func GeneroExiste(id int) bool {
+	var existe bool
+	err := mysql.GetBD().QueryRow(
+		"SELECT EXISTS(SELECT 1 FROM genero WHERE id_genero = ?)",
+		id,
+	).Scan(&existe)
+	middleware.PanicButton(err)
+	return existe
+}
 
 func GetGenerosField(generoType *graphql.Object) *graphql.Field {
 	return &graphql.Field{
@@ -87,7 +97,6 @@ func GetGeneros(limit int, offset int) ([]models.Genero, error) {
 	}
 	return generos, nil
 }
-
 
 func DeleteGeneroField(generoType *graphql.Object) *graphql.Field {
 	return &graphql.Field{
@@ -168,14 +177,14 @@ func UpdateGeneroField(generoType *graphql.Object) *graphql.Field {
 }
 
 func GetGeneroByID(id int) (models.Genero, error) {
-    var genero models.Genero
-    err := mysql.GetBD().QueryRow(
-        "SELECT id_genero, nombre FROM genero WHERE id_genero = ?",
-        id,
-    ).Scan(&genero.Id_genero, &genero.Nombre)
+	var genero models.Genero
+	err := mysql.GetBD().QueryRow(
+		"SELECT id_genero, nombre FROM genero WHERE id_genero = ?",
+		id,
+	).Scan(&genero.Id_genero, &genero.Nombre)
 
-    if err != nil {
-        return models.Genero{}, err
-    }
-    return genero, nil
+	if err != nil {
+		return models.Genero{}, err
+	}
+	return genero, nil
 }
