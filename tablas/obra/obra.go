@@ -1,13 +1,14 @@
 package obra
 
 import (
-	"main/tablas/artista"
-	"main/tablas/genero"
 	"main/middleware"
 	"main/models"
 	"main/mysql"
+	"main/tablas/artista"
+	"main/tablas/genero"
 	"strconv"
 	"time"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/graphql-go/graphql"
 )
@@ -33,7 +34,6 @@ func CreateObraType(artistaType *graphql.Object, generoType *graphql.Object) *gr
 			"material":    &graphql.Field{Type: graphql.String},
 			"peso":        &graphql.Field{Type: graphql.Float},
 			"dimensiones": &graphql.Field{Type: graphql.String},
-
 			// Relaciones FK usando los tipos ya existentes
 			"artista": &graphql.Field{
 				Type: artistaType,
@@ -54,7 +54,7 @@ func CreateObraType(artistaType *graphql.Object, generoType *graphql.Object) *gr
 				},
 			},
 			"id_artista": &graphql.Field{Type: graphql.Int},
-			"id_genero": &graphql.Field{Type: graphql.Int},
+			"id_genero":  &graphql.Field{Type: graphql.Int},
 		},
 	})
 }
@@ -108,6 +108,11 @@ func CreateObraField(obraType *graphql.Object) *graphql.Field {
 			material := p.Args["material"].(string)
 			peso := p.Args["peso"].(float64)
 			dimensiones := p.Args["dimensiones"].(string)
+
+			if !artista.ArtistaExiste(id_artista) {
+				println("Error: El artista con ID " + strconv.Itoa(id_artista) + " no existe.")
+				return nil, nil
+			}
 
 			fecha_creacion, err := time.Parse("2006-01-02", fecha_creacion_str)
 			middleware.PanicButton(err)
@@ -165,7 +170,7 @@ func UpdateObraField(obraType *graphql.Object) *graphql.Field {
 		Type:        obraType,
 		Description: "Actualizar una obra por ID",
 		Args: graphql.FieldConfigArgument{
-			"id_obra": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
+			"id_obra":        &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
 			"nombre":         &graphql.ArgumentConfig{Type: graphql.String},
 			"id_artista":     &graphql.ArgumentConfig{Type: graphql.Int},
 			"id_genero":      &graphql.ArgumentConfig{Type: graphql.Int},
@@ -239,17 +244,17 @@ func UpdateObraField(obraType *graphql.Object) *graphql.Field {
 					peso=?, 
 					dimensiones=? 
 				WHERE id_obra=?`,
-				
-				o.Nombre, 
-				o.Id_artista, 
-				o.Id_genero, 
-				o.Precio, 
-				o.Fecha_creacion, 
-				o.Estatus, 
-				o.Foto, 
+
+				o.Nombre,
+				o.Id_artista,
+				o.Id_genero,
+				o.Precio,
+				o.Fecha_creacion,
+				o.Estatus,
+				o.Foto,
 				o.Material,
-				o.Peso, 
-				o.Dimensiones, 
+				o.Peso,
+				o.Dimensiones,
 				id_obra,
 			)
 			middleware.PanicButton(err)

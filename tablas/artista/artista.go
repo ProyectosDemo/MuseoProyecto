@@ -6,9 +6,11 @@ import (
 	"main/mysql"
 	"strconv"
 	"time"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/graphql-go/graphql"
 )
+
 //artistaType
 // Podemos copiar estas funciones en las demas tablas, cambiando los campos, es casi lo mismo de antes, pero estas funciones trabajan con field ahora
 
@@ -16,8 +18,8 @@ func CreateArtistaType() *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name: "Artista",
 		Fields: graphql.Fields{
-			"id_artista":              &graphql.Field{Type: graphql.Int},
-			"nombre":          &graphql.Field{Type: graphql.String},
+			"id_artista": &graphql.Field{Type: graphql.Int},
+			"nombre":     &graphql.Field{Type: graphql.String},
 			"fecha_nacimiento": &graphql.Field{
 				Type: graphql.String,
 				Resolve: func(p graphql.ResolveParams) (any, error) {
@@ -27,13 +29,12 @@ func CreateArtistaType() *graphql.Object {
 					return nil, nil
 				},
 			},
-			"nacionalidad":    &graphql.Field{Type: graphql.String},
-			"biografia":       &graphql.Field{Type: graphql.String},
-			"foto":            &graphql.Field{Type: graphql.String},
+			"nacionalidad": &graphql.Field{Type: graphql.String},
+			"biografia":    &graphql.Field{Type: graphql.String},
+			"foto":         &graphql.Field{Type: graphql.String},
 		},
 	})
 }
-
 
 func GetArtistaField(artistaType *graphql.Object) *graphql.Field {
 	return &graphql.Field{
@@ -118,7 +119,6 @@ func GetArtistas(limit int, offset int) ([]models.Artista, error) {
 	}
 	return artistas, nil
 }
-
 
 func DeleteArtistaField(artistaType *graphql.Object) *graphql.Field {
 	return &graphql.Field{
@@ -238,16 +238,26 @@ func UpdateArtistaField(artistaType *graphql.Object) *graphql.Field {
 	}
 }
 
-func GetArtistaByID(id int) (models.Artista, error) {
-    var artista models.Artista
-    err := mysql.GetBD().QueryRow(
-        "SELECT id_artista, nombre, fecha_nacimiento, nacionalidad, biografia, foto FROM artista WHERE id_artista = ?",
-        id,
-    ).Scan(&artista.Id_artista, &artista.Nombre, &artista.Fecha_nacimiento,
-        &artista.Nacionalidad, &artista.Biografia, &artista.Foto)
+func ArtistaExiste(id int) bool {
+	var existe bool
+	err := mysql.GetBD().QueryRow(
+		"SELECT EXISTS(SELECT 1 FROM artista WHERE id_artista = ?)",
+		id,
+	).Scan(&existe)
+	middleware.PanicButton(err)
+	return existe
+}
 
-    if err != nil {
-        return models.Artista{}, err
-    }
-    return artista, nil
+func GetArtistaByID(id int) (models.Artista, error) {
+	var artista models.Artista
+	err := mysql.GetBD().QueryRow(
+		"SELECT id_artista, nombre, fecha_nacimiento, nacionalidad, biografia, foto FROM artista WHERE id_artista = ?",
+		id,
+	).Scan(&artista.Id_artista, &artista.Nombre, &artista.Fecha_nacimiento,
+		&artista.Nacionalidad, &artista.Biografia, &artista.Foto)
+
+	if err != nil {
+		return models.Artista{}, err
+	}
+	return artista, nil
 }
