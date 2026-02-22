@@ -27,6 +27,16 @@ func CreateClienteType() *graphql.Object {
 	})
 }
 
+func ClienteExiste(id int) bool {
+	var existe bool
+	err := mysql.GetBD().QueryRow(
+		"SELECT EXISTS(SELECT 1 FROM cliente WHERE id_cliente = ?)",
+		id,
+	).Scan(&existe)
+	middleware.PanicButton(err)
+	return existe
+}
+
 
 func GetClienteField(clienteType *graphql.Object) *graphql.Field {
 	return &graphql.Field{
@@ -77,7 +87,7 @@ func CreateClienteField(clienteType *graphql.Object) *graphql.Field {
 			)
 
 			return models.Cliente{
-				Id:              id,
+				Id_cliente:              id,
 				Nombre:          nombre,
 				Email:           email,
 				Telefono:        telefono,
@@ -101,7 +111,7 @@ func GetClientes(limit int, offset int) ([]models.Cliente, error) {
 	for registros.Next() {
 		var aux models.Cliente
 		if err := registros.Scan(
-			&aux.Id, &aux.Nombre, &aux.Email, &aux.Telefono,
+			&aux.Id_cliente, &aux.Nombre, &aux.Email, &aux.Telefono,
 			&aux.Login, &aux.Password, &aux.CodigoSeguridad,
 		); err != nil {
 			return nil, err
@@ -128,7 +138,7 @@ func DeleteClienteField(clienteType *graphql.Object) *graphql.Field {
 			err := mysql.GetBD().QueryRow(
 				"SELECT id_cliente, nombre, email, telefono, login, password, codigo_seguridad FROM cliente WHERE id_cliente = ?",
 				id,
-			).Scan(&cliente.Id, &cliente.Nombre, &cliente.Email, &cliente.Telefono,
+			).Scan(&cliente.Id_cliente, &cliente.Nombre, &cliente.Email, &cliente.Telefono,
 				&cliente.Login, &cliente.Password, &cliente.CodigoSeguridad)
 
 			middleware.PanicButton(err)
@@ -209,7 +219,7 @@ func UpdateClienteField(clienteType *graphql.Object) *graphql.Field {
 			err = mysql.GetBD().QueryRow(
 				"SELECT id_cliente, nombre, email, telefono, login, password, codigo_seguridad FROM cliente WHERE id_cliente = ?",
 				id,
-			).Scan(&cliente.Id, &cliente.Nombre, &cliente.Email, &cliente.Telefono,
+			).Scan(&cliente.Id_cliente, &cliente.Nombre, &cliente.Email, &cliente.Telefono,
 				&cliente.Login, &cliente.Password, &cliente.CodigoSeguridad)
 
 			middleware.PanicButton(err)
@@ -217,4 +227,18 @@ func UpdateClienteField(clienteType *graphql.Object) *graphql.Field {
 			return cliente, nil
 		},
 	}
+}
+
+func GetClienteByID(id int) (models.Cliente, error) {
+	var cliente models.Cliente
+	err := mysql.GetBD().QueryRow(
+		"SELECT id_cliente, nombre, email, telefono, login, password, codigo_seguridad FROM cliente WHERE id_cliente = ?",
+		id,
+	).Scan(&cliente.Id_cliente, &cliente.Nombre, &cliente.Email, &cliente.Telefono,
+		&cliente.Login, &cliente.Password, &cliente.CodigoSeguridad)
+
+	if err != nil {
+		return models.Cliente{}, err
+	}
+	return cliente, nil
 }

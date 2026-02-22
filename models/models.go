@@ -11,7 +11,7 @@ type Trabajador struct {
 }
 
 type Cliente struct {
-	Id              int64  `json:"id"`
+	Id_cliente              int64  `json:"id_cliente"`
 	Nombre          string `json:"nombre"`
 	Email           string `json:"email"`
 	Telefono        string `json:"telefono"`
@@ -44,7 +44,7 @@ type Obra struct {
 	Nombre         string  `json:"nombre"`
 	Id_artista     int64   `json:"id_artista"`
 	Id_genero      int64   `json:"id_genero"`
-	Precio         float64 `json:"precio"`
+	Precio_obra         float64 `json:"precio_obra"`
 	Fecha_creacion time.Time  `json:"fecha_creacion"`
 	Estatus        string  `json:"estatus"`
 	Foto           string  `json:"foto"`
@@ -53,15 +53,23 @@ type Obra struct {
 	Dimensiones    string  `json:"dimensiones"`
 }
 
+type EstatusOrden string
+
+const (
+	Pendiente  EstatusOrden = "Pendiente"
+	Pagado     EstatusOrden = "Concretada"
+	Cancelado  EstatusOrden = "Cancelada"
+)
+
 type Orden struct {
 	Id_orden       int64   `json:"id_orden"`
 	Id_cliente     int64   `json:"id_cliente"`
 	Id_obra        int64   `json:"id_obra"`
 	Id_trabajador  int64   `json:"id_trabajador"`
-	Precio         float64 `json:"precio"`
+	Precio_obra    float64 `json:"precio_obra"`
 	Iva            float64 `json:"iva"`
 	Ganancia_museo float64 `json:"ganancia_museo"`
 	Total          float64 `json:"total"`
-	Fecha_orden    string  `json:"fecha_orden"`
-	Estatus        string  `json:"estatus"`
+	Fecha_orden    time.Time  `json:"fecha_orden"`
+	Estatus        EstatusOrden  `json:"estatus"`
 }

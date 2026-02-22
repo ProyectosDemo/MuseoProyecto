@@ -19,7 +19,7 @@ func CreateObraType(artistaType *graphql.Object, generoType *graphql.Object) *gr
 		Fields: graphql.Fields{
 			"id_obra": &graphql.Field{Type: graphql.Int},
 			"nombre":  &graphql.Field{Type: graphql.String},
-			"precio":  &graphql.Field{Type: graphql.Float},
+			"precio_obra":  &graphql.Field{Type: graphql.Float},
 			"fecha_creacion": &graphql.Field{
 				Type: graphql.String,
 				Resolve: func(p graphql.ResolveParams) (any, error) {
@@ -59,6 +59,16 @@ func CreateObraType(artistaType *graphql.Object, generoType *graphql.Object) *gr
 	})
 }
 
+func ObraExiste(id int) bool {
+	var existe bool
+	err := mysql.GetBD().QueryRow(
+		"SELECT EXISTS(SELECT 1 FROM obra WHERE id_obra = ?)",
+		id,
+	).Scan(&existe)
+	middleware.PanicButton(err)
+	return existe
+}
+
 func GetObrasField(obraType *graphql.Object) *graphql.Field {
 	return &graphql.Field{
 		Type:        graphql.NewList(obraType),
@@ -89,7 +99,7 @@ func CreateObraField(obraType *graphql.Object) *graphql.Field {
 			"nombre":         &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 			"id_artista":     &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
 			"id_genero":      &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
-			"precio":         &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Float)},
+			"precio_obra":         &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Float)},
 			"fecha_creacion": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 			"estatus":        &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 			"foto":           &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
@@ -101,7 +111,7 @@ func CreateObraField(obraType *graphql.Object) *graphql.Field {
 			nombre := p.Args["nombre"].(string)
 			id_artista := p.Args["id_artista"].(int)
 			id_genero := p.Args["id_genero"].(int)
-			precio := p.Args["precio"].(float64)
+			precio_obra := p.Args["precio_obra"].(float64)
 			fecha_creacion_str := p.Args["fecha_creacion"].(string)
 			estatus := p.Args["estatus"].(string)
 			foto := p.Args["foto"].(string)
@@ -133,9 +143,9 @@ func CreateObraField(obraType *graphql.Object) *graphql.Field {
 			id := mysql.Insertar(
 				mysql.GetBD(),
 				`INSERT INTO obra 
-					(nombre, id_artista, id_genero, precio, fecha_creacion, estatus, foto, material, peso, dimensiones)
+					(nombre, id_artista, id_genero, precio_obra, fecha_creacion, estatus, foto, material, peso, dimensiones)
 					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-				nombre, id_artista, id_genero, precio, fecha_creacion, estatus, foto, material, peso, dimensiones,
+				nombre, id_artista, id_genero, precio_obra, fecha_creacion, estatus, foto, material, peso, dimensiones,
 			)
 
 			return models.Obra{
@@ -143,7 +153,7 @@ func CreateObraField(obraType *graphql.Object) *graphql.Field {
 				Nombre:         nombre,
 				Id_artista:     int64(id_artista),
 				Id_genero:      int64(id_genero),
-				Precio:         precio,
+				Precio_obra:         precio_obra,
 				Fecha_creacion: fecha_creacion,
 				Estatus:        estatus,
 				Foto:           foto,
@@ -155,11 +165,11 @@ func CreateObraField(obraType *graphql.Object) *graphql.Field {
 	}
 }
 
-// Función para listar obras desde la BD
+
 func GetObras(limit int, offset int) ([]models.Obra, error) {
 	var obras []models.Obra
 	rows, err := mysql.GetBD().Query(
-		`SELECT id_obra, nombre, id_artista, id_genero, precio, fecha_creacion, estatus, foto, material, peso, dimensiones 
+		`SELECT id_obra, nombre, id_artista, id_genero, precio_obra, fecha_creacion, estatus, foto, material, peso, dimensiones 
 		 FROM obra LIMIT ` + strconv.Itoa(limit) + ` OFFSET ` + strconv.Itoa(offset),
 	)
 	middleware.PanicButton(err)
@@ -168,7 +178,7 @@ func GetObras(limit int, offset int) ([]models.Obra, error) {
 	for rows.Next() {
 		var o models.Obra
 		if err := rows.Scan(
-			&o.Id_obra, &o.Nombre, &o.Id_artista, &o.Id_genero, &o.Precio, &o.Fecha_creacion,
+			&o.Id_obra, &o.Nombre, &o.Id_artista, &o.Id_genero, &o.Precio_obra, &o.Fecha_creacion,
 			&o.Estatus, &o.Foto, &o.Material, &o.Peso, &o.Dimensiones,
 		); err != nil {
 			return nil, err
@@ -204,7 +214,7 @@ func UpdateObraField(obraType *graphql.Object) *graphql.Field {
 				`SELECT id_obra, nombre, id_artista, id_genero, precio, fecha_creacion, estatus, foto, material, peso, dimensiones
 				 FROM obra WHERE id_obra = ?`,
 				id_obra,
-			).Scan(&o.Id_obra, &o.Nombre, &o.Id_artista, &o.Id_genero, &o.Precio, &o.Fecha_creacion,
+			).Scan(&o.Id_obra, &o.Nombre, &o.Id_artista, &o.Id_genero, &o.Precio_obra, &o.Fecha_creacion,
 				&o.Estatus, &o.Foto, &o.Material, &o.Peso, &o.Dimensiones)
 			middleware.PanicButton(err)
 
@@ -218,8 +228,8 @@ func UpdateObraField(obraType *graphql.Object) *graphql.Field {
 			if id_genero, ok := p.Args["id_genero"].(int); ok {
 				o.Id_genero = int64(id_genero)
 			}
-			if precio, ok := p.Args["precio"].(float64); ok {
-				o.Precio = precio
+			if precio_obra, ok := p.Args["precio_obra"].(float64); ok {
+				o.Precio_obra = precio_obra
 			}
 			if fechaStr, ok := p.Args["fecha_creacion"].(string); ok && fechaStr != "" {
 				fechaParseada, err := time.Parse("2006-01-02", fechaStr)
@@ -249,7 +259,7 @@ func UpdateObraField(obraType *graphql.Object) *graphql.Field {
 					nombre=?, 
 					id_artista=?, 
 					id_genero=?, 
-					precio=?, 
+					precio_obra=?, 
 					fecha_creacion=?, 
 					estatus=?, 
 					foto=?, 
@@ -261,7 +271,7 @@ func UpdateObraField(obraType *graphql.Object) *graphql.Field {
 				o.Nombre,
 				o.Id_artista,
 				o.Id_genero,
-				o.Precio,
+				o.Precio_obra,
 				o.Fecha_creacion,
 				o.Estatus,
 				o.Foto,
@@ -289,10 +299,10 @@ func DeleteObraField(obraType *graphql.Object) *graphql.Field {
 
 			var o models.Obra
 			err := mysql.GetBD().QueryRow(
-				`SELECT id_obra, nombre, id_artista, id_genero, precio, fecha_creacion, estatus, foto, material, peso, dimensiones
+				`SELECT id_obra, nombre, id_artista, id_genero, precio_obra, fecha_creacion, estatus, foto, material, peso, dimensiones
 				 FROM obra WHERE id_obra=?`,
 				id_obra,
-			).Scan(&o.Id_obra, &o.Nombre, &o.Id_artista, &o.Id_genero, &o.Precio, &o.Fecha_creacion,
+			).Scan(&o.Id_obra, &o.Nombre, &o.Id_artista, &o.Id_genero, &o.Precio_obra, &o.Fecha_creacion,
 				&o.Estatus, &o.Foto, &o.Material, &o.Peso, &o.Dimensiones)
 			middleware.PanicButton(err)
 
@@ -305,4 +315,19 @@ func DeleteObraField(obraType *graphql.Object) *graphql.Field {
 			return o, nil
 		},
 	}
+}
+
+func GetObraByID(id int) (models.Obra, error) {
+	var obra models.Obra
+	err := mysql.GetBD().QueryRow(
+		"SELECT id_obra, nombre, id_artista, id_genero, precio_obra, fecha_creacion, estatus, foto, material, peso, dimensiones FROM obra WHERE id_obra = ?",
+		id,
+	).Scan(&obra.Id_obra, &obra.Nombre, &obra.Id_artista, &obra.Id_genero,
+		&obra.Precio_obra, &obra.Fecha_creacion, &obra.Estatus,
+		&obra.Foto, &obra.Material, &obra.Peso, &obra.Dimensiones)
+
+	if err != nil {
+		return models.Obra{}, err
+	}
+	return obra, nil
 }

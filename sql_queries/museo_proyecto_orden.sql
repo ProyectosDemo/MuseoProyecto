@@ -40,7 +40,7 @@ CREATE TABLE `orden` (
   CONSTRAINT `orden_ibfk_1` FOREIGN KEY (`id_obra`) REFERENCES `obra` (`id_obra`),
   CONSTRAINT `orden_ibfk_2` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`),
   CONSTRAINT `orden_ibfk_3` FOREIGN KEY (`id_trabajador`) REFERENCES `trabajador` (`id_trabajador`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -49,6 +49,7 @@ CREATE TABLE `orden` (
 
 LOCK TABLES `orden` WRITE;
 /*!40000 ALTER TABLE `orden` DISABLE KEYS */;
+INSERT INTO `orden` (`id_orden`, `id_obra`, `id_cliente`, `id_trabajador`, `precio_obra`, `ganancia_museo`, `fecha_orden`, `estatus`) VALUES (1,2,3,1,1500.50,300.10,'2026-02-21 20:00:00','Pendiente'),(2,1,3,1,2000.00,400.00,'2026-02-21 20:00:00','Pendiente'),(3,1,3,1,2000.00,400.00,'2026-02-21 20:00:00','Pendiente'),(4,1,3,1,2000.00,400.00,'2026-02-21 20:00:00','Pendiente'),(5,1,3,1,2000.00,400.00,'2026-02-21 20:00:00','Pendiente'),(6,2,3,1,1500.50,300.10,'2026-02-21 20:00:00','Pendiente');
 /*!40000 ALTER TABLE `orden` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -61,4 +62,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-14 17:58:32
+-- Dump completed on 2026-02-22 13:30:24

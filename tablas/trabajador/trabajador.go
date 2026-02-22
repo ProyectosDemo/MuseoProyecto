@@ -23,6 +23,16 @@ func CreateTrabajadorType() *graphql.Object {
 	})
 }
 
+func TrabajadorExiste(id int) bool {
+	var existe bool
+	err := mysql.GetBD().QueryRow(
+		"SELECT EXISTS(SELECT 1 FROM trabajador WHERE id_trabajador = ?)",
+		id,
+	).Scan(&existe)
+	middleware.PanicButton(err)
+	return existe
+}
+
 func GetTrabajadorField(trabajadorType *graphql.Object) *graphql.Field {
 	return &graphql.Field{
 		Type:        graphql.NewList(trabajadorType),
@@ -188,4 +198,17 @@ func UpdateTrabajadorField(trabajadorType *graphql.Object) *graphql.Field {
 			return trabajador, nil
 		},
 	}
+}
+
+func GetTrabajadorByID(id int) (models.Trabajador, error) {
+	var trabajador models.Trabajador
+	err := mysql.GetBD().QueryRow(
+		"SELECT id_trabajador, nombre, login, password, admin FROM trabajador WHERE id_trabajador = ?",
+		id,
+	).Scan(&trabajador.Id, &trabajador.Nombre, &trabajador.Login, &trabajador.Password, &trabajador.Admin)
+
+	if err != nil {
+		return models.Trabajador{}, err
+	}
+	return trabajador, nil
 }
