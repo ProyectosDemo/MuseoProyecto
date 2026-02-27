@@ -1,0 +1,144 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Todo {
+  id: ID!
+  text: String!
+  done: Boolean!
+  user: User!
+}
+
+type User {
+  id: ID!
+  name: String!
+}
+
+type Cliente {
+  id: ID!
+  nombre: String!
+  email: String!
+  telefono: String!
+  login: String!
+  password: String!
+  codigo_seguridad: String!
+}
+
+type Obra {
+  id: ID!
+  nombre: String!
+  id_artista: ID!
+  id_genero: ID!
+  precio: Int!
+  fecha_creacion: String!
+  status: String!
+  foto: String!
+  material: String!
+  peso: Int!
+  dimensiones: String!
+}
+
+input NewObra {
+  nombre: String!
+  id_artista: ID!
+  id_genero: ID!
+  precio: Int!
+  fecha_creacion: String!
+  status: String!
+  foto: String!
+  material: String!
+  peso: Int!
+  dimensiones: String!
+}
+
+input UpdateObra {
+  id: ID!
+  nombre: String
+  id_artista: ID
+  id_genero: ID
+  precio: Int
+  fecha_creacion: String
+  status: String
+  foto: String
+  material: String
+  peso: Int
+  dimensiones: String
+}
+
+input NewCliente {
+  nombre: String!
+  email: String!
+  telefono: String!
+  login: String!
+  password: String!
+  codigo_seguridad: String!
+}
+
+input UpdateCliente {
+  id: ID!
+  nombre: String
+  email: String
+  telefono: String
+  login: String
+  password: String
+  codigo_seguridad: String
+}
+
+type Trabajador {
+  id: ID!
+  nombre: String!
+  login: String!
+  password: String!
+  admin: Boolean!
+}
+
+input NewTrabajador {
+  nombre: String!
+  login: String!
+  password: String!
+  admin: Boolean!
+}
+
+input UpdateTrabajador {
+  id: ID!
+  nombre: String
+  login: String
+  password: String
+  admin: Boolean
+}
+
+type Query {
+  todos: [Todo!]!
+  findCliente(id: ID!): [Cliente!]!
+  findTrabajador(id: ID!): [Trabajador!]!
+  findObra(id: ID!): [Obra!]!
+}
+
+type Genero {
+  id: ID!
+  nombre: String!
+}
+
+input NewGenero {
+  nombre: String!
+}
+
+input UpdateGenero {
+  id: ID!
+  nombre: String
+}
+
+type Mutation {
+  updateCliente(input: UpdateCliente!): Cliente!
+  updateTrabajador(input: UpdateTrabajador!): Trabajador!
+  updateObra(input: UpdateObra!): Obra!
+  #updateGenero(input: UpdateGenero!): Genero!
+  createCliente(input: NewCliente!): Cliente!
+  createTrabajador(input: NewTrabajador!): Trabajador!
+  createObra(input: NewObra!): Obra!
+  createGenero(nombre: String!): Genero!
+  killCliente(id: ID!): Boolean!
+  killTrabajador(id: ID!): Boolean!
+  killObra(id: ID!): Boolean!
+  killGenero(id: ID!): Boolean!
+}

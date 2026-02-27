@@ -1,12 +1,87 @@
 package main
-import 
-	"main/grapql"
+
+import (
+	"log"
+	"main/graph"
+	"main/mysql"
+	"os"
+
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/lru"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
+	gqlparser "github.com/vektah/gqlparser/v2"
+	"github.com/vektah/gqlparser/v2/ast"
+)
+
+func PrintFuncionesDisponibles(schemaAst *ast.Schema) {
+
+	// Loguear las operaciones encontradas en el schema para depuración
+	var mutationNames []string
+	if m := schemaAst.Types["Mutation"]; m != nil {
+		for _, f := range m.Fields {
+			mutationNames = append(mutationNames, f.Name)
+		}
+	}
+	var queryNames []string
+	if q := schemaAst.Types["Query"]; q != nil {
+		for _, f := range q.Fields {
+			queryNames = append(queryNames, f.Name)
+		}
+	}
+	log.Printf("Schema Mutation fields: %v", mutationNames)
+	log.Printf("Schema Query fields: %v", queryNames)
+}
 
 func main() {
-	// jose estuvo aqui
-	grapql.Coco()
-	//demo estuvo aqui, cambios principales en test_grapql.go, cliente.go y trabajador.go
+	// inicializar BD
+	mysql.ConectarBD()
+	if err := mysql.GetBD().Ping(); err != nil {
+		log.Fatalf("Error al conectar a la base de datos: %v", err)
+	}
 
+	// Cargar y parsear esquema GraphQL desde archivo para asegurar que incluya createCliente
+	schemaBytes, err := os.ReadFile("graph/schema.graphqls")
+	if err != nil {
+		log.Fatalf("No se pudo leer schema.graphqls: %v", err)
+	}
+	schemaAst, err := gqlparser.LoadSchema(&ast.Source{Input: string(schemaBytes)})
+	if err != nil {
+		log.Fatalf("Error al parsear schema.graphqls: %v", err)
+	}
+	PrintFuncionesDisponibles(schemaAst)
+	// crear servidor GraphQL usando el schema parseado
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{DB: mysql.GetBD()}, Schema: schemaAst}))
 
-	
+	// Registrar transportes HTTP que aceptarás (POST, GET, OPTIONS)
+	srv.AddTransport(transport.Options{})
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.POST{})
+
+	// Caché y extensiones recomendadas
+	srv.SetQueryCache(lru.New[*ast.QueryDocument](1000))
+	srv.Use(extension.Introspection{})
+	srv.Use(extension.AutomaticPersistedQuery{Cache: lru.New[string](100)})
+
+	// Crear router Gin y exponer endpoints
+	router := gin.Default()
+	if err := router.SetTrustedProxies(nil); err != nil {
+		log.Fatalf("Error al configurar proxies: %v", err)
+	}
+
+	router.GET("/", func(c *gin.Context) {
+		playground.Handler("GraphQL playground", "/query").ServeHTTP(c.Writer, c.Request)
+	})
+	router.Any("/query", gin.WrapH(srv))
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Printf("Servidor GraphQL corriendo en http://localhost:%s/", port)
+	log.Fatal(router.Run(":" + port))
 }
