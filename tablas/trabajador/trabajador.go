@@ -212,3 +212,49 @@ func GetTrabajadorByID(id int) (models.Trabajador, error) {
 	}
 	return trabajador, nil
 }
+
+func LoginTrabajadorField(trabajadorType *graphql.Object) *graphql.Field {
+	return &graphql.Field{
+		Type: graphql.NewObject(graphql.ObjectConfig{
+			Name: "LoginTrabajadorResponse",
+			Fields: graphql.Fields{
+				"success": &graphql.Field{Type: graphql.Boolean},
+				"id":      &graphql.Field{Type: graphql.Int},
+				"nombre":  &graphql.Field{Type: graphql.String},
+				"admin":   &graphql.Field{Type: graphql.Boolean}, // nuevo campo
+			},
+		}),
+		Description: "Login de trabajador",
+		Args: graphql.FieldConfigArgument{
+			"login":    &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+			"password": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+		},
+		Resolve: func(p graphql.ResolveParams) (any, error) {
+			login := p.Args["login"].(string)
+			password := p.Args["password"].(string)
+
+			var trabajador models.Trabajador
+			err := mysql.GetBD().QueryRow(
+				"SELECT id_trabajador, nombre, admin FROM trabajador WHERE login = ? AND password = ?",
+				login, password,
+			).Scan(&trabajador.Id, &trabajador.Nombre, &trabajador.Admin)
+
+			if err != nil {
+				// usuario no encontrado o error
+				return map[string]interface{}{
+					"success": false,
+					"id":      0,
+					"nombre":  "",
+					"admin":   false,
+				}, nil
+			}
+
+			return map[string]interface{}{
+				"success": true,
+				"id":      trabajador.Id,
+				"nombre":  trabajador.Nombre,
+				"admin":   trabajador.Admin,
+			}, nil
+		},
+	}
+}

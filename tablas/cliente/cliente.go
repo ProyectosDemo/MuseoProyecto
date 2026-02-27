@@ -242,3 +242,46 @@ func GetClienteByID(id int) (models.Cliente, error) {
 	}
 	return cliente, nil
 }
+
+func LoginClienteField(clienteType *graphql.Object) *graphql.Field {
+	return &graphql.Field{
+		Type: graphql.NewObject(graphql.ObjectConfig{
+			Name: "LoginResponse",
+			Fields: graphql.Fields{
+				"success": &graphql.Field{Type: graphql.Boolean},
+				"id":      &graphql.Field{Type: graphql.Int},
+				"nombre":  &graphql.Field{Type: graphql.String},
+			},
+		}),
+		Description: "Login de cliente",
+		Args: graphql.FieldConfigArgument{
+			"email":    &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+			"password": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+		},
+		Resolve: func(p graphql.ResolveParams) (any, error) {
+			email := p.Args["email"].(string)
+			password := p.Args["password"].(string)
+
+			var cliente models.Cliente
+			err := mysql.GetBD().QueryRow(
+				"SELECT id_cliente, nombre FROM cliente WHERE email = ? AND password = ?",
+				email, password,
+			).Scan(&cliente.Id_cliente, &cliente.Nombre)
+
+			if err != nil {
+				// usuario no encontrado o error
+				return map[string]interface{}{
+					"success": false,
+					"id":      0,
+					"nombre":  "",
+				}, nil
+			}
+
+			return map[string]interface{}{
+				"success": true,
+				"id":      cliente.Id_cliente,
+				"nombre":  cliente.Nombre,
+			}, nil
+		},
+	}
+}

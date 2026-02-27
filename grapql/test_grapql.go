@@ -38,6 +38,9 @@ func Coco() {
 			"genero":     genero.GetGenerosField(generoType),
 			"obra":       obra.GetObrasField(obraType),
 			"orden":      orden.GetOrdenesField(ordenType),
+			"loginCliente": cliente.LoginClienteField(clienteType),
+			"loginTrabajador": trabajador.LoginTrabajadorField(trabajadorType),
+			"obraById": obra.GetObraByIDField(obraType),
 		},
 	})
 
@@ -85,8 +88,17 @@ func Coco() {
 
 	router := gin.Default()
 	router.SetTrustedProxies(nil)
+	router.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	})
 	router.Any("/graphql", gin.WrapH(h))
-
 	port := "8080"
 	log.Println("Servidor GraphQL en http://localhost:" + port + "/graphql")
 

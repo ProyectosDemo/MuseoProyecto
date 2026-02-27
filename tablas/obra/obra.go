@@ -197,7 +197,7 @@ func UpdateObraField(obraType *graphql.Object) *graphql.Field {
 			"nombre":         &graphql.ArgumentConfig{Type: graphql.String},
 			"id_artista":     &graphql.ArgumentConfig{Type: graphql.Int},
 			"id_genero":      &graphql.ArgumentConfig{Type: graphql.Int},
-			"precio":         &graphql.ArgumentConfig{Type: graphql.Float},
+			"precio_obra":         &graphql.ArgumentConfig{Type: graphql.Float},
 			"fecha_creacion": &graphql.ArgumentConfig{Type: graphql.String},
 			"estatus":        &graphql.ArgumentConfig{Type: graphql.String},
 			"foto":           &graphql.ArgumentConfig{Type: graphql.String},
@@ -211,7 +211,7 @@ func UpdateObraField(obraType *graphql.Object) *graphql.Field {
 			// Obtener obra actual
 			var o models.Obra
 			err := mysql.GetBD().QueryRow(
-				`SELECT id_obra, nombre, id_artista, id_genero, precio, fecha_creacion, estatus, foto, material, peso, dimensiones
+				`SELECT id_obra, nombre, id_artista, id_genero, precio_obra, fecha_creacion, estatus, foto, material, peso, dimensiones
 				 FROM obra WHERE id_obra = ?`,
 				id_obra,
 			).Scan(&o.Id_obra, &o.Nombre, &o.Id_artista, &o.Id_genero, &o.Precio_obra, &o.Fecha_creacion,
@@ -330,4 +330,18 @@ func GetObraByID(id int) (models.Obra, error) {
 		return models.Obra{}, err
 	}
 	return obra, nil
+}
+
+func GetObraByIDField(obraType *graphql.Object) *graphql.Field {
+	return &graphql.Field{
+		Type:        obraType,
+		Description: "Obtener una obra por ID",
+		Args: graphql.FieldConfigArgument{
+			"id": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
+		},
+		Resolve: func(p graphql.ResolveParams) (any, error) {
+			id := p.Args["id"].(int)
+			return GetObraByID(id) // llama a tu función existente
+		},
+	}
 }

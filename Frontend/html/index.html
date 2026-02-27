@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Museo Aurora</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header>
+    <h1>Museo Aurora</h1>
+    <nav id="navMenu">
+        <a href="#">Inicio</a>
+        <a href="#">Exposiciones</a>
+        <a href="#">Artistas</a>
+        <a href="login.html" id="loginButton">Iniciar Sesión</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <h2>Donde el Arte Cobra Vida</h2>
+</section>
+
+<section class="section">
+    <h3>Obras Destacadas</h3>
+
+    <div class="gallery" id="gallery">
+        <!-- Las obras se cargarán dinámicamente -->
+    </div>
+</section>
+
+<footer>
+    © 2026 Museo Aurora | Todos los derechos reservados
+</footer>
+
+<script>
+const navMenu = document.getElementById("navMenu");
+const loginButton = document.getElementById("loginButton");
+
+// Datos de localStorage
+const nombreCliente = localStorage.getItem("clienteNombre");
+const nombreTrabajador = localStorage.getItem("trabajadorNombre");
+const esAdmin = localStorage.getItem("trabajadorAdmin") === "true";
+
+let userType = "";
+
+if (nombreCliente) {
+    loginButton.textContent = `Bienvenido, ${nombreCliente}`;
+    loginButton.href = "#";
+    userType = "cliente";
+} else if (nombreTrabajador) {
+    loginButton.textContent = `Bienvenido, ${nombreTrabajador}`;
+    loginButton.href = "#";
+    userType = esAdmin ? "admin" : "trabajador";
+}
+
+// Crear botones extra si hay sesión
+if (userType) {
+    // Botón Cerrar Sesión
+    const logoutBtn = document.createElement("a");
+    logoutBtn.href = "#";
+    logoutBtn.textContent = "Cerrar Sesión";
+    logoutBtn.style.marginLeft = "10px";
+    logoutBtn.addEventListener("click", () => {
+        if (userType === "cliente") {
+            localStorage.removeItem("clienteNombre");
+            localStorage.removeItem("clienteId");
+        } else {
+            localStorage.removeItem("trabajadorNombre");
+            localStorage.removeItem("trabajadorId");
+            localStorage.removeItem("trabajadorAdmin");
+        }
+        location.reload();
+    });
+    navMenu.appendChild(logoutBtn);
+
+    // Botón Administración para admin
+    if (esAdmin) {
+        const adminBtn = document.createElement("a");
+        adminBtn.href = "admin.html";
+        adminBtn.textContent = "Administración";
+        adminBtn.style.marginLeft = "10px";
+        navMenu.appendChild(adminBtn);
+    }
+}
+
+// --- Cargar obras desde GraphQL ---
+async function cargarObras() {
+    const query = `
+        query {
+            obra(limit: 10, offset: 0) {
+                id_obra
+                nombre
+                foto
+                artista {
+                    nombre
+                }
+            }
+        }
+    `;
+
+    try {
+        const res = await fetch("http://localhost:8080/graphql", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query })
+        });
+
+        const data = await res.json();
+        const gallery = document.getElementById("gallery");
+        gallery.innerHTML = "";
+
+        data.data.obra.forEach(ob => {
+            const artCard = document.createElement("div");
+            artCard.className = "art-card";
+
+            artCard.innerHTML = `
+                <a href="obra.html?id=${ob.id_obra}">
+                    <img src="${ob.foto}" alt="${ob.nombre}">
+                    <div class="art-info">
+                        <h4>${ob.nombre}</h4>
+                        <p>Autor: ${ob.artista.nombre}</p>
+                    </div>
+                </a>
+            `;
+            gallery.appendChild(artCard);
+        });
+
+    } catch (err) {
+        console.error(err);
+        document.getElementById("gallery").innerHTML = "<p>Error cargando obras</p>";
+    }
+}
+
+cargarObras();
+</script>
+
+</body>
+</html>
