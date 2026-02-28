@@ -118,7 +118,6 @@ type Artista {
 }
 
 input NewArtista {
-  id: ID!
   nombre: String!
   fecha_nacimiento: String!
   nacionalidad: String!

@@ -27,7 +27,7 @@ func (r *queryResolver) FindArtista(ctx context.Context, id string) ([]*model.Ar
 	}
 	return []*model.Artista{&artista}, nil
 }
-
+//codigo
 // UpdateArtista is the resolver for the updateArtista field.
 func (r *mutationResolver) UpdateArtista(ctx context.Context, input model.UpdateArtista) (*model.Artista, error) {
 	log.Printf("UpdateArtista called with input: %+v", input)
@@ -88,7 +88,7 @@ func (r *mutationResolver) CreateArtista(ctx context.Context, input model.NewArt
 		Biografia:       input.Biografia,
 		Foto:            input.Foto,
 	}
-	_, err := r.DB.ExecContext(ctx, "INSERT INTO artista (nombre, fecha_nacimiento, nacionalidad, biografia, foto, codigo_seguridad) VALUES (?, ?, ?, ?, ?, ?)", artista.Nombre, artista.FechaNacimiento, artista.Nacionalidad, artista.Biografia, artista.Foto)
+	_, err := r.DB.ExecContext(ctx, "INSERT INTO artista (nombre, fecha_nacimiento, nacionalidad, biografia, foto) VALUES (?, ?, ?, ?, ?)", artista.Nombre, artista.FechaNacimiento, artista.Nacionalidad, artista.Biografia, artista.Foto)
 	if err != nil {
 		log.Printf("CreateArtista DB error: %v", err)
 		return nil, err
