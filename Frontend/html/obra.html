@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Obra | Museo Aurora</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header>
+    <h1>Museo Aurora</h1>
+    <nav id="navMenu">
+        <a href="index.html">Inicio</a>
+        <a href="#">Exposiciones</a>
+        <a href="#">Artistas</a>
+        <a href="login.html" id="loginButton">Iniciar Sesión</a>
+    </nav>
+</header>
+
+<section class="obra-container">
+    <img id="obraFoto" src="" alt="Foto de la obra">
+    <div class="obra-info">
+        <div><span>Nombre:</span> <span id="obraNombre"></span></div>
+        <div><span>Artista:</span> <span id="obraArtista"></span></div>
+        <div><span>Género:</span> <span id="obraGenero"></span></div>
+        <div><span>Precio:</span> <span id="obraPrecio"></span></div>
+        <div><span>Fecha de creación:</span> <span id="obraFecha"></span></div>
+        <div><span>Estatus:</span> <span id="obraEstatus"></span></div>
+        <div><span>Material:</span> <span id="obraMaterial"></span></div>
+        <div><span>Peso:</span> <span id="obraPeso"></span></div>
+        <div><span>Dimensiones:</span> <span id="obraDimensiones"></span></div>
+    </div>
+</section>
+
+<script>
+    // Revisar sesión
+    const nombreCliente = localStorage.getItem("clienteNombre");
+    const navMenu = document.getElementById("navMenu");
+    const loginButton = document.getElementById("loginButton");
+
+    if (nombreCliente) {
+        loginButton.textContent = `Bienvenido, ${nombreCliente}`;
+        loginButton.href = "#";
+
+        const logoutBtn = document.createElement("a");
+        logoutBtn.href = "#";
+        logoutBtn.textContent = "Cerrar Sesión";
+        logoutBtn.style.marginLeft = "10px";
+        logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("clienteNombre");
+            localStorage.removeItem("clienteId");
+            location.reload();
+        });
+        navMenu.appendChild(logoutBtn);
+    }
+
+    // Obtener el ID de la obra desde query string
+    const params = new URLSearchParams(window.location.search);
+    const obraId = params.get("id");
+
+    if (!obraId) {
+        alert("No se especificó la obra");
+    } else {
+        const query = `
+            query {
+                obraById(id: ${obraId}) {
+                    nombre
+                    precio_obra
+                    fecha_creacion
+                    estatus
+                    foto
+                    material
+                    peso
+                    dimensiones
+                    artista { nombre }
+                    genero { nombre }
+                }
+            }
+        `;
+
+        fetch("http://localhost:8080/graphql", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const obra = data.data.obraById;
+            if (!obra) {
+                alert("Obra no encontrada");
+                return;
+            }
+
+            document.getElementById("obraFoto").src = obra.foto;
+            document.getElementById("obraNombre").textContent = obra.nombre;
+            document.getElementById("obraArtista").textContent = obra.artista ? obra.artista.nombre : "";
+            document.getElementById("obraGenero").textContent = obra.genero ? obra.genero.nombre : "";
+            document.getElementById("obraPrecio").textContent = "$" + obra.precio_obra;
+            document.getElementById("obraFecha").textContent = obra.fecha_creacion;
+            document.getElementById("obraEstatus").textContent = obra.estatus;
+            document.getElementById("obraMaterial").textContent = obra.material;
+            document.getElementById("obraPeso").textContent = obra.peso + " kg";
+            document.getElementById("obraDimensiones").textContent = obra.dimensiones;
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error cargando la obra");
+        });
+    }
+</script>
+
+</body>
+</html>
