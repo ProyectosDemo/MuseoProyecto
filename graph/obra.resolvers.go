@@ -10,29 +10,40 @@ import (
 
 // Obras lista de los clientes
 func (r *queryResolver) Obras(ctx context.Context, limit *int32, offset *int32) ([]*model.Obra, error) {
+    rows, err := r.DB.QueryContext(ctx,
+        `SELECT id_obra, nombre, id_artista, id_genero, precio_obra, fecha_creacion, estatus, foto 
+         FROM obra LIMIT ? OFFSET ?`,
+        limit, offset)
+    if err != nil {
+        log.Printf("Obras DB error: %v", err)
+        return nil, err
+    }
+    defer rows.Close()
 
-	rows, err := r.DB.QueryContext(ctx, "SELECT id_obra, nombre, id_artista, id_genero, precio_obra, fecha_creacion, estatus, foto FROM obra LIMIT ? OFFSET ?", limit, offset)
-	if err != nil {
-		log.Printf("Obras DB error: %v", err)
-		return nil, err
-	}
-	defer rows.Close()
+    var obras []*model.Obra
+    for rows.Next() {
+        var obra model.Obra
+        // IDs como strings
+        var idObra, idArtista, idGenero string
+        err := rows.Scan(&idObra, &obra.Nombre, &idArtista, &idGenero, &obra.Precio, &obra.FechaCreacion, &obra.Status, &obra.Foto)
+        if err != nil {
+            log.Printf("Obra scan error: %v", err)
+            return nil, err
+        }
 
-	var obras []*model.Obra
-	for rows.Next() {
-		var obra model.Obra
-		err := rows.Scan(&obra.ID, &obra.Nombre, &obra.IDArtista, &obra.IDGenero, &obra.Precio, &obra.FechaCreacion, &obra.Status, &obra.Foto)
-		if err != nil {
-			log.Printf("Obra scan error: %v", err)
-			return nil, err
-		}
-		obras = append(obras, &obra)
-	}
-	if err = rows.Err(); err != nil {
-		log.Printf("Obra rows error: %v", err)
-		return nil, err
-	}
-	return obras, nil
+        obra.ID = idObra
+        obra.IDArtista = idArtista
+        obra.IDGenero = idGenero
+
+        obras = append(obras, &obra)
+    }
+
+    if err = rows.Err(); err != nil {
+        log.Printf("Obra rows error: %v", err)
+        return nil, err
+    }
+
+    return obras, nil
 }
 
 // FindObra is the resolver for the findobra field.

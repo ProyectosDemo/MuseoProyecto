@@ -75,6 +75,16 @@ func main() {
 	router.GET("/", func(c *gin.Context) {
 		playground.Handler("GraphQL playground", "/query").ServeHTTP(c.Writer, c.Request)
 	})
+	router.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	})
 	router.Any("/query", gin.WrapH(srv))
 
 	port := os.Getenv("PORT")

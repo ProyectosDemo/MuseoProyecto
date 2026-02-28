@@ -24,7 +24,6 @@
 
 <section class="section">
     <h3>Obras Destacadas</h3>
-
     <div class="gallery" id="gallery">
         <!-- Las obras se cargarán dinámicamente -->
     </div>
@@ -38,7 +37,7 @@
 const navMenu = document.getElementById("navMenu");
 const loginButton = document.getElementById("loginButton");
 
-// Datos de localStorage
+// Manejo de sesión
 const nombreCliente = localStorage.getItem("clienteNombre");
 const nombreTrabajador = localStorage.getItem("trabajadorNombre");
 const esAdmin = localStorage.getItem("trabajadorAdmin") === "true";
@@ -55,9 +54,7 @@ if (nombreCliente) {
     userType = esAdmin ? "admin" : "trabajador";
 }
 
-// Crear botones extra si hay sesión
 if (userType) {
-    // Botón Cerrar Sesión
     const logoutBtn = document.createElement("a");
     logoutBtn.href = "#";
     logoutBtn.textContent = "Cerrar Sesión";
@@ -75,7 +72,6 @@ if (userType) {
     });
     navMenu.appendChild(logoutBtn);
 
-    // Botón Administración para admin
     if (esAdmin) {
         const adminBtn = document.createElement("a");
         adminBtn.href = "admin.html";
@@ -85,23 +81,20 @@ if (userType) {
     }
 }
 
-// --- Cargar obras desde GraphQL ---
+// Cargar obras desde GraphQL
 async function cargarObras() {
     const query = `
         query {
-            obra(limit: 10, offset: 0) {
-                id_obra
+            Obras(limit:4, offset:0) {
+                id
                 nombre
                 foto
-                artista {
-                    nombre
-                }
             }
         }
     `;
 
     try {
-        const res = await fetch("http://localhost:8080/graphql", {
+        const res = await fetch("http://localhost:8080/query", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ query })
@@ -111,16 +104,15 @@ async function cargarObras() {
         const gallery = document.getElementById("gallery");
         gallery.innerHTML = "";
 
-        data.data.obra.forEach(ob => {
+        data.data.Obras.forEach(ob => {
             const artCard = document.createElement("div");
             artCard.className = "art-card";
 
             artCard.innerHTML = `
-                <a href="obra.html?id=${ob.id_obra}">
+                <a href="obras.html?id=${ob.id}">
                     <img src="${ob.foto}" alt="${ob.nombre}">
                     <div class="art-info">
                         <h4>${ob.nombre}</h4>
-                        <p>Autor: ${ob.artista.nombre}</p>
                     </div>
                 </a>
             `;
