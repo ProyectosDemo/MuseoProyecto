@@ -122,6 +122,19 @@ input UpdateArtista {
   foto: String
 }
 
+type LoginResponseCliente {
+  success: Boolean!
+  id: ID
+  nombre: String
+}
+
+type LoginResponseTrabajador {
+  success: Boolean!
+  id: ID
+  nombre: String
+  admin: Boolean
+}
+
 type Query {
   Clientes(limit: Int, offset: Int): [Cliente!]!
   Obras(limit: Int, offset: Int): [Obra!]!
@@ -129,6 +142,8 @@ type Query {
   findTrabajador(id: ID!): [Trabajador!]!
   findObra(id: ID!): [Obra!]!
   findArtista(id: ID!): [Artista!]!
+  loginCliente(email: String!, password: String!): LoginResponseCliente!
+  loginTrabajador(login: String!, password: String!): LoginResponseTrabajador!
 }
 
 type Genero {

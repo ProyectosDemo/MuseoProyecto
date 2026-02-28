@@ -96,3 +96,30 @@ func (r *mutationResolver) KillTrabajador(ctx context.Context, id string) (bool,
 	}
 	return true, nil
 }
+
+func (r *queryResolver) LoginTrabajador(ctx context.Context, login string, password string) (*model.LoginResponseTrabajador, error) {
+    var trabajador model.Trabajador
+    query := `SELECT id_trabajador, nombre, password, admin FROM trabajador WHERE login = ?`
+    err := r.DB.QueryRowContext(ctx, query, login).Scan(&trabajador.ID, &trabajador.Nombre, &trabajador.Password, &trabajador.Admin)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return &model.LoginResponseTrabajador{Success: false}, nil
+        }
+        return nil, err
+    }
+
+    if trabajador.Password != password {
+        return &model.LoginResponseTrabajador{Success: false}, nil
+    }
+
+    idPtr := &trabajador.ID
+    nombrePtr := &trabajador.Nombre
+    adminPtr := &trabajador.Admin
+
+    return &model.LoginResponseTrabajador{
+        Success: true,
+        ID:      idPtr,
+        Nombre:  nombrePtr,
+        Admin:   adminPtr,
+    }, nil
+}

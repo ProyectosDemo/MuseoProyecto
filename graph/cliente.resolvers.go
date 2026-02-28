@@ -138,3 +138,29 @@ func (r *mutationResolver) KillCliente(ctx context.Context, id string) (bool, er
 	}
 	return true, nil
 }
+
+func (r *queryResolver) LoginCliente(ctx context.Context, email string, password string) (*model.LoginResponseCliente, error) {
+    var cliente model.Cliente
+    query := `SELECT id_cliente, nombre, password FROM cliente WHERE email = ?`
+    err := r.DB.QueryRowContext(ctx, query, email).Scan(&cliente.ID, &cliente.Nombre, &cliente.Password)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return &model.LoginResponseCliente{Success: false}, nil
+        }
+        return nil, err
+    }
+
+    if cliente.Password != password {
+        return &model.LoginResponseCliente{Success: false}, nil
+    }
+
+    // Crear punteros
+    idPtr := &cliente.ID
+    nombrePtr := &cliente.Nombre
+
+    return &model.LoginResponseCliente{
+        Success: true,
+        ID:      idPtr,
+        Nombre:  nombrePtr,
+    }, nil
+}

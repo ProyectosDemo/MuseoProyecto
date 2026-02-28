@@ -26,6 +26,19 @@ type Genero struct {
 	Nombre string `json:"nombre"`
 }
 
+type LoginResponseCliente struct {
+	Success bool    `json:"success"`
+	ID      *string `json:"id,omitempty"`
+	Nombre  *string `json:"nombre,omitempty"`
+}
+
+type LoginResponseTrabajador struct {
+	Success bool    `json:"success"`
+	ID      *string `json:"id,omitempty"`
+	Nombre  *string `json:"nombre,omitempty"`
+	Admin   *bool   `json:"admin,omitempty"`
+}
+
 type Mutation struct {
 }
 
