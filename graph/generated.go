@@ -92,9 +92,11 @@ type ComplexityRoot struct {
 	}
 
 	Obra struct {
+		Artista       func(childComplexity int) int
 		Dimensiones   func(childComplexity int) int
 		FechaCreacion func(childComplexity int) int
 		Foto          func(childComplexity int) int
+		Genero        func(childComplexity int) int
 		ID            func(childComplexity int) int
 		IDArtista     func(childComplexity int) int
 		IDGenero      func(childComplexity int) int
@@ -111,6 +113,7 @@ type ComplexityRoot struct {
 		FindCliente     func(childComplexity int, id string) int
 		FindObra        func(childComplexity int, id string) int
 		FindTrabajador  func(childComplexity int, id string) int
+		GetObra         func(childComplexity int, id string) int
 		LoginCliente    func(childComplexity int, email string, password string) int
 		LoginTrabajador func(childComplexity int, login string, password string) int
 		Obras           func(childComplexity int, limit *int32, offset *int32) int
@@ -151,6 +154,7 @@ type QueryResolver interface {
 	FindArtista(ctx context.Context, id string) ([]*model.Artista, error)
 	LoginCliente(ctx context.Context, email string, password string) (*model.LoginResponseCliente, error)
 	LoginTrabajador(ctx context.Context, login string, password string) (*model.LoginResponseTrabajador, error)
+	GetObra(ctx context.Context, id string) (*model.Obra, error)
 }
 
 type executableSchema graphql.ExecutableSchemaState[ResolverRoot, DirectiveRoot, ComplexityRoot]
@@ -470,6 +474,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.ComplexityRoot.Mutation.UpdateTrabajador(childComplexity, args["input"].(model.UpdateTrabajador)), true
 
+	case "Obra.artista":
+		if e.ComplexityRoot.Obra.Artista == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Obra.Artista(childComplexity), true
 	case "Obra.dimensiones":
 		if e.ComplexityRoot.Obra.Dimensiones == nil {
 			break
@@ -488,6 +498,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Obra.Foto(childComplexity), true
+	case "Obra.genero":
+		if e.ComplexityRoot.Obra.Genero == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Obra.Genero(childComplexity), true
 	case "Obra.id":
 		if e.ComplexityRoot.Obra.ID == nil {
 			break
@@ -592,6 +608,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Query.FindTrabajador(childComplexity, args["id"].(string)), true
+	case "Query.getObra":
+		if e.ComplexityRoot.Query.GetObra == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getObra_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.GetObra(childComplexity, args["id"].(string)), true
 
 	case "Query.loginCliente":
 		if e.ComplexityRoot.Query.LoginCliente == nil {
@@ -1012,6 +1039,17 @@ func (ec *executionContext) field_Query_findObra_args(ctx context.Context, rawAr
 }
 
 func (ec *executionContext) field_Query_findTrabajador_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getObra_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
@@ -1885,8 +1923,12 @@ func (ec *executionContext) fieldContext_Mutation_updateObra(ctx context.Context
 				return ec.fieldContext_Obra_nombre(ctx, field)
 			case "id_artista":
 				return ec.fieldContext_Obra_id_artista(ctx, field)
+			case "artista":
+				return ec.fieldContext_Obra_artista(ctx, field)
 			case "id_genero":
 				return ec.fieldContext_Obra_id_genero(ctx, field)
+			case "genero":
+				return ec.fieldContext_Obra_genero(ctx, field)
 			case "precio":
 				return ec.fieldContext_Obra_precio(ctx, field)
 			case "fecha_creacion":
@@ -2162,8 +2204,12 @@ func (ec *executionContext) fieldContext_Mutation_createObra(ctx context.Context
 				return ec.fieldContext_Obra_nombre(ctx, field)
 			case "id_artista":
 				return ec.fieldContext_Obra_id_artista(ctx, field)
+			case "artista":
+				return ec.fieldContext_Obra_artista(ctx, field)
 			case "id_genero":
 				return ec.fieldContext_Obra_id_genero(ctx, field)
+			case "genero":
+				return ec.fieldContext_Obra_genero(ctx, field)
 			case "precio":
 				return ec.fieldContext_Obra_precio(ctx, field)
 			case "fecha_creacion":
@@ -2590,6 +2636,49 @@ func (ec *executionContext) fieldContext_Obra_id_artista(_ context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _Obra_artista(ctx context.Context, field graphql.CollectedField, obj *model.Obra) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Obra_artista,
+		func(ctx context.Context) (any, error) {
+			return obj.Artista, nil
+		},
+		nil,
+		ec.marshalNArtista2ᚖmainᚋgraphᚋmodelᚐArtista,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Obra_artista(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Obra",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Artista_id(ctx, field)
+			case "nombre":
+				return ec.fieldContext_Artista_nombre(ctx, field)
+			case "fecha_nacimiento":
+				return ec.fieldContext_Artista_fecha_nacimiento(ctx, field)
+			case "nacionalidad":
+				return ec.fieldContext_Artista_nacionalidad(ctx, field)
+			case "biografia":
+				return ec.fieldContext_Artista_biografia(ctx, field)
+			case "foto":
+				return ec.fieldContext_Artista_foto(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Artista", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Obra_id_genero(ctx context.Context, field graphql.CollectedField, obj *model.Obra) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -2614,6 +2703,41 @@ func (ec *executionContext) fieldContext_Obra_id_genero(_ context.Context, field
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Obra_genero(ctx context.Context, field graphql.CollectedField, obj *model.Obra) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Obra_genero,
+		func(ctx context.Context) (any, error) {
+			return obj.Genero, nil
+		},
+		nil,
+		ec.marshalNGenero2ᚖmainᚋgraphᚋmodelᚐGenero,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Obra_genero(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Obra",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Genero_id(ctx, field)
+			case "nombre":
+				return ec.fieldContext_Genero_nombre(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Genero", field.Name)
 		},
 	}
 	return fc, nil
@@ -2910,8 +3034,12 @@ func (ec *executionContext) fieldContext_Query_Obras(ctx context.Context, field 
 				return ec.fieldContext_Obra_nombre(ctx, field)
 			case "id_artista":
 				return ec.fieldContext_Obra_id_artista(ctx, field)
+			case "artista":
+				return ec.fieldContext_Obra_artista(ctx, field)
 			case "id_genero":
 				return ec.fieldContext_Obra_id_genero(ctx, field)
+			case "genero":
+				return ec.fieldContext_Obra_genero(ctx, field)
 			case "precio":
 				return ec.fieldContext_Obra_precio(ctx, field)
 			case "fecha_creacion":
@@ -3085,8 +3213,12 @@ func (ec *executionContext) fieldContext_Query_findObra(ctx context.Context, fie
 				return ec.fieldContext_Obra_nombre(ctx, field)
 			case "id_artista":
 				return ec.fieldContext_Obra_id_artista(ctx, field)
+			case "artista":
+				return ec.fieldContext_Obra_artista(ctx, field)
 			case "id_genero":
 				return ec.fieldContext_Obra_id_genero(ctx, field)
+			case "genero":
+				return ec.fieldContext_Obra_genero(ctx, field)
 			case "precio":
 				return ec.fieldContext_Obra_precio(ctx, field)
 			case "fecha_creacion":
@@ -3268,6 +3400,75 @@ func (ec *executionContext) fieldContext_Query_loginTrabajador(ctx context.Conte
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_loginTrabajador_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getObra(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_getObra,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().GetObra(ctx, fc.Args["id"].(string))
+		},
+		nil,
+		ec.marshalOObra2ᚖmainᚋgraphᚋmodelᚐObra,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_getObra(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Obra_id(ctx, field)
+			case "nombre":
+				return ec.fieldContext_Obra_nombre(ctx, field)
+			case "id_artista":
+				return ec.fieldContext_Obra_id_artista(ctx, field)
+			case "artista":
+				return ec.fieldContext_Obra_artista(ctx, field)
+			case "id_genero":
+				return ec.fieldContext_Obra_id_genero(ctx, field)
+			case "genero":
+				return ec.fieldContext_Obra_genero(ctx, field)
+			case "precio":
+				return ec.fieldContext_Obra_precio(ctx, field)
+			case "fecha_creacion":
+				return ec.fieldContext_Obra_fecha_creacion(ctx, field)
+			case "status":
+				return ec.fieldContext_Obra_status(ctx, field)
+			case "foto":
+				return ec.fieldContext_Obra_foto(ctx, field)
+			case "material":
+				return ec.fieldContext_Obra_material(ctx, field)
+			case "peso":
+				return ec.fieldContext_Obra_peso(ctx, field)
+			case "dimensiones":
+				return ec.fieldContext_Obra_dimensiones(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Obra", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getObra_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -6008,8 +6209,18 @@ func (ec *executionContext) _Obra(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "artista":
+			out.Values[i] = ec._Obra_artista(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "id_genero":
 			out.Values[i] = ec._Obra_id_genero(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "genero":
+			out.Values[i] = ec._Obra_genero(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -6257,6 +6468,25 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getObra":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getObra(ctx, field)
 				return res
 			}
 
@@ -7167,6 +7397,13 @@ func (ec *executionContext) marshalOInt2ᚖint32(ctx context.Context, sel ast.Se
 	_ = ctx
 	res := graphql.MarshalInt32(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOObra2ᚖmainᚋgraphᚋmodelᚐObra(ctx context.Context, sel ast.SelectionSet, v *model.Obra) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Obra(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v any) (*string, error) {

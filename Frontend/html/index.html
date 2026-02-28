@@ -25,7 +25,6 @@
 <section class="section">
     <h3>Obras Destacadas</h3>
     <div class="gallery" id="gallery">
-        <!-- Las obras se cargarán dinámicamente -->
     </div>
 </section>
 
@@ -89,6 +88,9 @@ async function cargarObras() {
                 id
                 nombre
                 foto
+                artista {
+                    nombre
+                }
             }
         }
     `;
@@ -104,17 +106,24 @@ async function cargarObras() {
         const gallery = document.getElementById("gallery");
         gallery.innerHTML = "";
 
-        data.data.Obras.forEach(ob => {
+        const obras = data.data.Obras;
+        if (!obras || obras.length === 0) {
+            gallery.innerHTML = "<p>No hay obras disponibles</p>";
+            return;
+        }
+
+        obras.forEach(ob => {
             const artCard = document.createElement("div");
             artCard.className = "art-card";
 
             artCard.innerHTML = `
-                <a href="obras.html?id=${ob.id}">
-                    <img src="${ob.foto}" alt="${ob.nombre}">
-                    <div class="art-info">
+                <div class="art-info">
+                    <a href="obra.html?id=${ob.id}">
+                        <img src="${ob.foto}" alt="${ob.nombre}">
                         <h4>${ob.nombre}</h4>
-                    </div>
-                </a>
+                    </a>
+                    <p>${ob.artista ? ob.artista.nombre : ""}</p>
+                </div>
             `;
             gallery.appendChild(artCard);
         });

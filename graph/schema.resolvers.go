@@ -1,5 +1,10 @@
 package graph
 
+import (
+	"context"
+	"main/graph/model"
+)
+
 // This file will be automatically regenerated based on the schema, any resolver
 // implementations
 // will be copied through when generating and any unknown code will be moved to the end.
@@ -13,3 +18,8 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// GetObra implements [QueryResolver].
+func (r *queryResolver) GetObra(ctx context.Context, id string) (*model.Obra, error) {
+	panic("unimplemented")
+}

@@ -16,7 +16,9 @@ type Obra {
   id: ID!
   nombre: String!
   id_artista: ID!
+  artista: Artista!
   id_genero: ID!
+  genero: Genero!
   precio: Int!
   fecha_creacion: String!
   status: String!
@@ -144,6 +146,7 @@ type Query {
   findArtista(id: ID!): [Artista!]!
   loginCliente(email: String!, password: String!): LoginResponseCliente!
   loginTrabajador(login: String!, password: String!): LoginResponseTrabajador!
+  getObra(id: ID!): Obra
 }
 
 type Genero {

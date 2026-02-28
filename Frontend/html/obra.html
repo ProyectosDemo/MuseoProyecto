@@ -34,80 +34,111 @@
 </section>
 
 <script>
-    // Revisar sesión
-    const nombreCliente = localStorage.getItem("clienteNombre");
-    const navMenu = document.getElementById("navMenu");
-    const loginButton = document.getElementById("loginButton");
+const navMenu = document.getElementById("navMenu");
+const loginButton = document.getElementById("loginButton");
 
-    if (nombreCliente) {
-        loginButton.textContent = `Bienvenido, ${nombreCliente}`;
-        loginButton.href = "#";
+// Manejo de sesionnnnn
+const nombreCliente = localStorage.getItem("clienteNombre");
+const nombreTrabajador = localStorage.getItem("trabajadorNombre");
+const esAdmin = localStorage.getItem("trabajadorAdmin") === "true";
+let userType = "";
 
-        const logoutBtn = document.createElement("a");
-        logoutBtn.href = "#";
-        logoutBtn.textContent = "Cerrar Sesión";
-        logoutBtn.style.marginLeft = "10px";
-        logoutBtn.addEventListener("click", () => {
+if (nombreCliente) {
+    loginButton.textContent = `Bienvenido, ${nombreCliente}`;
+    loginButton.href = "#";
+    userType = "cliente";
+} else if (nombreTrabajador) {
+    loginButton.textContent = `Bienvenido, ${nombreTrabajador}`;
+    loginButton.href = "#";
+    userType = esAdmin ? "admin" : "trabajador";
+}
+
+if (userType) {
+    const logoutBtn = document.createElement("a");
+    logoutBtn.href = "#";
+    logoutBtn.textContent = "Cerrar Sesión";
+    logoutBtn.style.marginLeft = "10px";
+    logoutBtn.addEventListener("click", () => {
+        if (userType === "cliente") {
             localStorage.removeItem("clienteNombre");
             localStorage.removeItem("clienteId");
-            location.reload();
-        });
-        navMenu.appendChild(logoutBtn);
+        } else {
+            localStorage.removeItem("trabajadorNombre");
+            localStorage.removeItem("trabajadorId");
+            localStorage.removeItem("trabajadorAdmin");
+        }
+        location.reload();
+    });
+    navMenu.appendChild(logoutBtn);
+
+    if (esAdmin) {
+        const adminBtn = document.createElement("a");
+        adminBtn.href = "admin.html";
+        adminBtn.textContent = "Administración";
+        adminBtn.style.marginLeft = "10px";
+        navMenu.appendChild(adminBtn);
     }
+}
 
-    // Obtener el ID de la obra desde query string
-    const params = new URLSearchParams(window.location.search);
-    const obraId = params.get("id");
+// Obtener ID de la obra desde query string
+const params = new URLSearchParams(window.location.search);
+const obraId = params.get("id");
 
-    if (!obraId) {
-        alert("No se especificó la obra");
-    } else {
-        const query = `
-            query {
-                obraById(id: ${obraId}) {
-                    nombre
-                    precio_obra
-                    fecha_creacion
-                    estatus
-                    foto
-                    material
-                    peso
-                    dimensiones
-                    artista { nombre }
-                    genero { nombre }
-                }
+if (!obraId) {
+    //alert("No se especifico la obra");
+} else {
+    const query = `
+        query FindObra($id: ID!) {
+            findObra(id: $id) {
+                id
+                nombre
+                artista { nombre }
+                genero { nombre }
+                precio
+                fecha_creacion
+                status
+                foto
+                material
+                peso
+                dimensiones
             }
-        `;
+        }
+    `;
 
-        fetch("http://localhost:8080/graphql", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query })
+    fetch("http://localhost:8080/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            query,
+            variables: { id: String(obraId) } // importante: ID como string
         })
-        .then(res => res.json())
-        .then(data => {
-            const obra = data.data.obraById;
-            if (!obra) {
-                alert("Obra no encontrada");
-                return;
-            }
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log("GraphQL response:", data);
+        if (!data.data || !data.data.findObra || data.data.findObra.length === 0) {
+            //alert("Obra no encontrada");
+            return;
+        }
 
-            document.getElementById("obraFoto").src = obra.foto;
-            document.getElementById("obraNombre").textContent = obra.nombre;
-            document.getElementById("obraArtista").textContent = obra.artista ? obra.artista.nombre : "";
-            document.getElementById("obraGenero").textContent = obra.genero ? obra.genero.nombre : "";
-            document.getElementById("obraPrecio").textContent = "$" + obra.precio_obra;
-            document.getElementById("obraFecha").textContent = obra.fecha_creacion;
-            document.getElementById("obraEstatus").textContent = obra.estatus;
-            document.getElementById("obraMaterial").textContent = obra.material;
-            document.getElementById("obraPeso").textContent = obra.peso + " kg";
-            document.getElementById("obraDimensiones").textContent = obra.dimensiones;
-        })
-        .catch(err => {
-            console.error(err);
-            alert("Error cargando la obra");
-        });
-    }
+        const obra = data.data.findObra[0];
+
+        document.getElementById("obraFoto").src = obra.foto;
+        document.getElementById("obraNombre").textContent = obra.nombre;
+        document.getElementById("obraArtista").textContent = obra.artista ? obra.artista.nombre : "";
+        document.getElementById("obraGenero").textContent = obra.genero ? obra.genero.nombre : "";
+        document.getElementById("obraPrecio").textContent = "$" + obra.precio;
+        document.getElementById("obraFecha").textContent = obra.fecha_creacion;
+        document.getElementById("obraEstatus").textContent = obra.status;
+        document.getElementById("obraMaterial").textContent = obra.material;
+        document.getElementById("obraPeso").textContent = obra.peso + " kg";
+        document.getElementById("obraDimensiones").textContent = obra.dimensiones;
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Error cargando la obra");
+    });
+}
 </script>
 
 </body>

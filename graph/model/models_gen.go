@@ -84,17 +84,19 @@ type NewTrabajador struct {
 }
 
 type Obra struct {
-	ID            string `json:"id"`
-	Nombre        string `json:"nombre"`
-	IDArtista     string `json:"id_artista"`
-	IDGenero      string `json:"id_genero"`
-	Precio        int32  `json:"precio"`
-	FechaCreacion string `json:"fecha_creacion"`
-	Status        string `json:"status"`
-	Foto          string `json:"foto"`
-	Material      string `json:"material"`
-	Peso          int32  `json:"peso"`
-	Dimensiones   string `json:"dimensiones"`
+	ID            string   `json:"id"`
+	Nombre        string   `json:"nombre"`
+	IDArtista     string   `json:"id_artista"`
+	Artista       *Artista `json:"artista"`
+	IDGenero      string   `json:"id_genero"`
+	Genero        *Genero  `json:"genero"`
+	Precio        int32    `json:"precio"`
+	FechaCreacion string   `json:"fecha_creacion"`
+	Status        string   `json:"status"`
+	Foto          string   `json:"foto"`
+	Material      string   `json:"material"`
+	Peso          int32    `json:"peso"`
+	Dimensiones   string   `json:"dimensiones"`
 }
 
 type Query struct {

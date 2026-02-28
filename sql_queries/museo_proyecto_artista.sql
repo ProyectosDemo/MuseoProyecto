@@ -25,12 +25,12 @@ DROP TABLE IF EXISTS `artista`;
 CREATE TABLE `artista` (
   `id_artista` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(100) NOT NULL,
-  `fecha_nacimiento` date DEFAULT NULL,
+  `fecha_nacimiento` varchar(45) DEFAULT NULL,
   `nacionalidad` varchar(50) DEFAULT NULL,
   `biografia` text,
   `foto` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id_artista`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,7 +39,7 @@ CREATE TABLE `artista` (
 
 LOCK TABLES `artista` WRITE;
 /*!40000 ALTER TABLE `artista` DISABLE KEYS */;
-INSERT INTO `artista` VALUES (2,'jose Artista','1990-05-19','Argentina','Artista apasionado por la música y la pintura.','https://example.com/foto.jpg');
+INSERT INTO `artista` VALUES (2,'jOSE','1990-05-19','Argentina','Artista apasionado por la música y la pintura.','https://example.com/foto.jpg');
 /*!40000 ALTER TABLE `artista` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-22 13:30:24
+-- Dump completed on 2026-02-28 15:52:37
