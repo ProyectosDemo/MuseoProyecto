@@ -19,6 +19,7 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 
+// Todos implements [QueryResolver].
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic("quiero gritar y no puedo")
+	panic("unimplemented")
 }

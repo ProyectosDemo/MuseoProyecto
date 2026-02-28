@@ -36,6 +36,15 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Artista struct {
+		Biografia       func(childComplexity int) int
+		FechaNacimiento func(childComplexity int) int
+		Foto            func(childComplexity int) int
+		ID              func(childComplexity int) int
+		Nacionalidad    func(childComplexity int) int
+		Nombre          func(childComplexity int) int
+	}
+
 	Cliente struct {
 		CodigoSeguridad func(childComplexity int) int
 		Email           func(childComplexity int) int
@@ -52,14 +61,17 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
+		CreateArtista    func(childComplexity int, input model.NewArtista) int
 		CreateCliente    func(childComplexity int, input model.NewCliente) int
 		CreateGenero     func(childComplexity int, nombre string) int
 		CreateObra       func(childComplexity int, input model.NewObra) int
 		CreateTrabajador func(childComplexity int, input model.NewTrabajador) int
+		KillArtista      func(childComplexity int, id string) int
 		KillCliente      func(childComplexity int, id string) int
 		KillGenero       func(childComplexity int, id string) int
 		KillObra         func(childComplexity int, id string) int
 		KillTrabajador   func(childComplexity int, id string) int
+		UpdateArtista    func(childComplexity int, input model.UpdateArtista) int
 		UpdateCliente    func(childComplexity int, input model.UpdateCliente) int
 		UpdateGenero     func(childComplexity int, input model.UpdateGenero) int
 		UpdateObra       func(childComplexity int, input model.UpdateObra) int
@@ -81,6 +93,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		FindArtista    func(childComplexity int, id string) int
 		FindCliente    func(childComplexity int, id string) int
 		FindObra       func(childComplexity int, id string) int
 		FindTrabajador func(childComplexity int, id string) int
@@ -113,20 +126,24 @@ type MutationResolver interface {
 	UpdateTrabajador(ctx context.Context, input model.UpdateTrabajador) (*model.Trabajador, error)
 	UpdateObra(ctx context.Context, input model.UpdateObra) (*model.Obra, error)
 	UpdateGenero(ctx context.Context, input model.UpdateGenero) (*model.Genero, error)
+	UpdateArtista(ctx context.Context, input model.UpdateArtista) (*model.Artista, error)
 	CreateCliente(ctx context.Context, input model.NewCliente) (*model.Cliente, error)
 	CreateTrabajador(ctx context.Context, input model.NewTrabajador) (*model.Trabajador, error)
 	CreateObra(ctx context.Context, input model.NewObra) (*model.Obra, error)
 	CreateGenero(ctx context.Context, nombre string) (*model.Genero, error)
+	CreateArtista(ctx context.Context, input model.NewArtista) (*model.Artista, error)
 	KillCliente(ctx context.Context, id string) (bool, error)
 	KillTrabajador(ctx context.Context, id string) (bool, error)
 	KillObra(ctx context.Context, id string) (bool, error)
 	KillGenero(ctx context.Context, id string) (bool, error)
+	KillArtista(ctx context.Context, id string) (bool, error)
 }
 type QueryResolver interface {
 	Todos(ctx context.Context) ([]*model.Todo, error)
 	FindCliente(ctx context.Context, id string) ([]*model.Cliente, error)
 	FindTrabajador(ctx context.Context, id string) ([]*model.Trabajador, error)
 	FindObra(ctx context.Context, id string) ([]*model.Obra, error)
+	FindArtista(ctx context.Context, id string) ([]*model.Artista, error)
 }
 
 type executableSchema graphql.ExecutableSchemaState[ResolverRoot, DirectiveRoot, ComplexityRoot]
@@ -142,6 +159,43 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	ec := newExecutionContext(nil, e, nil)
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Artista.biografia":
+		if e.ComplexityRoot.Artista.Biografia == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Artista.Biografia(childComplexity), true
+	case "Artista.fecha_nacimiento":
+		if e.ComplexityRoot.Artista.FechaNacimiento == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Artista.FechaNacimiento(childComplexity), true
+	case "Artista.foto":
+		if e.ComplexityRoot.Artista.Foto == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Artista.Foto(childComplexity), true
+	case "Artista.id":
+		if e.ComplexityRoot.Artista.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Artista.ID(childComplexity), true
+	case "Artista.nacionalidad":
+		if e.ComplexityRoot.Artista.Nacionalidad == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Artista.Nacionalidad(childComplexity), true
+	case "Artista.nombre":
+		if e.ComplexityRoot.Artista.Nombre == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Artista.Nombre(childComplexity), true
 
 	case "Cliente.codigo_seguridad":
 		if e.ComplexityRoot.Cliente.CodigoSeguridad == nil {
@@ -199,6 +253,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.ComplexityRoot.Genero.Nombre(childComplexity), true
 
+	case "Mutation.createArtista":
+		if e.ComplexityRoot.Mutation.CreateArtista == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createArtista_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.CreateArtista(childComplexity, args["input"].(model.NewArtista)), true
 	case "Mutation.createCliente":
 		if e.ComplexityRoot.Mutation.CreateCliente == nil {
 			break
@@ -243,6 +308,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.CreateTrabajador(childComplexity, args["input"].(model.NewTrabajador)), true
+	case "Mutation.killArtista":
+		if e.ComplexityRoot.Mutation.KillArtista == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_killArtista_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.KillArtista(childComplexity, args["id"].(string)), true
 	case "Mutation.killCliente":
 		if e.ComplexityRoot.Mutation.KillCliente == nil {
 			break
@@ -287,6 +363,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.KillTrabajador(childComplexity, args["id"].(string)), true
+	case "Mutation.updateArtista":
+		if e.ComplexityRoot.Mutation.UpdateArtista == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateArtista_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.UpdateArtista(childComplexity, args["input"].(model.UpdateArtista)), true
 	case "Mutation.updateCliente":
 		if e.ComplexityRoot.Mutation.UpdateCliente == nil {
 			break
@@ -399,6 +486,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.ComplexityRoot.Obra.Status(childComplexity), true
 
+	case "Query.findArtista":
+		if e.ComplexityRoot.Query.FindArtista == nil {
+			break
+		}
+
+		args, err := ec.field_Query_findArtista_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.FindArtista(childComplexity, args["id"].(string)), true
 	case "Query.findCliente":
 		if e.ComplexityRoot.Query.FindCliente == nil {
 			break
@@ -517,10 +615,12 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := newExecutionContext(opCtx, e, make(chan graphql.DeferredResult))
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputNewArtista,
 		ec.unmarshalInputNewCliente,
 		ec.unmarshalInputNewGenero,
 		ec.unmarshalInputNewObra,
 		ec.unmarshalInputNewTrabajador,
+		ec.unmarshalInputUpdateArtista,
 		ec.unmarshalInputUpdateCliente,
 		ec.unmarshalInputUpdateGenero,
 		ec.unmarshalInputUpdateObra,
@@ -619,6 +719,17 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
+func (ec *executionContext) field_Mutation_createArtista_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNNewArtista2mainᚋgraphᚋmodelᚐNewArtista)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createCliente_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -663,6 +774,17 @@ func (ec *executionContext) field_Mutation_createTrabajador_args(ctx context.Con
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_killArtista_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_killCliente_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -704,6 +826,17 @@ func (ec *executionContext) field_Mutation_killTrabajador_args(ctx context.Conte
 		return nil, err
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateArtista_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateArtista2mainᚋgraphᚋmodelᚐUpdateArtista)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -759,6 +892,17 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		return nil, err
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_findArtista_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -846,6 +990,180 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _Artista_id(ctx context.Context, field graphql.CollectedField, obj *model.Artista) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Artista_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalNID2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Artista_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Artista",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Artista_nombre(ctx context.Context, field graphql.CollectedField, obj *model.Artista) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Artista_nombre,
+		func(ctx context.Context) (any, error) {
+			return obj.Nombre, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Artista_nombre(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Artista",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Artista_fecha_nacimiento(ctx context.Context, field graphql.CollectedField, obj *model.Artista) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Artista_fecha_nacimiento,
+		func(ctx context.Context) (any, error) {
+			return obj.FechaNacimiento, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Artista_fecha_nacimiento(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Artista",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Artista_nacionalidad(ctx context.Context, field graphql.CollectedField, obj *model.Artista) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Artista_nacionalidad,
+		func(ctx context.Context) (any, error) {
+			return obj.Nacionalidad, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Artista_nacionalidad(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Artista",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Artista_biografia(ctx context.Context, field graphql.CollectedField, obj *model.Artista) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Artista_biografia,
+		func(ctx context.Context) (any, error) {
+			return obj.Biografia, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Artista_biografia(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Artista",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Artista_foto(ctx context.Context, field graphql.CollectedField, obj *model.Artista) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Artista_foto,
+		func(ctx context.Context) (any, error) {
+			return obj.Foto, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Artista_foto(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Artista",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
 
 func (ec *executionContext) _Cliente_id(ctx context.Context, field graphql.CollectedField, obj *model.Cliente) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
@@ -1330,6 +1648,61 @@ func (ec *executionContext) fieldContext_Mutation_updateGenero(ctx context.Conte
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_updateArtista(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_updateArtista,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().UpdateArtista(ctx, fc.Args["input"].(model.UpdateArtista))
+		},
+		nil,
+		ec.marshalNArtista2ᚖmainᚋgraphᚋmodelᚐArtista,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateArtista(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Artista_id(ctx, field)
+			case "nombre":
+				return ec.fieldContext_Artista_nombre(ctx, field)
+			case "fecha_nacimiento":
+				return ec.fieldContext_Artista_fecha_nacimiento(ctx, field)
+			case "nacionalidad":
+				return ec.fieldContext_Artista_nacionalidad(ctx, field)
+			case "biografia":
+				return ec.fieldContext_Artista_biografia(ctx, field)
+			case "foto":
+				return ec.fieldContext_Artista_foto(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Artista", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateArtista_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createCliente(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -1552,6 +1925,61 @@ func (ec *executionContext) fieldContext_Mutation_createGenero(ctx context.Conte
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createArtista(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_createArtista,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().CreateArtista(ctx, fc.Args["input"].(model.NewArtista))
+		},
+		nil,
+		ec.marshalNArtista2ᚖmainᚋgraphᚋmodelᚐArtista,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createArtista(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Artista_id(ctx, field)
+			case "nombre":
+				return ec.fieldContext_Artista_nombre(ctx, field)
+			case "fecha_nacimiento":
+				return ec.fieldContext_Artista_fecha_nacimiento(ctx, field)
+			case "nacionalidad":
+				return ec.fieldContext_Artista_nacionalidad(ctx, field)
+			case "biografia":
+				return ec.fieldContext_Artista_biografia(ctx, field)
+			case "foto":
+				return ec.fieldContext_Artista_foto(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Artista", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createArtista_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_killCliente(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -1710,6 +2138,47 @@ func (ec *executionContext) fieldContext_Mutation_killGenero(ctx context.Context
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_killGenero_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_killArtista(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_killArtista,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().KillArtista(ctx, fc.Args["id"].(string))
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_killArtista(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_killArtista_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2243,6 +2712,61 @@ func (ec *executionContext) fieldContext_Query_findObra(ctx context.Context, fie
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_findObra_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_findArtista(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_findArtista,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().FindArtista(ctx, fc.Args["id"].(string))
+		},
+		nil,
+		ec.marshalNArtista2ᚕᚖmainᚋgraphᚋmodelᚐArtistaᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_findArtista(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Artista_id(ctx, field)
+			case "nombre":
+				return ec.fieldContext_Artista_nombre(ctx, field)
+			case "fecha_nacimiento":
+				return ec.fieldContext_Artista_fecha_nacimiento(ctx, field)
+			case "nacionalidad":
+				return ec.fieldContext_Artista_nacionalidad(ctx, field)
+			case "biografia":
+				return ec.fieldContext_Artista_biografia(ctx, field)
+			case "foto":
+				return ec.fieldContext_Artista_foto(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Artista", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_findArtista_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4128,6 +4652,67 @@ func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputNewArtista(ctx context.Context, obj any) (model.NewArtista, error) {
+	var it model.NewArtista
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "nombre", "fecha_nacimiento", "nacionalidad", "biografia", "foto"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "nombre":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nombre"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Nombre = data
+		case "fecha_nacimiento":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fecha_nacimiento"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FechaNacimiento = data
+		case "nacionalidad":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nacionalidad"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Nacionalidad = data
+		case "biografia":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("biografia"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Biografia = data
+		case "foto":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("foto"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Foto = data
+		}
+	}
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewCliente(ctx context.Context, obj any) (model.NewCliente, error) {
 	var it model.NewCliente
 	asMap := map[string]any{}
@@ -4346,6 +4931,67 @@ func (ec *executionContext) unmarshalInputNewTrabajador(ctx context.Context, obj
 				return it, err
 			}
 			it.Admin = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateArtista(ctx context.Context, obj any) (model.UpdateArtista, error) {
+	var it model.UpdateArtista
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "nombre", "fecha_nacimiento", "nacionalidad", "biografia", "foto"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "nombre":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nombre"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Nombre = data
+		case "fecha_nacimiento":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fecha_nacimiento"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FechaNacimiento = data
+		case "nacionalidad":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nacionalidad"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Nacionalidad = data
+		case "biografia":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("biografia"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Biografia = data
+		case "foto":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("foto"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Foto = data
 		}
 	}
 	return it, nil
@@ -4610,6 +5256,70 @@ func (ec *executionContext) unmarshalInputUpdateTrabajador(ctx context.Context, 
 
 // region    **************************** object.gotpl ****************************
 
+var artistaImplementors = []string{"Artista"}
+
+func (ec *executionContext) _Artista(ctx context.Context, sel ast.SelectionSet, obj *model.Artista) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, artistaImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Artista")
+		case "id":
+			out.Values[i] = ec._Artista_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "nombre":
+			out.Values[i] = ec._Artista_nombre(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "fecha_nacimiento":
+			out.Values[i] = ec._Artista_fecha_nacimiento(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "nacionalidad":
+			out.Values[i] = ec._Artista_nacionalidad(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "biografia":
+			out.Values[i] = ec._Artista_biografia(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "foto":
+			out.Values[i] = ec._Artista_foto(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var clienteImplementors = []string{"Cliente"}
 
 func (ec *executionContext) _Cliente(ctx context.Context, sel ast.SelectionSet, obj *model.Cliente) graphql.Marshaler {
@@ -4770,6 +5480,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "updateArtista":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateArtista(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "createCliente":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createCliente(ctx, field)
@@ -4798,6 +5515,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createArtista":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createArtista(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "killCliente":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_killCliente(ctx, field)
@@ -4822,6 +5546,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "killGenero":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_killGenero(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "killArtista":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_killArtista(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -5033,6 +5764,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_findObra(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "findArtista":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_findArtista(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -5568,6 +6321,36 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNArtista2mainᚋgraphᚋmodelᚐArtista(ctx context.Context, sel ast.SelectionSet, v model.Artista) graphql.Marshaler {
+	return ec._Artista(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNArtista2ᚕᚖmainᚋgraphᚋmodelᚐArtistaᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Artista) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNArtista2ᚖmainᚋgraphᚋmodelᚐArtista(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNArtista2ᚖmainᚋgraphᚋmodelᚐArtista(ctx context.Context, sel ast.SelectionSet, v *model.Artista) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Artista(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v any) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -5658,6 +6441,11 @@ func (ec *executionContext) marshalNInt2int32(ctx context.Context, sel ast.Selec
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNNewArtista2mainᚋgraphᚋmodelᚐNewArtista(ctx context.Context, v any) (model.NewArtista, error) {
+	res, err := ec.unmarshalInputNewArtista(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNNewCliente2mainᚋgraphᚋmodelᚐNewCliente(ctx context.Context, v any) (model.NewCliente, error) {
@@ -5775,6 +6563,11 @@ func (ec *executionContext) marshalNTrabajador2ᚖmainᚋgraphᚋmodelᚐTrabaja
 		return graphql.Null
 	}
 	return ec._Trabajador(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUpdateArtista2mainᚋgraphᚋmodelᚐUpdateArtista(ctx context.Context, v any) (model.UpdateArtista, error) {
+	res, err := ec.unmarshalInputUpdateArtista(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNUpdateCliente2mainᚋgraphᚋmodelᚐUpdateCliente(ctx context.Context, v any) (model.UpdateCliente, error) {

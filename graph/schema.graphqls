@@ -107,11 +107,40 @@ input UpdateTrabajador {
   admin: Boolean
 }
 
+
+type Artista {
+  id: ID!
+  nombre: String!
+  fecha_nacimiento: String!
+  nacionalidad: String!
+  biografia: String!
+  foto: String!
+}
+
+input NewArtista {
+  id: ID!
+  nombre: String!
+  fecha_nacimiento: String!
+  nacionalidad: String!
+  biografia: String!
+  foto: String!
+}
+
+input UpdateArtista {
+  id: ID!
+  nombre: String
+  fecha_nacimiento: String
+  nacionalidad: String
+  biografia: String
+  foto: String
+}
+
 type Query {
   todos: [Todo!]!
   findCliente(id: ID!): [Cliente!]!
   findTrabajador(id: ID!): [Trabajador!]!
   findObra(id: ID!): [Obra!]!
+  findArtista(id: ID!): [Artista!]!
 }
 
 type Genero {
@@ -132,13 +161,16 @@ type Mutation {
   updateCliente(input: UpdateCliente!): Cliente!
   updateTrabajador(input: UpdateTrabajador!): Trabajador!
   updateObra(input: UpdateObra!): Obra!
-  #updateGenero(input: UpdateGenero!): Genero!
+  updateGenero(input: UpdateGenero!): Genero!
+  updateArtista(input: UpdateArtista!): Artista!
   createCliente(input: NewCliente!): Cliente!
   createTrabajador(input: NewTrabajador!): Trabajador!
   createObra(input: NewObra!): Obra!
   createGenero(nombre: String!): Genero!
+  createArtista(input: NewArtista!): Artista!
   killCliente(id: ID!): Boolean!
   killTrabajador(id: ID!): Boolean!
   killObra(id: ID!): Boolean!
   killGenero(id: ID!): Boolean!
+  killArtista(id: ID!): Boolean!
 }

@@ -2,8 +2,17 @@
 
 package model
 
+type Artista struct {
+	ID              string `json:"id"`
+	Nombre          string `json:"nombre"`
+	FechaNacimiento string `json:"fecha_nacimiento"`
+	Nacionalidad    string `json:"nacionalidad"`
+	Biografia       string `json:"biografia"`
+	Foto            string `json:"foto"`
+}
+
 type Cliente struct {
-	ID              string `json:"id_cliente"`
+	ID              string `json:"id"`
 	Nombre          string `json:"nombre"`
 	Email           string `json:"email"`
 	Telefono        string `json:"telefono"`
@@ -13,11 +22,20 @@ type Cliente struct {
 }
 
 type Genero struct {
-	ID     string `json:"id_genero"`
+	ID     string `json:"id"`
 	Nombre string `json:"nombre"`
 }
 
 type Mutation struct {
+}
+
+type NewArtista struct {
+	ID              string `json:"id"`
+	Nombre          string `json:"nombre"`
+	FechaNacimiento string `json:"fecha_nacimiento"`
+	Nacionalidad    string `json:"nacionalidad"`
+	Biografia       string `json:"biografia"`
+	Foto            string `json:"foto"`
 }
 
 type NewCliente struct {
@@ -54,7 +72,7 @@ type NewTrabajador struct {
 }
 
 type Obra struct {
-	ID            string `json:"id_obra"`
+	ID            string `json:"id"`
 	Nombre        string `json:"nombre"`
 	IDArtista     string `json:"id_artista"`
 	IDGenero      string `json:"id_genero"`
@@ -78,15 +96,24 @@ type Todo struct {
 }
 
 type Trabajador struct {
-	ID       string `json:"id_trabajador"`
+	ID       string `json:"id"`
 	Nombre   string `json:"nombre"`
 	Login    string `json:"login"`
 	Password string `json:"password"`
 	Admin    bool   `json:"admin"`
 }
 
+type UpdateArtista struct {
+	ID              string  `json:"id"`
+	Nombre          *string `json:"nombre,omitempty"`
+	FechaNacimiento *string `json:"fecha_nacimiento,omitempty"`
+	Nacionalidad    *string `json:"nacionalidad,omitempty"`
+	Biografia       *string `json:"biografia,omitempty"`
+	Foto            *string `json:"foto,omitempty"`
+}
+
 type UpdateCliente struct {
-	ID              string  `json:"id_cliente"`
+	ID              string  `json:"id"`
 	Nombre          *string `json:"nombre,omitempty"`
 	Email           *string `json:"email,omitempty"`
 	Telefono        *string `json:"telefono,omitempty"`
@@ -96,12 +123,12 @@ type UpdateCliente struct {
 }
 
 type UpdateGenero struct {
-	ID     string  `json:"id_genero"`
+	ID     string  `json:"id"`
 	Nombre *string `json:"nombre,omitempty"`
 }
 
 type UpdateObra struct {
-	ID            string  `json:"id_obra"`
+	ID            string  `json:"id"`
 	Nombre        *string `json:"nombre,omitempty"`
 	IDArtista     *string `json:"id_artista,omitempty"`
 	IDGenero      *string `json:"id_genero,omitempty"`
@@ -115,7 +142,7 @@ type UpdateObra struct {
 }
 
 type UpdateTrabajador struct {
-	ID       string  `json:"id_trabajador"`
+	ID       string  `json:"id"`
 	Nombre   *string `json:"nombre,omitempty"`
 	Login    *string `json:"login,omitempty"`
 	Password *string `json:"password,omitempty"`
