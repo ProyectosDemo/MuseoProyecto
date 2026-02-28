@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Museo Aurora</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header>
+    <h1>Museo Aurora</h1>
+</header>
+
+<section class="login-container">
+    <div class="login-box">
+        <h2>Iniciar Sesión</h2>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="email">Correo</label>
+                <input type="email" id="email" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" required>
+            </div>
+
+            <button type="submit" class="btn-primary">Entrar</button>
+        </form>
+
+        <!-- Nuevo link para trabajadores -->
+        <p style="margin-top: 1em; text-align: center;">
+            ¿Eres trabajador? 
+            <a href="login-trabajador.html" class="btn-secondary">Iniciar sesión como trabajador</a>
+        </p>
+    </div>
+</section>
+
+<footer>
+    © 2026 Museo Aurora
+</footer>
+
+<script>
+const form = document.getElementById("loginForm");
+
+form.addEventListener("submit", async (e) => {
+    e.preventDefault(); // evita que se recargue la página
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    // Query GraphQL para login
+    const query = `
+        query {
+            loginCliente(email: "${email}", password: "${password}") {
+                success
+                id
+                nombre
+            }
+        }
+    `;
+
+    try {
+        const res = await fetch("http://localhost:8080/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query })
+        });
+
+        const data = await res.json();
+
+       if (data.data.loginCliente.success) {
+            localStorage.setItem("clienteNombre", data.data.loginCliente.nombre);
+            localStorage.setItem("clienteId", data.data.loginCliente.id);
+
+            window.location.href = "index.html"; 
+        } else {
+            alert("Usuario o contraseña incorrectos");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Error conectando al servidor");
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,182 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Cliente {
+  id: ID!
+  nombre: String!
+  email: String!
+  telefono: String!
+  login: String!
+  password: String!
+  codigo_seguridad: String!
+}
+
+type Obra {
+  id: ID!
+  nombre: String!
+  id_artista: ID!
+  artista: Artista!
+  id_genero: ID!
+  genero: Genero!
+  precio: Int!
+  fecha_creacion: String!
+  status: String!
+  foto: String!
+  material: String!
+  peso: Int!
+  dimensiones: String!
+}
+
+input NewObra {
+  nombre: String!
+  id_artista: ID!
+  id_genero: ID!
+  precio: Int!
+  fecha_creacion: String!
+  status: String!
+  foto: String!
+  material: String!
+  peso: Int!
+  dimensiones: String!
+}
+
+input UpdateObra {
+  id: ID!
+  nombre: String
+  id_artista: ID
+  id_genero: ID
+  precio: Int
+  fecha_creacion: String
+  status: String
+  foto: String
+  material: String
+  peso: Int
+  dimensiones: String
+}
+
+input NewCliente {
+  nombre: String!
+  email: String!
+  telefono: String!
+  login: String!
+  password: String!
+  codigo_seguridad: String!
+}
+
+input UpdateCliente {
+  id: ID!
+  nombre: String
+  email: String
+  telefono: String
+  login: String
+  password: String
+  codigo_seguridad: String
+}
+
+type Trabajador {
+  id: ID!
+  nombre: String!
+  login: String!
+  password: String!
+  admin: Boolean!
+}
+
+input NewTrabajador {
+  nombre: String!
+  login: String!
+  password: String!
+  admin: Boolean!
+}
+
+input UpdateTrabajador {
+  id: ID!
+  nombre: String
+  login: String
+  password: String
+  admin: Boolean
+}
+
+
+type Artista {
+  id: ID!
+  nombre: String!
+  fecha_nacimiento: String!
+  nacionalidad: String!
+  biografia: String!
+  foto: String!
+}
+
+input NewArtista {
+  nombre: String!
+  fecha_nacimiento: String!
+  nacionalidad: String!
+  biografia: String!
+  foto: String!
+}
+
+input UpdateArtista {
+  id: ID!
+  nombre: String
+  fecha_nacimiento: String
+  nacionalidad: String
+  biografia: String
+  foto: String
+}
+
+type LoginResponseCliente {
+  success: Boolean!
+  id: ID
+  nombre: String
+}
+
+type LoginResponseTrabajador {
+  success: Boolean!
+  id: ID
+  nombre: String
+  admin: Boolean
+}
+
+type Query {
+  Clientes(limit: Int, offset: Int): [Cliente!]!
+  Obras(limit: Int, offset: Int): [Obra!]!
+  findCliente(id: ID!): [Cliente!]!
+  findTrabajador(id: ID!): [Trabajador!]!
+  findObra(id: ID!): [Obra!]!
+  findArtista(id: ID!): [Artista!]!
+  loginCliente(email: String!, password: String!): LoginResponseCliente!
+  loginTrabajador(login: String!, password: String!): LoginResponseTrabajador!
+  getObra(id: ID!): Obra
+}
+
+type Genero {
+  id: ID!
+  nombre: String!
+}
+
+input NewGenero {
+  nombre: String!
+}
+
+input UpdateGenero {
+  id: ID!
+  nombre: String
+}
+
+type Mutation {
+  updateCliente(input: UpdateCliente!): Cliente!
+  updateTrabajador(input: UpdateTrabajador!): Trabajador!
+  updateObra(input: UpdateObra!): Obra!
+  updateGenero(input: UpdateGenero!): Genero!
+  updateArtista(input: UpdateArtista!): Artista!
+  createCliente(input: NewCliente!): Cliente!
+  createTrabajador(input: NewTrabajador!): Trabajador!
+  createObra(input: NewObra!): Obra!
+  createGenero(nombre: String!): Genero!
+  createArtista(input: NewArtista!): Artista!
+  killCliente(id: ID!): Boolean!
+  killTrabajador(id: ID!): Boolean!
+  killObra(id: ID!): Boolean!
+  killGenero(id: ID!): Boolean!
+  killArtista(id: ID!): Boolean!
+}
