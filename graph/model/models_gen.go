@@ -30,7 +30,6 @@ type Mutation struct {
 }
 
 type NewArtista struct {
-	ID              string `json:"id"`
 	Nombre          string `json:"nombre"`
 	FechaNacimiento string `json:"fecha_nacimiento"`
 	Nacionalidad    string `json:"nacionalidad"`
@@ -88,13 +87,6 @@ type Obra struct {
 type Query struct {
 }
 
-type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
-}
-
 type Trabajador struct {
 	ID       string `json:"id"`
 	Nombre   string `json:"nombre"`
@@ -147,9 +139,4 @@ type UpdateTrabajador struct {
 	Login    *string `json:"login,omitempty"`
 	Password *string `json:"password,omitempty"`
 	Admin    *bool   `json:"admin,omitempty"`
-}
-
-type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
 }

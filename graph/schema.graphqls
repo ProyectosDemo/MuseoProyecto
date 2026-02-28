@@ -2,18 +2,6 @@
 #
 # https://gqlgen.com/getting-started/
 
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
-}
-
-type User {
-  id: ID!
-  name: String!
-}
-
 type Cliente {
   id: ID!
   nombre: String!
@@ -135,7 +123,8 @@ input UpdateArtista {
 }
 
 type Query {
-  todos: [Todo!]!
+  Clientes(limit: Int, offset: Int): [Cliente!]!
+  Obras(limit: Int, offset: Int): [Obra!]!
   findCliente(id: ID!): [Cliente!]!
   findTrabajador(id: ID!): [Trabajador!]!
   findObra(id: ID!): [Obra!]!

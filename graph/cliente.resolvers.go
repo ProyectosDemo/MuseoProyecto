@@ -8,6 +8,33 @@ import (
 	"main/graph/model"
 )
 
+// Clientes lista de los clientes
+func (r *queryResolver) Clientes(ctx context.Context, limit *int32, offset *int32) ([]*model.Cliente, error) {
+
+	rows, err := r.DB.QueryContext(ctx, "SELECT id_cliente, nombre, email, telefono, login, password, codigo_seguridad FROM cliente LIMIT ? OFFSET ?", limit, offset)
+	if err != nil {
+		log.Printf("Clientes DB error: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var clientes []*model.Cliente
+	for rows.Next() {
+		var cliente model.Cliente
+		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Email, &cliente.Telefono, &cliente.Login, &cliente.Password, &cliente.CodigoSeguridad)
+		if err != nil {
+			log.Printf("Clientes scan error: %v", err)
+			return nil, err
+		}
+		clientes = append(clientes, &cliente)
+	}
+	if err = rows.Err(); err != nil {
+		log.Printf("Clientes rows error: %v", err)
+		return nil, err
+	}
+	return clientes, nil
+}
+
 // FindCliente is the resolver for the findCliente field.
 func (r *queryResolver) FindCliente(ctx context.Context, id string) ([]*model.Cliente, error) {
 	log.Printf("FindCliente called with id: %s", id)
