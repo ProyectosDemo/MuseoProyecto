@@ -4,16 +4,24 @@
     <meta charset="UTF-8">
     <title>Museo Aurora</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/style.css">
+    
+    <!-- CSS global: reset, tipografía, header y footer -->
+    <link rel="stylesheet" href="../css/global.css">
+    
+    <!-- Hero principal -->
+    <link rel="stylesheet" href="../css/hero.css">
+    
+    <!-- Galería y cards de obras -->
+    <link rel="stylesheet" href="../css/gallery.css">
 </head>
 <body>
 
 <header>
     <h1>Museo Aurora</h1>
     <nav id="navMenu">
-        <a href="#">Inicio</a>
+        <a href="index.html">Inicio</a>
         <a href="#">Exposiciones</a>
-        <a href="#">Artistas</a>
+        <a href="artistas.html">Artistas</a>
         <a href="login.html" id="loginButton">Iniciar Sesión</a>
     </nav>
 </header>
@@ -36,7 +44,7 @@
 const navMenu = document.getElementById("navMenu");
 const loginButton = document.getElementById("loginButton");
 
-// Manejo de sesión
+// Manejo de sesion
 const nombreCliente = localStorage.getItem("clienteNombre");
 const nombreTrabajador = localStorage.getItem("trabajadorNombre");
 const esAdmin = localStorage.getItem("trabajadorAdmin") === "true";

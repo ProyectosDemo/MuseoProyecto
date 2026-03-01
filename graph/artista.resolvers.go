@@ -8,6 +8,32 @@ import (
 	"main/graph/model"
 )
 
+func (r *queryResolver) Artistas(ctx context.Context, limit *int32, offset *int32) ([]*model.Artista, error) {
+
+	rows, err := r.DB.QueryContext(ctx, "SELECT id_artista, nombre, fecha_nacimiento, nacionalidad, biografia, foto FROM artista LIMIT ? OFFSET ?", limit, offset)
+	if err != nil {
+		log.Printf("Artistas DB error: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var artistas []*model.Artista
+	for rows.Next() {
+		var artista model.Artista
+		err := rows.Scan(&artista.ID, &artista.Nombre, &artista.FechaNacimiento, &artista.Nacionalidad, &artista.Biografia, &artista.Foto)
+		if err != nil {
+			log.Printf("Artistas scan error: %v", err)
+			return nil, err
+		}
+		artistas = append(artistas, &artista)
+	}
+	if err = rows.Err(); err != nil {
+		log.Printf("Artistas rows error: %v", err)
+		return nil, err
+	}
+	return artistas, nil
+}
+
 // FindArtista is the resolver for the findArtista field.
 func (r *queryResolver) FindArtista(ctx context.Context, id string) ([]*model.Artista, error) {
 	log.Printf("FindArtista called with id: %s", id)

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Artistas | Museo Aurora</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- CSS global: reset y tipografía -->
+    <link rel="stylesheet" href="../css/global.css">
+
+    <!-- Artistas: contenedor y tarjetas -->
+    <link rel="stylesheet" href="../css/artistas.css">
+</head>
+<body>
+
+<header>
+    <h1>Museo Aurora</h1>
+    <nav id="navMenu">
+        <a href="index.html">Inicio</a>
+        <a href="#">Exposiciones</a>
+        <a href="artistas.html">Artistas</a>
+        <a href="login.html" id="loginButton">Iniciar Sesión</a>
+    </nav>
+</header>
+
+<section class="artistas-container" id="artistasContainer">
+ 
+</section>
+
+<script>
+const navMenu = document.getElementById("navMenu");
+const loginButton = document.getElementById("loginButton");
+
+// Manejo de sesión
+const nombreCliente = localStorage.getItem("clienteNombre");
+const nombreTrabajador = localStorage.getItem("trabajadorNombre");
+const esAdmin = localStorage.getItem("trabajadorAdmin") === "true";
+let userType = "";
+
+if (nombreCliente) {
+    loginButton.textContent = `Bienvenido, ${nombreCliente}`;
+    loginButton.href = "#";
+    userType = "cliente";
+} else if (nombreTrabajador) {
+    loginButton.textContent = `Bienvenido, ${nombreTrabajador}`;
+    loginButton.href = "#";
+    userType = esAdmin ? "admin" : "trabajador";
+}
+
+if (userType) {
+    const logoutBtn = document.createElement("a");
+    logoutBtn.href = "#";
+    logoutBtn.textContent = "Cerrar Sesión";
+    logoutBtn.style.marginLeft = "10px";
+    logoutBtn.addEventListener("click", () => {
+        if (userType === "cliente") {
+            localStorage.removeItem("clienteNombre");
+            localStorage.removeItem("clienteId");
+        } else {
+            localStorage.removeItem("trabajadorNombre");
+            localStorage.removeItem("trabajadorId");
+            localStorage.removeItem("trabajadorAdmin");
+        }
+        location.reload();
+    });
+    navMenu.appendChild(logoutBtn);
+
+    if (esAdmin) {
+        const adminBtn = document.createElement("a");
+        adminBtn.href = "admin.html";
+        adminBtn.textContent = "Administración";
+        adminBtn.style.marginLeft = "10px";
+        navMenu.appendChild(adminBtn);
+    }
+}
+
+// Contenedor de artistas
+const container = document.getElementById("artistasContainer");
+
+const query = `
+    query {
+        Artistas(limit: 100, offset: 0) {
+            id
+            nombre
+            fecha_nacimiento
+            nacionalidad
+            biografia
+            foto
+        }
+    }
+`;
+
+// Fetch GraphQL
+fetch("http://localhost:8080/query", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query })
+})
+.then(res => res.json())
+.then(data => {
+    if (!data.data || !data.data.Artistas) {
+        console.error("No se encontraron artistas");
+        return;
+    }
+
+    const artistas = data.data.Artistas;
+
+    artistas.forEach(artista => {
+        const card = document.createElement("div");
+        card.classList.add("artista-card");
+
+        card.innerHTML = `
+            <img src="${artista.foto}" alt="${artista.nombre}">
+            <div class="artista-info">
+                <h2>${artista.nombre}</h2>
+                <p><strong>Fecha de nacimiento:</strong> ${artista.fecha_nacimiento}</p>
+                <p><strong>Nacionalidad:</strong> ${artista.nacionalidad}</p>
+                <p>${artista.biografia}</p>
+                <a href="artista-detalle.html?id=${artista.id}">Ver más</a>
+            </div>
+        `;
+
+        container.appendChild(card);
+    });
+})
+.catch(err => {
+    console.error("Error cargando artistas:", err);
+});
+</script>
+
+</body>
+</html>

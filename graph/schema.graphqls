@@ -139,6 +139,7 @@ type LoginResponseTrabajador {
 
 type Query {
   Clientes(limit: Int, offset: Int): [Cliente!]!
+  Artistas(limit: Int, offset: Int): [Artista!]!
   Trabajadores(limit: Int, offset: Int): [Trabajador!]!
   Obras(limit: Int, offset: Int): [Obra!]!
   findCliente(id: ID!): [Cliente!]!

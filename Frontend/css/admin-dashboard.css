@@ -1,0 +1,99 @@
+
+/* Header admin */
+header.admin {
+    background-color: #1f2a38;
+    color: #fff;
+    padding: 20px 8%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+header.admin h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+/* Main admin */
+main#contenidoAdmin {
+    padding: 50px 8%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h2 {
+    margin-bottom: 50px;
+    font-size: 1.5em;
+    color: #1f2a38;
+    text-align: center;
+}
+
+/* Dashboard botones principales */
+.dashboardAdmin {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.dashboardAdmin button {
+    flex: 1 1 200px; /* ahora por fin esta bien coño*/
+    max-width: 200px; /* todos iguales */
+    padding: 25px 0;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2980b9, #3498db);
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.dashboardAdmin button:hover {
+    background: linear-gradient(135deg, #3498db, #5dade2);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+
+#contenidoAdmin > div:last-child {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+#contenidoAdmin > div:last-child button {
+    padding: 20px 40px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f39c12, #f1c40f);
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+#contenidoAdmin > div:last-child button:hover {
+    background: linear-gradient(135deg, #e67e22, #f39c12);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dashboardAdmin button {
+        flex: 1 1 100%;
+        max-width: 100%;
+        padding: 20px 0;
+    }
+
+    h2 {
+        font-size: 1.2em;
+        margin-bottom: 30px;
+    }
+
+    header.admin h1 {
+        font-size: 1.4em;
+    }
+}
