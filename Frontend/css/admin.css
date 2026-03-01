@@ -1,4 +1,4 @@
-
+/* General */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
@@ -39,18 +39,16 @@ header nav button:hover {
     transform: translateY(-2px);
 }
 
-/* Main */
-main#contenidoClientes {
-    padding: 40px 20px;
-}
-
 /* Acciones CRUD */
-.accionesClientes {
-    margin-bottom: 30px;
+.actionButtons {
+    margin: 20px 0 30px;
+    display: flex;
+    justify-content: space-around;
 }
 
-.accionesClientes button {
-    margin: 5px;
+.actionButtons button {
+    flex: 1;
+    margin: 0 5px;
     padding: 15px 25px;
     font-size: 1em;
     border: none;
@@ -62,12 +60,17 @@ main#contenidoClientes {
     transition: all 0.3s ease;
 }
 
-.accionesClientes button:hover {
+.actionButtons button:hover {
     background: linear-gradient(135deg, #2ecc71, #58d68d);
     transform: translateY(-2px);
 }
 
-/* Formulario */
+/* Main content */
+main {
+    padding: 20px;
+}
+
+/* Formularios */
 form {
     display: flex;
     flex-direction: column;
@@ -90,7 +93,6 @@ form input, form select {
 }
 
 form button {
-    margin: 12px 5px 0 5px;
     padding: 12px 25px;
     font-size: 1em;
     border: none;
@@ -106,18 +108,32 @@ form button:hover {
     transform: translateY(-2px);
 }
 
-/* Select para eliminar/editar */
-select {
-    width: 60%;
-    padding: 12px;
-    font-size: 1em;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    margin: 15px 0;
+/* Botones de formulario lado a lado */
+.formButtons {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    gap: 10px;
 }
 
-/* Lista de clientes */
-.listaClientes {
+.formButtons button {
+    width: 120px;
+}
+
+/* Selects y listas de entidades */
+.selectItem {
+    width: 300px;
+    display: block;
+    margin: 10px auto;
+    font-size: 1.05em;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    text-align: left;
+}
+
+/* Lista de entidades */
+.listContainer {
     max-width: 800px;
     margin: 20px auto;
     text-align: left;
@@ -127,12 +143,12 @@ select {
     padding: 20px;
 }
 
-.listaClientes ul {
+.listContainer ul {
     list-style: none;
     padding: 0;
 }
 
-.listaClientes li {
+.listContainer li {
     padding: 12px;
     border-bottom: 1px solid #eee;
     display: flex;
@@ -141,24 +157,54 @@ select {
     transition: background-color 0.2s;
 }
 
-.listaClientes li:hover {
+.listContainer li:hover {
     background-color: #f2f8ff;
 }
 
-/* Botón eliminar */
-.listaClientes button {
-    padding: 6px 12px;
-    font-size: 0.9em;
-    border: none;
-    border-radius: 6px;
-    background-color: #e74c3c;
+/* Botones uniformes para cancelar, eliminar y actualizar */
+.buttonCancel {
+    background: linear-gradient(135deg, #2980b9, #3498db);
     color: white;
+    border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    padding: 10px 20px;
+    font-size: 1em;
+    transition: all 0.3s ease;
 }
 
-.listaClientes button:hover {
-    background-color: #c0392b;
+.buttonCancel:hover {
+    background: linear-gradient(135deg, #3498db, #5dade2);
+    transform: translateY(-2px);
+}
+
+.buttonDelete {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 1em;
+    transition: all 0.3s ease;
+}
+
+.buttonDelete:hover {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    transform: translateY(-2px);
+}
+
+.botonCrearActualizar {
+    background: linear-gradient(135deg, #2980b9, #3498db);
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 1em;
+    transition: all 0.3s ease;
+}
+
+.botonCrearActualizar:hover {
+    background: linear-gradient(135deg, #3498db, #5dade2);
+    transform: translateY(-2px);
 }
 
 /* Mensajes de alerta o info */
