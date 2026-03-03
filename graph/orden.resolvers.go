@@ -124,7 +124,7 @@ func (r *mutationResolver) CreateOrden(ctx context.Context, input model.NewOrden
 		ID:           fmt.Sprintf("%d", id),
 		IDObra:       input.IDObra,
 		IDCliente:    input.IDCliente,
-		IDTrabajador: idTrabajadorStr, // ya es string vacío si es nil
+		IDTrabajador: idTrabajadorStr,
 		Fecha:        input.Fecha,
 		Status:       input.Status,
 	}, nil
@@ -134,7 +134,7 @@ func (r *mutationResolver) UpdateOrden(ctx context.Context, input model.UpdateOr
 	log.Printf("UpdateOrden llamado con input: %+v", input)
 
 	if input.ID == "" {
-		return nil, fmt.Errorf("el ID de la orden es obligatorio para la actualización")
+		return nil, fmt.Errorf("el ID de la orden es obligatorio para la actualizacion")
 	}
 
 	// Validar status si viene

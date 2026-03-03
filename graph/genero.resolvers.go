@@ -80,7 +80,7 @@ func (r *mutationResolver) CreateGenero(ctx context.Context, nombre string) (*mo
 
 // KillGenero is the resolver for the killGenero field.
 func (r *mutationResolver) KillGenero(ctx context.Context, id string) (bool, error) {
-	// log de la llamada para depuración
+	
 	log.Printf("KillCliente called with id: %s", id)
 	if id == "" {
 		return false, fmt.Errorf("el ID del genero es obligatorio para eliminar")

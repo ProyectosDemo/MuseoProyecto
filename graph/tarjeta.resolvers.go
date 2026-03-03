@@ -57,31 +57,6 @@ func (r *queryResolver) FindTarjetaCliente(ctx context.Context, id string) (*mod
 	return &tarjeta, nil
 }
 
-// FindTarjetasByCliente obtiene todas las tarjetas de un cliente
-func (r *queryResolver) FindTarjetasByCliente(ctx context.Context, idCliente string) ([]*model.TarjetaCliente, error) {
-	rows, err := r.DB.QueryContext(ctx, `
-		SELECT id_tarjeta, id_cliente, numero_tarjeta, fecha_expiracion, codigo_seguridad 
-		FROM tarjeta_cliente 
-		WHERE id_cliente = ?`, idCliente)
-	if err != nil {
-		log.Printf("FindTarjetasByCliente DB error: %v", err)
-		return nil, err
-	}
-	defer rows.Close()
-
-	var tarjetas []*model.TarjetaCliente
-	for rows.Next() {
-		var tarjeta model.TarjetaCliente
-		err := rows.Scan(&tarjeta.IDTarjeta, &tarjeta.IDCliente, &tarjeta.NumeroTarjeta, &tarjeta.FechaExpiracion, &tarjeta.CodigoSeguridad)
-		if err != nil {
-			log.Printf("FindTarjetasByCliente scan error: %v", err)
-			return nil, err
-		}
-		tarjetas = append(tarjetas, &tarjeta)
-	}
-	return tarjetas, nil
-}
-
 // UpdateTarjetaCliente actualiza los datos de una tarjeta
 func (r *mutationResolver) UpdateTarjetaCliente(ctx context.Context, input model.UpdateTarjetaCliente) (*model.TarjetaCliente, error) {
 	log.Printf("UpdateTarjetaCliente called with input: %+v", input)

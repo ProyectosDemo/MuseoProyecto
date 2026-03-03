@@ -152,9 +152,6 @@ func (r *mutationResolver) UpdateObra(ctx context.Context, input model.UpdateObr
 	return &obra, nil
 }
 
-// -------------------------------
-// CreateObra inserta una nueva obra
-// -------------------------------
 func (r *mutationResolver) CreateObra(ctx context.Context, input model.NewObra) (*model.Obra, error) {
 	log.Printf("CreateObra called with input: %+v", input)
 

@@ -16,7 +16,6 @@ th, td {
     text-align: left;
 }
 
-/* Limitamos altura de las celdas de información de la orden */
 td {
     max-height: 40px;
     overflow: hidden;
@@ -46,7 +45,6 @@ button:hover {
     background-color: #006600;
 }
 
-/* Celdas más compactas para fecha y status */
 #orden-fecha,
 #orden-status {
     max-height: 25px;
@@ -55,5 +53,5 @@ button:hover {
     white-space: nowrap;
     padding: 4px 8px;
     font-size: 13px;
-    text-align: center;  /* centramos el contenido dentro de la celda */
+    text-align: center;
 }
