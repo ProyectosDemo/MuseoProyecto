@@ -26,13 +26,9 @@ CREATE TABLE `orden` (
   `id_orden` int NOT NULL AUTO_INCREMENT,
   `id_obra` int NOT NULL,
   `id_cliente` int NOT NULL,
-  `id_trabajador` int NOT NULL,
-  `precio_obra` decimal(10,2) NOT NULL,
-  `iva` decimal(10,2) GENERATED ALWAYS AS ((`precio_obra` * 0.16)) STORED,
-  `ganancia_museo` decimal(10,2) NOT NULL,
-  `total` decimal(10,2) GENERATED ALWAYS AS ((`precio_obra` + `iva`)) STORED,
-  `fecha_orden` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `estatus` enum('Pendiente','Concretada','Cancelada') DEFAULT 'Pendiente',
+  `id_trabajador` int DEFAULT NULL,
+  `fecha` varchar(45) DEFAULT NULL,
+  `status` enum('PENDIENTE','CONCRETADA','CANCELADA') NOT NULL DEFAULT 'PENDIENTE',
   PRIMARY KEY (`id_orden`),
   KEY `id_obra` (`id_obra`),
   KEY `id_cliente` (`id_cliente`),
@@ -40,7 +36,7 @@ CREATE TABLE `orden` (
   CONSTRAINT `orden_ibfk_1` FOREIGN KEY (`id_obra`) REFERENCES `obra` (`id_obra`),
   CONSTRAINT `orden_ibfk_2` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`),
   CONSTRAINT `orden_ibfk_3` FOREIGN KEY (`id_trabajador`) REFERENCES `trabajador` (`id_trabajador`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -49,7 +45,7 @@ CREATE TABLE `orden` (
 
 LOCK TABLES `orden` WRITE;
 /*!40000 ALTER TABLE `orden` DISABLE KEYS */;
-INSERT INTO `orden` (`id_orden`, `id_obra`, `id_cliente`, `id_trabajador`, `precio_obra`, `ganancia_museo`, `fecha_orden`, `estatus`) VALUES (1,1,3,1,2000.00,400.50,'2026-02-21 20:00:00','Pendiente'),(2,1,3,1,2000.00,400.00,'2026-02-21 20:00:00','Pendiente'),(4,1,3,1,2000.00,400.00,'2026-02-21 20:00:00','Pendiente'),(5,1,3,1,2000.00,400.00,'2026-02-21 20:00:00','Pendiente'),(6,2,3,1,1500.50,300.10,'2026-02-21 20:00:00','Pendiente'),(7,2,3,1,1500.50,300.10,'2026-02-21 20:00:00','Concretada');
+INSERT INTO `orden` VALUES (10,18,14,10,'2026-03-03T17:38:20.444Z','PENDIENTE'),(11,19,16,18,'2026-03-03T17:38:51.458Z','CONCRETADA');
 /*!40000 ALTER TABLE `orden` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -62,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-01 16:02:55
+-- Dump completed on 2026-03-03 13:46:08

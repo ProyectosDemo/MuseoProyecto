@@ -16,34 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `cliente`
+-- Table structure for table `tarjeta_cliente`
 --
 
-DROP TABLE IF EXISTS `cliente`;
+DROP TABLE IF EXISTS `tarjeta_cliente`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `cliente` (
-  `id_cliente` int NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
-  `login` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `codigo_seguridad` varchar(10) DEFAULT NULL,
-  PRIMARY KEY (`id_cliente`),
-  UNIQUE KEY `email` (`email`),
-  UNIQUE KEY `login` (`login`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `tarjeta_cliente` (
+  `id_tarjeta` int NOT NULL AUTO_INCREMENT,
+  `id_cliente` int NOT NULL,
+  `numero_tarjeta` varchar(20) NOT NULL,
+  `tipo` varchar(20) NOT NULL,
+  PRIMARY KEY (`id_tarjeta`),
+  KEY `id_cliente` (`id_cliente`),
+  CONSTRAINT `tarjeta_cliente_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `cliente`
+-- Dumping data for table `tarjeta_cliente`
 --
 
-LOCK TABLES `cliente` WRITE;
-/*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-INSERT INTO `cliente` VALUES (14,'Nadia Romero','nadiaRo@gmail.com','0424-424-0424','nadiaPao','123456789','nFQpbCMD'),(15,'Santiago Romero','santiago@gmail.com','0424-424-0424','santiagopzt','123123123','EJiDNSR5'),(16,'Jesús Ortiz','yisus@gmail.com','0424-424-0424','yisus_the_kawaii','ensalada','UcOqhWf7'),(17,'Nina Romero','ninaRor@gmail.com','0424-424-0424','ninaValle','vallez123','aMcXGntw');
-/*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
+LOCK TABLES `tarjeta_cliente` WRITE;
+/*!40000 ALTER TABLE `tarjeta_cliente` DISABLE KEYS */;
+INSERT INTO `tarjeta_cliente` VALUES (3,14,'1234','Crédito'),(4,15,'5678','Crédito'),(5,16,'5692','Prepago'),(6,17,'4367','Prepago');
+/*!40000 ALTER TABLE `tarjeta_cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

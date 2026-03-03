@@ -30,7 +30,7 @@ CREATE TABLE `trabajador` (
   `admin` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id_trabajador`),
   UNIQUE KEY `login` (`login`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,7 +39,7 @@ CREATE TABLE `trabajador` (
 
 LOCK TABLES `trabajador` WRITE;
 /*!40000 ALTER TABLE `trabajador` DISABLE KEYS */;
-INSERT INTO `trabajador` VALUES (1,'Carlos Nuevo','carlos.nuevo','supersecreto',1),(10,'Hazel','hazelvalen','swaxe',0);
+INSERT INTO `trabajador` VALUES (1,'Carlos Nuevo','carlos.nuevo','supersecreto',1),(10,'Hazel','hazelvalen','swaxe',0),(12,'Juan Pérez','jperez','1234',1),(13,'María López','mlopez','abcd',0),(14,'Carlos Gómez','cgomez','pass123',0),(15,'Ana Torres','atorres','qwerty',1),(16,'Luis Ramírez','lramirez','luis2026',0),(17,'Sofía Martínez','smartinez','sofia456',0),(18,'Pedro Fernández','pfernandez','pedro789',1),(19,'Valentina Cruz','vcruz','valen321',0);
 /*!40000 ALTER TABLE `trabajador` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-01 16:02:56
+-- Dump completed on 2026-03-03 13:46:08

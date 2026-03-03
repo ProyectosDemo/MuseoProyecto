@@ -16,34 +16,32 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `cliente`
+-- Table structure for table `preguntas`
 --
 
-DROP TABLE IF EXISTS `cliente`;
+DROP TABLE IF EXISTS `preguntas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `cliente` (
-  `id_cliente` int NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
-  `login` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `codigo_seguridad` varchar(10) DEFAULT NULL,
-  PRIMARY KEY (`id_cliente`),
-  UNIQUE KEY `email` (`email`),
-  UNIQUE KEY `login` (`login`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `preguntas` (
+  `id_pregunta` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id_cliente` int NOT NULL,
+  `pregunta` varchar(255) NOT NULL,
+  `respuesta` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id_pregunta`),
+  UNIQUE KEY `id_pregunta` (`id_pregunta`),
+  KEY `fk_cliente` (`id_cliente`),
+  CONSTRAINT `fk_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `cliente`
+-- Dumping data for table `preguntas`
 --
 
-LOCK TABLES `cliente` WRITE;
-/*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-INSERT INTO `cliente` VALUES (14,'Nadia Romero','nadiaRo@gmail.com','0424-424-0424','nadiaPao','123456789','nFQpbCMD'),(15,'Santiago Romero','santiago@gmail.com','0424-424-0424','santiagopzt','123123123','EJiDNSR5'),(16,'Jesús Ortiz','yisus@gmail.com','0424-424-0424','yisus_the_kawaii','ensalada','UcOqhWf7'),(17,'Nina Romero','ninaRor@gmail.com','0424-424-0424','ninaValle','vallez123','aMcXGntw');
-/*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
+LOCK TABLES `preguntas` WRITE;
+/*!40000 ALTER TABLE `preguntas` DISABLE KEYS */;
+INSERT INTO `preguntas` VALUES (1,14,'Nombre de tu primera mascota?','Temmie'),(2,14,'Ciudad donde naciste?','Guayana'),(3,14,'Tu comida favorita?','Galletas'),(4,15,'Nombre de tu primera mascota?','Pinchi'),(5,15,'Primer colegio al que fuiste?','Fe y Alegria'),(6,15,'Tu comida favorita?','pizza'),(7,16,'Tu película favorita?','Cars'),(8,16,'Tu comida favorita?','arepa'),(9,16,'Nombre de tu primera mascota?','loro'),(10,17,'Nombre de tu mejor amigo de infancia?','Yannil'),(11,17,'Ciudad donde naciste?','guayana'),(12,17,'Primer colegio al que fuiste?','san pablo');
+/*!40000 ALTER TABLE `preguntas` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -55,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-03 13:46:08
+-- Dump completed on 2026-03-03 13:46:07
