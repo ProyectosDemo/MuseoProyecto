@@ -25,14 +25,19 @@
 
 <section class="artista-detalle-container">
     <div class="artista-info">
+        <!-- Imagen del artista -->
+        <img id="artistaFoto" class="artista-foto" alt="Foto del artista">
+
         <h2 id="artistaNombre"></h2>
         <p><strong>Fecha de nacimiento:</strong> <span id="artistaFecha"></span></p>
         <p><strong>Nacionalidad:</strong> <span id="artistaNacionalidad"></span></p>
         <p id="artistaBio"></p>
     </div>
 
-    <h3>Obras de este artista</h3>
-    <div class="obras-container" id="obrasContainer"></div>
+    <div class="artista-obras-wrapper">
+        <h3>Obras de este artista</h3>
+        <div class="obras-container" id="obrasContainer"></div>
+    </div>
 </section>
 
 <footer>
@@ -118,10 +123,15 @@ if (!artistaId) {
     .then(data => {
         const artista = data.data.findArtista[0];
         if (!artista) return;
+
         document.getElementById("artistaNombre").textContent = artista.nombre;
         document.getElementById("artistaFecha").textContent = artista.fecha_nacimiento;
         document.getElementById("artistaNacionalidad").textContent = artista.nacionalidad;
         document.getElementById("artistaBio").textContent = artista.biografia;
+
+        if (artista.foto) {
+            document.getElementById("artistaFoto").src = artista.foto;
+        }
     });
 
     // 2️⃣ Traer obras filtrando por artista usando artista.id

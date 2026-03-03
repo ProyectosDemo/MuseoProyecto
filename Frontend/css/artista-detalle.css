@@ -4,32 +4,60 @@
     margin: 30px auto;
     padding: 0 20px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row; /* foto a la izquierda, obras a la derecha */
     gap: 30px;
+    align-items: flex-start;
 }
 
+/* Información del artista (foto + datos) */
 .artista-info {
     background-color: white;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    flex: 0 0 300px; /* ancho fijo */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+/* Foto del artista */
+.artista-foto {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    display: block;
+    margin-bottom: 15px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+}
+
+/* Títulos y textos del artista */
 .artista-info h2 {
     margin-top: 0;
     font-size: 2em;
     margin-bottom: 10px;
+    text-align: center;
 }
 
 .artista-info p {
     line-height: 1.5;
     margin-bottom: 8px;
+    text-align: center;
 }
 
-/* Contenedor de obras del artista */
+/* Contenedor de obras + título */
+.artista-obras-wrapper {
+    display: flex;
+    flex-direction: column; /* título arriba, obras abajo */
+    flex: 1; /* ocupa espacio restante */
+    gap: 15px;
+}
+
+/* Contenedor de obras */
 .obras-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(2, 1fr); /* filas de 2 obras */
     gap: 20px;
 }
 
@@ -67,22 +95,33 @@
     color: inherit;
 }
 
-/* Footer */
-footer {
-    text-align: center;
-    padding: 20px;
-    margin-top: 50px;
-    background-color: #2c3e50;
-    color: white;
-    font-size: 0.9em;
-}
+
 
 /* Responsive */
+@media (max-width: 1024px) {
+    .artista-detalle-container {
+        flex-direction: column; /* apilar columnas en tablet */
+    }
+
+    .artista-info {
+        flex: none;
+        width: 100%;
+    }
+
+    .obras-container {
+        grid-template-columns: repeat(2, 1fr); /* mantener 2 columnas en tablet */
+    }
+}
+
 @media (max-width: 768px) {
     .artista-info h2 {
         font-size: 1.5em;
     }
     .obra-card img {
         height: 150px;
+    }
+
+    .obras-container {
+        grid-template-columns: 1fr; /* 1 columna en móvil */
     }
 }
