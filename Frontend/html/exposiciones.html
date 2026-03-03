@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Artistas | Museo Aurora</title>
+    <title>Exposiciones | Museo Aurora</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- CSS global: reset y tipografía -->
+    <!-- CSS global: reset, tipografía, header y footer -->
     <link rel="stylesheet" href="../css/global.css">
 
-    <!-- Artistas: contenedor y tarjetas -->
-    <link rel="stylesheet" href="../css/artistas.css">
+    <!-- Galería y cards de obras -->
+    <link rel="stylesheet" href="../css/gallery.css">
 </head>
 <body>
 
@@ -23,18 +23,26 @@
     </nav>
 </header>
 
-<section class="artistas-container" id="artistasContainer">
- 
+<section class="section">
+    <h2>Todas las Obras</h2>
+    <div class="gallery" id="gallery">
+        <!-- Las obras se cargarán aquí -->
+    </div>
 </section>
 
+<footer>
+    © 2026 Museo Aurora | Todos los derechos reservados
+</footer>
+
 <script>
+// Manejo de sesión (igual que en index.html)
 const navMenu = document.getElementById("navMenu");
 const loginButton = document.getElementById("loginButton");
 
-// Manejo de sesión
 const nombreCliente = localStorage.getItem("clienteNombre");
 const nombreTrabajador = localStorage.getItem("trabajadorNombre");
 const esAdmin = localStorage.getItem("trabajadorAdmin") === "true";
+
 let userType = "";
 
 if (nombreCliente) {
@@ -74,58 +82,61 @@ if (userType) {
     }
 }
 
-// Contenedor de artistas
-const container = document.getElementById("artistasContainer");
-
-const query = `
-    query {
-        Artistas(limit: 100, offset: 0) {
-            id
-            nombre
-            fecha_nacimiento
-            nacionalidad
-            biografia
-            foto
+// Cargar todas las obras desde GraphQL
+async function cargarTodasObras() {
+    const query = `
+        query {
+            Obras(limit:100, offset:0) {
+                id
+                nombre
+                foto
+                artista {
+                    nombre
+                }
+            }
         }
+    `;
+
+    try {
+        const res = await fetch("http://localhost:8080/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query })
+        });
+
+        const data = await res.json();
+        const gallery = document.getElementById("gallery");
+        gallery.innerHTML = "";
+
+        const obras = data.data.Obras;
+        if (!obras || obras.length === 0) {
+            gallery.innerHTML = "<p>No hay obras disponibles</p>";
+            return;
+        }
+
+        obras.forEach(ob => {
+            const artCard = document.createElement("div");
+            artCard.className = "art-card";
+
+            artCard.innerHTML = `
+                <div class="art-info">
+                    <a href="obra.html?id=${ob.id}">
+                        <img src="${ob.foto}" alt="${ob.nombre}">
+                        <h4>${ob.nombre}</h4>
+                    </a>
+                    <p>${ob.artista ? ob.artista.nombre : ""}</p>
+                </div>
+            `;
+            gallery.appendChild(artCard);
+        });
+
+    } catch (err) {
+        console.error(err);
+        document.getElementById("gallery").innerHTML = "<p>Error cargando obras</p>";
     }
-`;
+}
 
-// Fetch GraphQL
-fetch("http://localhost:8080/query", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query })
-})
-.then(res => res.json())
-.then(data => {
-    if (!data.data || !data.data.Artistas) {
-        console.error("No se encontraron artistas");
-        return;
-    }
-
-    const artistas = data.data.Artistas;
-
-    artistas.forEach(artista => {
-        const card = document.createElement("div");
-        card.classList.add("artista-card");
-
-        card.innerHTML = `
-            <img src="${artista.foto}" alt="${artista.nombre}">
-            <div class="artista-info">
-                <h2>${artista.nombre}</h2>
-                <p><strong>Fecha de nacimiento:</strong> ${artista.fecha_nacimiento}</p>
-                <p><strong>Nacionalidad:</strong> ${artista.nacionalidad}</p>
-                <p>${artista.biografia}</p>
-                <a href="artista-detalle.html?id=${artista.id}">Ver más</a>
-            </div>
-        `;
-
-        container.appendChild(card);
-    });
-})
-.catch(err => {
-    console.error("Error cargando artistas:", err);
-});
+cargarTodasObras();
 </script>
 
 </body>

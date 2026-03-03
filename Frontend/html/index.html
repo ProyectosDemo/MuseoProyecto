@@ -20,7 +20,7 @@
     <h1>Museo Aurora</h1>
     <nav id="navMenu">
         <a href="index.html">Inicio</a>
-        <a href="#">Exposiciones</a>
+        <a href="exposiciones.html">Exposiciones</a>
         <a href="artistas.html">Artistas</a>
         <a href="login.html" id="loginButton">Iniciar Sesión</a>
     </nav>
@@ -78,6 +78,15 @@ if (userType) {
         location.reload();
     });
     navMenu.appendChild(logoutBtn);
+
+    // Botón visible solo para trabajadores (admin incluido)
+    if (userType === "trabajador" || esAdmin) {
+        const reservasBtn = document.createElement("a");
+        reservasBtn.href = "reservas.html";  // ajusta a tu página de reservas
+        reservasBtn.textContent = "Reservas";
+        reservasBtn.style.marginLeft = "10px";
+        navMenu.appendChild(reservasBtn);
+    }
 
     if (esAdmin) {
         const adminBtn = document.createElement("a");

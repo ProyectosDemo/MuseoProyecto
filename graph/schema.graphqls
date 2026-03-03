@@ -1,7 +1,43 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
+# Enums
+enum StatusObra {
+  DISPONIBLE
+  RESERVADA
+  VENDIDA
+}
 
+enum StatusOrden {
+  PENDIENTE
+  CONCRETADA
+  CANCELADA
+}
+
+# Types
+type TarjetaCliente {
+  id_tarjeta: ID!
+  id_cliente: ID!
+  cliente: Cliente!
+  numero_tarjeta: String!
+  fecha_expiracion: String!
+  codigo_seguridad: String!
+}
+
+# Input Types
+input NewTarjetaCliente {
+  id_cliente: ID!
+  numero_tarjeta: String!
+  fecha_expiracion: String!
+  codigo_seguridad: String!
+}
+
+input UpdateTarjetaCliente {
+  id_tarjeta: ID!
+  id_cliente: ID
+  numero_tarjeta: String
+  fecha_expiracion: String
+  codigo_seguridad: String
+}
+
+# Types
 type Cliente {
   id: ID!
   nombre: String!
@@ -10,6 +46,28 @@ type Cliente {
   login: String!
   password: String!
   codigo_seguridad: String!
+}
+
+type Trabajador {
+  id: ID!
+  nombre: String!
+  login: String!
+  password: String!
+  admin: Boolean!
+}
+
+type Artista {
+  id: ID!
+  nombre: String!
+  fecha_nacimiento: String!
+  nacionalidad: String!
+  biografia: String!
+  foto: String!
+}
+
+type Genero {
+  id: ID!
+  nombre: String!
 }
 
 type Obra {
@@ -21,40 +79,39 @@ type Obra {
   genero: Genero!
   precio: Int!
   fecha_creacion: String!
-  status: String!
+  status: StatusObra!
   foto: String!
   material: String!
   peso: Int!
   dimensiones: String!
 }
 
-input NewObra {
-  nombre: String!
-  id_artista: ID!
-  id_genero: ID!
-  precio: Int!
-  fecha_creacion: String!
-  status: String!
-  foto: String!
-  material: String!
-  peso: Int!
-  dimensiones: String!
-}
-
-input UpdateObra {
+type Orden {
   id: ID!
-  nombre: String
-  id_artista: ID
-  id_genero: ID
-  precio: Int
-  fecha_creacion: String
-  status: String
-  foto: String
-  material: String
-  peso: Int
-  dimensiones: String
+  id_obra: ID!
+  obra: Obra!
+  id_cliente: ID!
+  cliente: Cliente!
+  id_trabajador: ID!
+  trabajador: Trabajador!
+  fecha: String!
+  status: StatusOrden!
 }
 
+type LoginResponseCliente {
+  success: Boolean!
+  id: ID
+  nombre: String
+}
+
+type LoginResponseTrabajador {
+  success: Boolean!
+  id: ID
+  nombre: String
+  admin: Boolean
+}
+
+# Input Types
 input NewCliente {
   nombre: String!
   email: String!
@@ -74,14 +131,6 @@ input UpdateCliente {
   codigo_seguridad: String
 }
 
-type Trabajador {
-  id: ID!
-  nombre: String!
-  login: String!
-  password: String!
-  admin: Boolean!
-}
-
 input NewTrabajador {
   nombre: String!
   login: String!
@@ -95,16 +144,6 @@ input UpdateTrabajador {
   login: String
   password: String
   admin: Boolean
-}
-
-
-type Artista {
-  id: ID!
-  nombre: String!
-  fecha_nacimiento: String!
-  nacionalidad: String!
-  biografia: String!
-  foto: String!
 }
 
 input NewArtista {
@@ -124,38 +163,6 @@ input UpdateArtista {
   foto: String
 }
 
-type LoginResponseCliente {
-  success: Boolean!
-  id: ID
-  nombre: String
-}
-
-type LoginResponseTrabajador {
-  success: Boolean!
-  id: ID
-  nombre: String
-  admin: Boolean
-}
-
-type Query {
-  Clientes(limit: Int, offset: Int): [Cliente!]!
-  Artistas(limit: Int, offset: Int): [Artista!]!
-  Trabajadores(limit: Int, offset: Int): [Trabajador!]!
-  Obras(limit: Int, offset: Int): [Obra!]!
-  findCliente(id: ID!): [Cliente!]!
-  findTrabajador(id: ID!): [Trabajador!]!
-  findObra(id: ID!): [Obra!]!
-  findArtista(id: ID!): [Artista!]!
-  loginCliente(email: String!, password: String!): LoginResponseCliente!
-  loginTrabajador(login: String!, password: String!): LoginResponseTrabajador!
-  getObra(id: ID!): Obra
-}
-
-type Genero {
-  id: ID!
-  nombre: String!
-}
-
 input NewGenero {
   nombre: String!
 }
@@ -165,20 +172,96 @@ input UpdateGenero {
   nombre: String
 }
 
+input NewObra {
+  nombre: String!
+  id_artista: ID!
+  id_genero: ID!
+  precio: Int!
+  fecha_creacion: String!
+  status: StatusObra!
+  foto: String!
+  material: String!
+  peso: Int!
+  dimensiones: String!
+}
+
+input UpdateObra {
+  id: ID!
+  nombre: String
+  id_artista: ID
+  id_genero: ID
+  precio: Int
+  fecha_creacion: String
+  status: StatusObra
+  foto: String
+  material: String
+  peso: Int
+  dimensiones: String
+}
+
+input NewOrden {
+  id_obra: ID!
+  id_cliente: ID!
+  id_trabajador: ID
+  fecha: String!
+  status: StatusOrden!
+}
+
+input UpdateOrden {
+  id: ID!
+  id_obra: ID
+  id_cliente: ID
+  id_trabajador: ID
+  fecha: String
+  status: StatusOrden
+}
+
+# Queries
+type Query {
+  Clientes(limit: Int, offset: Int): [Cliente!]!
+  Artistas(limit: Int, offset: Int): [Artista!]!
+  Trabajadores(limit: Int, offset: Int): [Trabajador!]!
+  Obras(limit: Int, offset: Int): [Obra!]!
+  Ordenes(limit: Int, offset: Int): [Orden!]!
+  TarjetasCliente(limit: Int, offset: Int): [TarjetaCliente!]!
+  findTarjetaCliente(id_tarjeta: ID!): TarjetaCliente
+  findCliente(id: ID!): [Cliente!]!
+  findTrabajador(id: ID!): [Trabajador!]!
+  findObra(id: ID!): [Obra!]!
+  findOrden(id: ID!): Orden
+  findArtista(id: ID!): [Artista!]!
+  getObra(id: ID!): Obra
+  loginCliente(email: String!, password: String!): LoginResponseCliente!
+  loginTrabajador(login: String!, password: String!): LoginResponseTrabajador!
+}
+
+# Mutations
 type Mutation {
-  updateCliente(input: UpdateCliente!): Cliente!
-  updateTrabajador(input: UpdateTrabajador!): Trabajador!
-  updateObra(input: UpdateObra!): Obra!
-  updateGenero(input: UpdateGenero!): Genero!
-  updateArtista(input: UpdateArtista!): Artista!
   createCliente(input: NewCliente!): Cliente!
-  createTrabajador(input: NewTrabajador!): Trabajador!
-  createObra(input: NewObra!): Obra!
-  createGenero(nombre: String!): Genero!
-  createArtista(input: NewArtista!): Artista!
+  updateCliente(input: UpdateCliente!): Cliente!
   killCliente(id: ID!): Boolean!
+
+  createTrabajador(input: NewTrabajador!): Trabajador!
+  updateTrabajador(input: UpdateTrabajador!): Trabajador!
   killTrabajador(id: ID!): Boolean!
-  killObra(id: ID!): Boolean!
-  killGenero(id: ID!): Boolean!
+
+  createArtista(input: NewArtista!): Artista!
+  updateArtista(input: UpdateArtista!): Artista!
   killArtista(id: ID!): Boolean!
+
+  createGenero(nombre: String!): Genero!
+  updateGenero(input: UpdateGenero!): Genero!
+  killGenero(id: ID!): Boolean!
+
+  createObra(input: NewObra!): Obra!
+  updateObra(input: UpdateObra!): Obra!
+  killObra(id: ID!): Boolean!
+
+  createOrden(input: NewOrden!): Orden!
+  updateOrden(input: UpdateOrden!): Orden!
+  killOrden(id: ID!): Boolean!
+
+  createTarjetaCliente(input: NewTarjetaCliente!): TarjetaCliente!
+  updateTarjetaCliente(input: UpdateTarjetaCliente!): TarjetaCliente!
+  killTarjetaCliente(id_tarjeta: ID!): Boolean!
 }

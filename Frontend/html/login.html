@@ -35,10 +35,16 @@
             <button type="submit" class="btn-primary">Entrar</button>
         </form>
 
-        <!-- Nuevo link para trabajadores -->
+        <!-- Link para trabajadores -->
         <p style="margin-top: 1em; text-align: center;">
             ¿Eres trabajador? 
             <a href="login-trabajador.html" class="btn-secondary">Iniciar sesión como trabajador</a>
+        </p>
+
+        <!-- Botón para crear cuenta -->
+        <p style="margin-top: 1em; text-align: center;">
+            ¿No tienes cuenta? 
+            <a href="registro.html" class="btn-secondary">Crear cuenta</a>
         </p>
     </div>
 </section>
@@ -76,10 +82,11 @@ form.addEventListener("submit", async (e) => {
 
         const data = await res.json();
 
-       if (data.data.loginCliente.success) {
+        if (data.data.loginCliente.success) {
             localStorage.setItem("clienteNombre", data.data.loginCliente.nombre);
             localStorage.setItem("clienteId", data.data.loginCliente.id);
 
+            // Redirige a la página principal del cliente
             window.location.href = "index.html"; 
         } else {
             alert("Usuario o contraseña incorrectos");

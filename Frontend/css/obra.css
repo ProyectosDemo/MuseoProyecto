@@ -9,8 +9,17 @@
     align-items: flex-start;
 }
 
+/* Contenedor vertical para foto + botón */
+.foto-boton {
+    display: flex;
+    flex-direction: column; /* apila verticalmente */
+    align-items: center;    /* centra horizontalmente */
+    gap: 10px;              /* espacio entre la foto y el botón */
+}
+
 .obra-container img#obraFoto {
-    max-width: 100%; width: 400px;
+    max-width: 100%; 
+    width: 400px;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
@@ -24,14 +33,94 @@
     font-family: Arial, sans-serif;
 }
 
-.obra-info div { display: flex; justify-content: space-between; background: #f9f9f9;
-    padding: 8px 12px; border-radius: 5px; border: 1px solid #ddd; }
+.obra-info div { 
+    display: flex; 
+    justify-content: space-between; 
+    background: #f9f9f9;
+    padding: 8px 12px; 
+    border-radius: 5px; 
+    border: 1px solid #ddd; 
+}
 
-.obra-info div span:first-child { font-weight: bold; color: #333; }
-.obra-info div span:last-child { color: #555; }
+.obra-info div span:first-child { 
+    font-weight: bold; 
+    color: #333; 
+}
+.obra-info div span:last-child { 
+    color: #555; 
+}
+
+/* Estilo del botón Comprar */
+#btnComprar {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#btnComprar:hover {
+    background-color: #0056b3;
+}
 
 @media (max-width: 768px) {
-    .obra-container { flex-direction: column; align-items: center; }
-    .obra-container img#obraFoto { width: 80%; }
-    .obra-info { width: 100%; }
+    .obra-container { 
+        flex-direction: column; 
+        align-items: center; 
+    }
+    .obra-container img#obraFoto { 
+        width: 80%; 
+    }
+    .obra-info { 
+        width: 100%; 
+    }
+}
+
+#formCodigoSeguridad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fefefe;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 320px;
+}
+
+#formCodigoSeguridad input#codigoSeguridad {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+#formCodigoSeguridad input#codigoSeguridad:focus {
+    border-color: #007bff;
+}
+
+#formCodigoSeguridad button#btnConfirmar {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#formCodigoSeguridad button#btnConfirmar:hover {
+    background-color: #1e7e34;
 }

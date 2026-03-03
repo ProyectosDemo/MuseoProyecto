@@ -17,6 +17,12 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
+
+// KillCliente implements [MutationResolver].
+func (r *mutationResolver) KillCliente(ctx context.Context, id string) (bool, error) {
+	panic("unimplemented")
+}
+
 type queryResolver struct{ *Resolver }
 
 // GetObra implements [QueryResolver].

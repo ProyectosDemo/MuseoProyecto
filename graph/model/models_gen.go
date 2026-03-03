@@ -2,6 +2,13 @@
 
 package model
 
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"strconv"
+)
+
 type Artista struct {
 	ID              string `json:"id"`
 	Nombre          string `json:"nombre"`
@@ -64,16 +71,31 @@ type NewGenero struct {
 }
 
 type NewObra struct {
-	Nombre        string `json:"nombre"`
-	IDArtista     string `json:"id_artista"`
-	IDGenero      string `json:"id_genero"`
-	Precio        int32  `json:"precio"`
-	FechaCreacion string `json:"fecha_creacion"`
-	Status        string `json:"status"`
-	Foto          string `json:"foto"`
-	Material      string `json:"material"`
-	Peso          int32  `json:"peso"`
-	Dimensiones   string `json:"dimensiones"`
+	Nombre        string     `json:"nombre"`
+	IDArtista     string     `json:"id_artista"`
+	IDGenero      string     `json:"id_genero"`
+	Precio        int32      `json:"precio"`
+	FechaCreacion string     `json:"fecha_creacion"`
+	Status        StatusObra `json:"status"`
+	Foto          string     `json:"foto"`
+	Material      string     `json:"material"`
+	Peso          int32      `json:"peso"`
+	Dimensiones   string     `json:"dimensiones"`
+}
+
+type NewOrden struct {
+	IDObra       string      `json:"id_obra"`
+	IDCliente    string      `json:"id_cliente"`
+	IDTrabajador *string     `json:"id_trabajador,omitempty"`
+	Fecha        string      `json:"fecha"`
+	Status       StatusOrden `json:"status"`
+}
+
+type NewTarjetaCliente struct {
+	IDCliente       string `json:"id_cliente"`
+	NumeroTarjeta   string `json:"numero_tarjeta"`
+	FechaExpiracion string `json:"fecha_expiracion"`
+	CodigoSeguridad string `json:"codigo_seguridad"`
 }
 
 type NewTrabajador struct {
@@ -84,22 +106,43 @@ type NewTrabajador struct {
 }
 
 type Obra struct {
-	ID            string   `json:"id"`
-	Nombre        string   `json:"nombre"`
-	IDArtista     string   `json:"id_artista"`
-	Artista       *Artista `json:"artista"`
-	IDGenero      string   `json:"id_genero"`
-	Genero        *Genero  `json:"genero"`
-	Precio        int32    `json:"precio"`
-	FechaCreacion string   `json:"fecha_creacion"`
-	Status        string   `json:"status"`
-	Foto          string   `json:"foto"`
-	Material      string   `json:"material"`
-	Peso          int32    `json:"peso"`
-	Dimensiones   string   `json:"dimensiones"`
+	ID            string     `json:"id"`
+	Nombre        string     `json:"nombre"`
+	IDArtista     string     `json:"id_artista"`
+	Artista       *Artista   `json:"artista"`
+	IDGenero      string     `json:"id_genero"`
+	Genero        *Genero    `json:"genero"`
+	Precio        int32      `json:"precio"`
+	FechaCreacion string     `json:"fecha_creacion"`
+	Status        StatusObra `json:"status"`
+	Foto          string     `json:"foto"`
+	Material      string     `json:"material"`
+	Peso          int32      `json:"peso"`
+	Dimensiones   string     `json:"dimensiones"`
+}
+
+type Orden struct {
+	ID           string      `json:"id"`
+	IDObra       string      `json:"id_obra"`
+	Obra         *Obra       `json:"obra"`
+	IDCliente    string      `json:"id_cliente"`
+	Cliente      *Cliente    `json:"cliente"`
+	IDTrabajador string      `json:"id_trabajador"`
+	Trabajador   *Trabajador `json:"trabajador"`
+	Fecha        string      `json:"fecha"`
+	Status       StatusOrden `json:"status"`
 }
 
 type Query struct {
+}
+
+type TarjetaCliente struct {
+	IDTarjeta       string   `json:"id_tarjeta"`
+	IDCliente       string   `json:"id_cliente"`
+	Cliente         *Cliente `json:"cliente"`
+	NumeroTarjeta   string   `json:"numero_tarjeta"`
+	FechaExpiracion string   `json:"fecha_expiracion"`
+	CodigoSeguridad string   `json:"codigo_seguridad"`
 }
 
 type Trabajador struct {
@@ -135,17 +178,34 @@ type UpdateGenero struct {
 }
 
 type UpdateObra struct {
-	ID            string  `json:"id"`
-	Nombre        *string `json:"nombre,omitempty"`
-	IDArtista     *string `json:"id_artista,omitempty"`
-	IDGenero      *string `json:"id_genero,omitempty"`
-	Precio        *int32  `json:"precio,omitempty"`
-	FechaCreacion *string `json:"fecha_creacion,omitempty"`
-	Status        *string `json:"status,omitempty"`
-	Foto          *string `json:"foto,omitempty"`
-	Material      *string `json:"material,omitempty"`
-	Peso          *int32  `json:"peso,omitempty"`
-	Dimensiones   *string `json:"dimensiones,omitempty"`
+	ID            string      `json:"id"`
+	Nombre        *string     `json:"nombre,omitempty"`
+	IDArtista     *string     `json:"id_artista,omitempty"`
+	IDGenero      *string     `json:"id_genero,omitempty"`
+	Precio        *int32      `json:"precio,omitempty"`
+	FechaCreacion *string     `json:"fecha_creacion,omitempty"`
+	Status        *StatusObra `json:"status,omitempty"`
+	Foto          *string     `json:"foto,omitempty"`
+	Material      *string     `json:"material,omitempty"`
+	Peso          *int32      `json:"peso,omitempty"`
+	Dimensiones   *string     `json:"dimensiones,omitempty"`
+}
+
+type UpdateOrden struct {
+	ID           string       `json:"id"`
+	IDObra       *string      `json:"id_obra,omitempty"`
+	IDCliente    *string      `json:"id_cliente,omitempty"`
+	IDTrabajador *string      `json:"id_trabajador,omitempty"`
+	Fecha        *string      `json:"fecha,omitempty"`
+	Status       *StatusOrden `json:"status,omitempty"`
+}
+
+type UpdateTarjetaCliente struct {
+	IDTarjeta       string  `json:"id_tarjeta"`
+	IDCliente       *string `json:"id_cliente,omitempty"`
+	NumeroTarjeta   *string `json:"numero_tarjeta,omitempty"`
+	FechaExpiracion *string `json:"fecha_expiracion,omitempty"`
+	CodigoSeguridad *string `json:"codigo_seguridad,omitempty"`
 }
 
 type UpdateTrabajador struct {
@@ -154,4 +214,118 @@ type UpdateTrabajador struct {
 	Login    *string `json:"login,omitempty"`
 	Password *string `json:"password,omitempty"`
 	Admin    *bool   `json:"admin,omitempty"`
+}
+
+type StatusObra string
+
+const (
+	StatusObraDisponible StatusObra = "DISPONIBLE"
+	StatusObraReservada  StatusObra = "RESERVADA"
+	StatusObraVendida    StatusObra = "VENDIDA"
+)
+
+var AllStatusObra = []StatusObra{
+	StatusObraDisponible,
+	StatusObraReservada,
+	StatusObraVendida,
+}
+
+func (e StatusObra) IsValid() bool {
+	switch e {
+	case StatusObraDisponible, StatusObraReservada, StatusObraVendida:
+		return true
+	}
+	return false
+}
+
+func (e StatusObra) String() string {
+	return string(e)
+}
+
+func (e *StatusObra) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = StatusObra(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid StatusObra", str)
+	}
+	return nil
+}
+
+func (e StatusObra) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *StatusObra) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e StatusObra) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type StatusOrden string
+
+const (
+	StatusOrdenPendiente  StatusOrden = "PENDIENTE"
+	StatusOrdenConcretada StatusOrden = "CONCRETADA"
+	StatusOrdenCancelada  StatusOrden = "CANCELADA"
+)
+
+var AllStatusOrden = []StatusOrden{
+	StatusOrdenPendiente,
+	StatusOrdenConcretada,
+	StatusOrdenCancelada,
+}
+
+func (e StatusOrden) IsValid() bool {
+	switch e {
+	case StatusOrdenPendiente, StatusOrdenConcretada, StatusOrdenCancelada:
+		return true
+	}
+	return false
+}
+
+func (e StatusOrden) String() string {
+	return string(e)
+}
+
+func (e *StatusOrden) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = StatusOrden(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid StatusOrden", str)
+	}
+	return nil
+}
+
+func (e StatusOrden) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *StatusOrden) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e StatusOrden) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
 }
