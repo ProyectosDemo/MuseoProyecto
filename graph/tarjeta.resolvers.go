@@ -12,7 +12,7 @@ import (
 // TarjetasCliente lista de todas las tarjetas
 func (r *queryResolver) TarjetasCliente(ctx context.Context, limit *int32, offset *int32) ([]*model.TarjetaCliente, error) {
 	rows, err := r.DB.QueryContext(ctx, `
-		SELECT id_tarjeta, id_cliente, numero_tarjeta, fecha_expiracion, codigo_seguridad 
+		SELECT id_tarjeta, id_cliente, numero_tarjeta, tipo 
 		FROM tarjeta_cliente 
 		LIMIT ? OFFSET ?`, limit, offset)
 	if err != nil {
@@ -24,7 +24,7 @@ func (r *queryResolver) TarjetasCliente(ctx context.Context, limit *int32, offse
 	var tarjetas []*model.TarjetaCliente
 	for rows.Next() {
 		var tarjeta model.TarjetaCliente
-		err := rows.Scan(&tarjeta.IDTarjeta, &tarjeta.IDCliente, &tarjeta.NumeroTarjeta, &tarjeta.FechaExpiracion, &tarjeta.CodigoSeguridad)
+		err := rows.Scan(&tarjeta.IDTarjeta, &tarjeta.IDCliente, &tarjeta.NumeroTarjeta, &tarjeta.Tipo)
 		if err != nil {
 			log.Printf("TarjetasCliente scan error: %v", err)
 			return nil, err
@@ -43,9 +43,9 @@ func (r *queryResolver) FindTarjetaCliente(ctx context.Context, id string) (*mod
 	log.Printf("FindTarjetaCliente called with id: %s", id)
 
 	var tarjeta model.TarjetaCliente
-	query := `SELECT id_tarjeta, id_cliente, numero_tarjeta, fecha_expiracion, codigo_seguridad FROM tarjeta_cliente WHERE id_tarjeta = ?`
+	query := `SELECT id_tarjeta, id_cliente, numero_tarjeta, tipo FROM tarjeta_cliente WHERE id_tarjeta = ?`
 	err := r.DB.QueryRowContext(ctx, query, id).Scan(
-		&tarjeta.IDTarjeta, &tarjeta.IDCliente, &tarjeta.NumeroTarjeta, &tarjeta.FechaExpiracion, &tarjeta.CodigoSeguridad,
+		&tarjeta.IDTarjeta, &tarjeta.IDCliente, &tarjeta.NumeroTarjeta, &tarjeta.Tipo,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -68,22 +68,21 @@ func (r *mutationResolver) UpdateTarjetaCliente(ctx context.Context, input model
 	query := `UPDATE tarjeta_cliente SET 
 		id_cliente = COALESCE(?, id_cliente), 
 		numero_tarjeta = COALESCE(?, numero_tarjeta), 
-		fecha_expiracion = COALESCE(?, fecha_expiracion), 
-		codigo_seguridad = COALESCE(?, codigo_seguridad) 
+		tipo = COALESCE(?, tipo)
 	WHERE id_tarjeta = ?`
 
-	_, err := r.DB.ExecContext(ctx, query, input.IDCliente, input.NumeroTarjeta, input.FechaExpiracion, input.CodigoSeguridad, input.IDTarjeta)
+	_, err := r.DB.ExecContext(ctx, query, input.IDCliente, input.NumeroTarjeta, input.Tipo, input.IDTarjeta)
 	if err != nil {
 		log.Printf("UpdateTarjetaCliente DB error: %v", err)
 		return nil, err
 	}
 
 	var tarjeta model.TarjetaCliente
-	selectQuery := `SELECT id_tarjeta, id_cliente, numero_tarjeta, fecha_expiracion, codigo_seguridad 
+	selectQuery := `SELECT id_tarjeta, id_cliente, numero_tarjeta, tipo
 	FROM tarjeta_cliente WHERE id_tarjeta = ?`
 
 	err = r.DB.QueryRowContext(ctx, selectQuery, input.IDTarjeta).Scan(
-		&tarjeta.IDTarjeta, &tarjeta.IDCliente, &tarjeta.NumeroTarjeta, &tarjeta.FechaExpiracion, &tarjeta.CodigoSeguridad,
+		&tarjeta.IDTarjeta, &tarjeta.IDCliente, &tarjeta.NumeroTarjeta, &tarjeta.Tipo,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -104,11 +103,10 @@ func (r *mutationResolver) CreateTarjetaCliente(ctx context.Context, input model
 	if input.IDCliente == "" {
 		return nil, fmt.Errorf("id_cliente es obligatorio")
 	}
-	if input.NumeroTarjeta == "" || input.FechaExpiracion == "" || input.CodigoSeguridad == "" {
-		return nil, fmt.Errorf("numero_tarjeta, fecha_expiracion y codigo_seguridad son obligatorios")
+	if input.NumeroTarjeta == "" || input.Tipo == "" {
+		return nil, fmt.Errorf("numero_tarjeta y tipo son obligatorios")
 	}
 
-	// Verificar si IDCliente es numérico (opcional si tu DB usa int)
 	if _, err := strconv.Atoi(input.IDCliente); err != nil {
 		log.Printf("Warning: id_cliente no es numérico, se enviará como string: %v", input.IDCliente)
 	}
@@ -117,16 +115,15 @@ func (r *mutationResolver) CreateTarjetaCliente(ctx context.Context, input model
 	tarjeta := &model.TarjetaCliente{
 		IDCliente:      input.IDCliente,
 		NumeroTarjeta:  input.NumeroTarjeta,
-		FechaExpiracion: input.FechaExpiracion,
-		CodigoSeguridad: input.CodigoSeguridad,
+		Tipo: input.Tipo,
 	}
 
 	log.Printf("Insertando tarjeta en DB: %+v", tarjeta)
 
 	_, err := r.DB.ExecContext(ctx, `
-		INSERT INTO tarjeta_cliente (id_cliente, numero_tarjeta, fecha_expiracion, codigo_seguridad)
-		VALUES (?, ?, ?, ?)`,
-		tarjeta.IDCliente, tarjeta.NumeroTarjeta, tarjeta.FechaExpiracion, tarjeta.CodigoSeguridad)
+		INSERT INTO tarjeta_cliente (id_cliente, numero_tarjeta, tipo)
+		VALUES (?, ?, ?)`,
+		tarjeta.IDCliente, tarjeta.NumeroTarjeta, tarjeta.Tipo)
 	if err != nil {
 		log.Printf("CreateTarjetaCliente DB error: %v", err)
 		return nil, err

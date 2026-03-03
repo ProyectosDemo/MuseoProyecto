@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Consultas y Facturación | Museo Aurora</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/consultas.css">
+</head>
+<body>
+
+<header>
+    <h1>Museo Aurora - Consultas y Facturación</h1>
+    <nav id="navMenu">
+        <a href="index.html">Inicio</a>
+        <a href="exposiciones.html">Exposiciones</a>
+        <a href="artistas.html">Artistas</a>
+        <a href="login.html" id="loginButton">Iniciar Sesión</a>
+    </nav>
+</header>
+
+<div class="admin-panel">
+
+    <div class="panel">
+        <h2>Órdenes Concretadas</h2>
+        <div id="ordenesContainer" class="consulta-block">
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Factura</h2>
+        <div id="facturaContainer" class="factura-block">
+            <p>Selecciona una orden para generar la factura.</p>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    © 2026 Museo Aurora | Todos los derechos reservados
+</footer>
+
+<script>
+const navMenu = document.getElementById("navMenu");
+const loginButton = document.getElementById("loginButton");
+const trabajadorId = localStorage.getItem("trabajadorId");
+const trabajadorNombre = localStorage.getItem("trabajadorNombre");
+
+if (!trabajadorId) {
+    location.href = "login.html";
+}
+
+loginButton.textContent = `Bienvenido, ${trabajadorNombre || "Trabajador"}`;
+loginButton.href = "#";
+
+const logoutBtn = document.createElement("a");
+logoutBtn.href = "#";
+logoutBtn.textContent = "Cerrar Sesión";
+logoutBtn.style.marginLeft = "10px";
+logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("trabajadorNombre");
+    localStorage.removeItem("trabajadorId");
+    localStorage.removeItem("trabajadorAdmin");
+    location.reload();
+});
+navMenu.appendChild(logoutBtn);
+
+async function cargarOrdenesConcretadas() {
+    try {
+        const query = `
+            query {
+                Ordenes(limit: 100, offset: 0) {
+                    id
+                    id_obra
+                    id_cliente
+                    id_trabajador
+                    fecha
+                    status
+                }
+            }
+        `;
+        const res = await fetch("http://localhost:8080/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query })
+        });
+        const data = await res.json();
+        const ordenes = data?.data?.Ordenes.filter(o => o.status === "CONCRETADA") || [];
+
+        const container = document.getElementById("ordenesContainer");
+        container.innerHTML = "";
+
+        for (const orden of ordenes) {
+            const obraQuery = `
+                query { findObra(id: "${orden.id_obra}") { id nombre precio } }
+            `;
+            const obraRes = await fetch("http://localhost:8080/query", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: obraQuery })
+            });
+            const obraData = await obraRes.json();
+            const obra = obraData?.data?.findObra[0];
+
+            const clienteQuery = `
+                query { findCliente(id: "${orden.id_cliente}") { id nombre } }
+            `;
+            const clienteRes = await fetch("http://localhost:8080/query", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: clienteQuery })
+            });
+            const clienteData = await clienteRes.json();
+            const cliente = clienteData?.data?.findCliente[0];
+
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `
+                <p><strong>ID Orden:</strong> ${orden.id}</p>
+                <p><strong>Obra:</strong> ${obra?.nombre || "N/D"}</p>
+                <p><strong>Cliente:</strong> ${cliente?.nombre || "N/D"}</p>
+                <p><strong>Fecha:</strong> ${orden.fecha}</p>
+                <p><strong>Precio:</strong> $${obra?.precio || 0}</p>
+                <button class="facturaBtn">Generar Factura</button>
+            `;
+            container.appendChild(card);
+
+            card.querySelector(".facturaBtn").addEventListener("click", () => generarFactura(orden, obra, cliente));
+        }
+    } catch (err) {
+        console.error("Error al cargar ordenes concretadas:", err);
+    }
+}
+
+function generarFactura(orden, obra, cliente) {
+    const IVA = 0.21;
+    const porcentajeMuseo = (Math.random() * 5 + 5) / 100;
+    const precio = obra.precio;
+    const iva = precio * IVA;
+    const gananciaMuseo = precio * porcentajeMuseo;
+    const total = precio + iva;
+
+    const container = document.getElementById("facturaContainer");
+    container.innerHTML = `
+        <div class="card">
+            <p><strong>Factura de la Orden ID:</strong> ${orden.id}</p>
+            <p><strong>Cliente:</strong> ${cliente.nombre}</p>
+            <p><strong>Obra:</strong> ${obra.nombre}</p>
+            <p><strong>Precio:</strong> $${precio.toFixed(2)}</p>
+            <p><strong>IVA (21%):</strong> $${iva.toFixed(2)}</p>
+            <p><strong>Total:</strong> $${total.toFixed(2)}</p>
+            <p><strong>Ganancia del Museo:</strong> $${gananciaMuseo.toFixed(2)}</p>
+            <p><strong>Fecha de Venta:</strong> ${orden.fecha}</p>
+        </div>
+    `;
+}
+
+cargarOrdenesConcretadas();
+</script>
+
+</body>
+</html>

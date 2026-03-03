@@ -21,21 +21,24 @@
     <div class="login-box">
         <h2>Iniciar Sesión Trabajador</h2>
 
-        <form id="loginTrabajadorForm">
+        <form id="loginTrabajadorForm" autocomplete="off">
+            <input type="text" style="display:none">
+
             <div class="input-group">
-                <label for="login">Usuario</label>
-                <input type="text" id="login" required>
+                <label for="login_fake">Usuario</label>
+                <input type="text" id="login_fake" name="login_fake" required 
+                       autocomplete="new-password" autocorrect="off" spellcheck="false">
             </div>
 
             <div class="input-group">
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" required>
+                <label for="password_fake">Contraseña</label>
+                <input type="password" id="password_fake" name="password_fake" required 
+                       autocomplete="new-password" autocorrect="off" spellcheck="false">
             </div>
 
             <button type="submit" class="btn-primary">Entrar</button>
         </form>
 
-        <!-- Link de vuelta a login de clientes -->
         <p style="margin-top: 1em; text-align: center;">
             ¿Eres cliente? 
             <a href="login.html" class="btn-secondary">Iniciar sesión como cliente</a>
@@ -53,10 +56,9 @@ const form = document.getElementById("loginTrabajadorForm");
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const login = document.getElementById("login").value;
-    const password = document.getElementById("password").value;
+    const login = document.getElementById("login_fake").value;
+    const password = document.getElementById("password_fake").value;
 
-    // Query GraphQL para login de trabajador
     const query = `
         query {
             loginTrabajador(login: "${login}", password: "${password}") {
@@ -76,7 +78,6 @@ form.addEventListener("submit", async (e) => {
         });
 
         const data = await res.json();
-
         const trabajador = data.data.loginTrabajador;
 
         if (trabajador.success) {
@@ -84,7 +85,6 @@ form.addEventListener("submit", async (e) => {
             localStorage.setItem("trabajadorId", trabajador.id);
             localStorage.setItem("trabajadorAdmin", trabajador.admin);
 
-            // Redirige si es admin o no
             if (trabajador.admin) {
                 window.location.href = "admin.html";
             } else {
@@ -93,7 +93,6 @@ form.addEventListener("submit", async (e) => {
         } else {
             alert("Usuario o contraseña incorrectos");
         }
-
     } catch (err) {
         console.error(err);
         alert("Error conectando al servidor");

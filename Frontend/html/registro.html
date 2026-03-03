@@ -17,6 +17,7 @@
 <section class="login-container">
     <form id="registroForm">
         <div class="registro-container">
+
             <!-- Caja Cliente -->
             <div class="registro-box">
                 <h3>Datos del Cliente</h3>
@@ -50,12 +51,36 @@
                     <input type="text" id="numero_tarjeta" required>
                 </div>
                 <div class="input-group">
-                    <label for="fecha_expiracion">Fecha de expiración (MM/AA)</label>
-                    <input type="text" id="fecha_expiracion" required>
+                    <label for="tipo">Tipo de tarjeta</label>
+                    <select id="tipo" required>
+                        <option value="" disabled selected>Selecciona tipo</option>
+                        <option value="Crédito">Crédito</option>
+                        <option value="Débito">Débito</option>
+                        <option value="Prepago">Prepago</option>
+                    </select>
                 </div>
+            </div>
+
+            <!-- Caja Preguntas -->
+            <div class="registro-box">
+                <h3>Preguntas de Seguridad</h3>
+
                 <div class="input-group">
-                    <label for="codigo_seguridad_tarjeta">Código de seguridad (CVV)</label>
-                    <input type="text" id="codigo_seguridad_tarjeta" required>
+                    <label for="pregunta1">Pregunta 1</label>
+                    <select id="pregunta1" required></select>
+                    <input type="text" id="respuesta1" placeholder="Respuesta 1" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="pregunta2">Pregunta 2</label>
+                    <select id="pregunta2" required></select>
+                    <input type="text" id="respuesta2" placeholder="Respuesta 2" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="pregunta3">Pregunta 3</label>
+                    <select id="pregunta3" required></select>
+                    <input type="text" id="respuesta3" placeholder="Respuesta 3" required>
                 </div>
             </div>
         </div>
@@ -83,6 +108,41 @@ function generarCodigoSeguridad(longitud = 8) {
     return result;
 }
 
+const opcionesPreguntas = [
+    "Nombre de tu primera mascota?",
+    "Ciudad donde naciste?",
+    "Tu comida favorita?",
+    "Nombre de tu mejor amigo de infancia?",
+    "Tu película favorita?",
+    "Primer colegio al que fuiste?"
+];
+
+const selectsPreguntas = [
+    document.getElementById("pregunta1"),
+    document.getElementById("pregunta2"),
+    document.getElementById("pregunta3")
+];
+
+function actualizarSelects() {
+    const seleccionadas = selectsPreguntas.map(s => s.value).filter(v => v !== "");
+    selectsPreguntas.forEach(select => {
+        const valorActual = select.value;
+        select.innerHTML = `<option value="" disabled ${valorActual === "" ? "selected" : ""}>Selecciona una pregunta</option>`;
+        opcionesPreguntas.forEach(op => {
+            if (!seleccionadas.includes(op) || op === valorActual) {
+                const opt = document.createElement("option");
+                opt.value = op;
+                opt.textContent = op;
+                if (op === valorActual) opt.selected = true;
+                select.appendChild(opt);
+            }
+        });
+    });
+}
+
+actualizarSelects();
+selectsPreguntas.forEach(select => select.addEventListener("change", actualizarSelects));
+
 const form = document.getElementById("registroForm");
 
 form.addEventListener("submit", async (e) => {
@@ -96,11 +156,10 @@ form.addEventListener("submit", async (e) => {
     const codigoSeguridadCliente = generarCodigoSeguridad(8);
 
     const numeroTarjeta = document.getElementById("numero_tarjeta").value.trim();
-    const fechaExpiracion = document.getElementById("fecha_expiracion").value.trim();
-    const codigoSeguridadTarjeta = document.getElementById("codigo_seguridad_tarjeta").value.trim();
+    const tipo = document.getElementById("tipo").value;
 
     try {
-        // 1️⃣ Crear Cliente usando variables GraphQL
+        // 1️⃣ Crear Cliente
         const createClienteQuery = `
             mutation CreateCliente($input: NewCliente!) {
                 createCliente(input: $input) {
@@ -125,17 +184,12 @@ form.addEventListener("submit", async (e) => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ query: createClienteQuery, variables: clienteVariables })
         });
-
         const dataCliente = await resCliente.json();
-        if (dataCliente.errors) {
-            console.error(dataCliente.errors);
-            alert("Error al crear el cliente: " + dataCliente.errors[0].message);
-            return;
-        }
+        if (dataCliente.errors) throw new Error(dataCliente.errors[0].message);
 
         const clienteId = dataCliente.data.createCliente.id;
 
-        // 2️⃣ Crear Tarjeta asociada al cliente usando variables GraphQL
+        // 2️⃣ Crear Tarjeta
         const createTarjetaQuery = `
             mutation CreateTarjeta($input: NewTarjetaCliente!) {
                 createTarjetaCliente(input: $input) {
@@ -144,33 +198,49 @@ form.addEventListener("submit", async (e) => {
             }
         `;
         const tarjetaVariables = {
-            input: {
-                id_cliente: clienteId,
-                numero_tarjeta: numeroTarjeta,
-                fecha_expiracion: fechaExpiracion,
-                codigo_seguridad: codigoSeguridadTarjeta
-            }
+            input: { id_cliente: clienteId, numero_tarjeta: numeroTarjeta, tipo }
         };
-
         const resTarjeta = await fetch("http://localhost:8080/query", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ query: createTarjetaQuery, variables: tarjetaVariables })
         });
-
         const dataTarjeta = await resTarjeta.json();
-        if (dataTarjeta.errors) {
-            console.error(dataTarjeta.errors);
-            alert("Error al crear la tarjeta: " + dataTarjeta.errors[0].message);
-            return;
+        if (dataTarjeta.errors) throw new Error(dataTarjeta.errors[0].message);
+
+        // 3️⃣ Crear 3 preguntas como registros separados
+        for (let i = 1; i <= 3; i++) {
+            const createPreguntaQuery = `
+                mutation CreatePreguntas($input: NewPreguntas!) {
+                    createPreguntas(input: $input) {
+                        id
+                        pregunta
+                        respuesta
+                    }
+                }
+            `;
+            const preguntaVariables = {
+                input: {
+                    id_cliente: clienteId,
+                    pregunta: document.getElementById(`pregunta${i}`).value,
+                    respuesta: document.getElementById(`respuesta${i}`).value.trim()
+                }
+            };
+            const resPregunta = await fetch("http://localhost:8080/query", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: createPreguntaQuery, variables: preguntaVariables })
+            });
+            const dataPregunta = await resPregunta.json();
+            if (dataPregunta.errors) throw new Error(dataPregunta.errors[0].message);
         }
 
-        alert(`Cuenta creada correctamente. Código de seguridad del cliente: ${codigoSeguridadCliente}`);
+        alert(`Cuenta creada correctamente. Codigo de seguridad del cliente: ${codigoSeguridadCliente}`);
         window.location.href = "login.html";
 
     } catch (err) {
         console.error(err);
-        alert("Error al crear la cuenta o la tarjeta");
+        alert("Error al crear la cuenta: " + err.message);
     }
 });
 </script>

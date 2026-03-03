@@ -12,29 +12,49 @@ enum StatusOrden {
 }
 
 # Types
+type Preguntas {
+  id: ID!
+  id_cliente: ID!
+  cliente: Cliente!
+  pregunta: String!
+  respuesta: String!
+}
+
+# Input Types
+input NewPreguntas {
+  id_cliente: ID!
+  pregunta: String!
+  respuesta: String!
+}
+
+input UpdatePreguntas {
+  id: ID!
+  id_cliente: ID
+  pregunta: String
+  respuesta: String
+}
+
+# Types
 type TarjetaCliente {
   id_tarjeta: ID!
   id_cliente: ID!
   cliente: Cliente!
   numero_tarjeta: String!
-  fecha_expiracion: String!
-  codigo_seguridad: String!
+  tipo: String!
 }
 
 # Input Types
 input NewTarjetaCliente {
   id_cliente: ID!
   numero_tarjeta: String!
-  fecha_expiracion: String!
-  codigo_seguridad: String!
+  tipo: String!
 }
 
 input UpdateTarjetaCliente {
   id_tarjeta: ID!
   id_cliente: ID
   numero_tarjeta: String
-  fecha_expiracion: String
-  codigo_seguridad: String
+  tipo: String
 }
 
 # Types
@@ -224,6 +244,9 @@ type Query {
   Obras(limit: Int, offset: Int): [Obra!]!
   Ordenes(limit: Int, offset: Int): [Orden!]!
   TarjetasCliente(limit: Int, offset: Int): [TarjetaCliente!]!
+  Preguntas(limit: Int, offset: Int): [Preguntas!]!
+  findPreguntas(id: ID!): Preguntas
+  findPreguntasByCliente(id_cliente: ID!): [Preguntas!]!
   findTarjetaCliente(id_tarjeta: ID!): TarjetaCliente
   findCliente(id: ID!): [Cliente!]!
   findTrabajador(id: ID!): [Trabajador!]!
@@ -231,7 +254,7 @@ type Query {
   findOrden(id: ID!): Orden
   findArtista(id: ID!): [Artista!]!
   getObra(id: ID!): Obra
-  loginCliente(email: String!, password: String!): LoginResponseCliente!
+  loginCliente(login: String!, password: String!): LoginResponseCliente!
   loginTrabajador(login: String!, password: String!): LoginResponseTrabajador!
 }
 
@@ -264,4 +287,8 @@ type Mutation {
   createTarjetaCliente(input: NewTarjetaCliente!): TarjetaCliente!
   updateTarjetaCliente(input: UpdateTarjetaCliente!): TarjetaCliente!
   killTarjetaCliente(id_tarjeta: ID!): Boolean!
+
+  createPreguntas(input: NewPreguntas!): Preguntas!
+  updatePreguntas(input: UpdatePreguntas!): Preguntas!
+  killPreguntas(id: ID!): Boolean!
 }

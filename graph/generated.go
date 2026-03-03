@@ -79,6 +79,7 @@ type ComplexityRoot struct {
 		CreateGenero         func(childComplexity int, nombre string) int
 		CreateObra           func(childComplexity int, input model.NewObra) int
 		CreateOrden          func(childComplexity int, input model.NewOrden) int
+		CreatePreguntas      func(childComplexity int, input model.NewPreguntas) int
 		CreateTarjetaCliente func(childComplexity int, input model.NewTarjetaCliente) int
 		CreateTrabajador     func(childComplexity int, input model.NewTrabajador) int
 		KillArtista          func(childComplexity int, id string) int
@@ -86,6 +87,7 @@ type ComplexityRoot struct {
 		KillGenero           func(childComplexity int, id string) int
 		KillObra             func(childComplexity int, id string) int
 		KillOrden            func(childComplexity int, id string) int
+		KillPreguntas        func(childComplexity int, id string) int
 		KillTarjetaCliente   func(childComplexity int, idTarjeta string) int
 		KillTrabajador       func(childComplexity int, id string) int
 		UpdateArtista        func(childComplexity int, input model.UpdateArtista) int
@@ -93,6 +95,7 @@ type ComplexityRoot struct {
 		UpdateGenero         func(childComplexity int, input model.UpdateGenero) int
 		UpdateObra           func(childComplexity int, input model.UpdateObra) int
 		UpdateOrden          func(childComplexity int, input model.UpdateOrden) int
+		UpdatePreguntas      func(childComplexity int, input model.UpdatePreguntas) int
 		UpdateTarjetaCliente func(childComplexity int, input model.UpdateTarjetaCliente) int
 		UpdateTrabajador     func(childComplexity int, input model.UpdateTrabajador) int
 	}
@@ -125,31 +128,41 @@ type ComplexityRoot struct {
 		Trabajador   func(childComplexity int) int
 	}
 
+	Preguntas struct {
+		Cliente   func(childComplexity int) int
+		ID        func(childComplexity int) int
+		IDCliente func(childComplexity int) int
+		Pregunta  func(childComplexity int) int
+		Respuesta func(childComplexity int) int
+	}
+
 	Query struct {
-		Artistas           func(childComplexity int, limit *int32, offset *int32) int
-		Clientes           func(childComplexity int, limit *int32, offset *int32) int
-		FindArtista        func(childComplexity int, id string) int
-		FindCliente        func(childComplexity int, id string) int
-		FindObra           func(childComplexity int, id string) int
-		FindOrden          func(childComplexity int, id string) int
-		FindTarjetaCliente func(childComplexity int, idTarjeta string) int
-		FindTrabajador     func(childComplexity int, id string) int
-		GetObra            func(childComplexity int, id string) int
-		LoginCliente       func(childComplexity int, email string, password string) int
-		LoginTrabajador    func(childComplexity int, login string, password string) int
-		Obras              func(childComplexity int, limit *int32, offset *int32) int
-		Ordenes            func(childComplexity int, limit *int32, offset *int32) int
-		TarjetasCliente    func(childComplexity int, limit *int32, offset *int32) int
-		Trabajadores       func(childComplexity int, limit *int32, offset *int32) int
+		Artistas               func(childComplexity int, limit *int32, offset *int32) int
+		Clientes               func(childComplexity int, limit *int32, offset *int32) int
+		FindArtista            func(childComplexity int, id string) int
+		FindCliente            func(childComplexity int, id string) int
+		FindObra               func(childComplexity int, id string) int
+		FindOrden              func(childComplexity int, id string) int
+		FindPreguntas          func(childComplexity int, id string) int
+		FindPreguntasByCliente func(childComplexity int, idCliente string) int
+		FindTarjetaCliente     func(childComplexity int, idTarjeta string) int
+		FindTrabajador         func(childComplexity int, id string) int
+		GetObra                func(childComplexity int, id string) int
+		LoginCliente           func(childComplexity int, login string, password string) int
+		LoginTrabajador        func(childComplexity int, login string, password string) int
+		Obras                  func(childComplexity int, limit *int32, offset *int32) int
+		Ordenes                func(childComplexity int, limit *int32, offset *int32) int
+		Preguntas              func(childComplexity int, limit *int32, offset *int32) int
+		TarjetasCliente        func(childComplexity int, limit *int32, offset *int32) int
+		Trabajadores           func(childComplexity int, limit *int32, offset *int32) int
 	}
 
 	TarjetaCliente struct {
-		Cliente         func(childComplexity int) int
-		CodigoSeguridad func(childComplexity int) int
-		FechaExpiracion func(childComplexity int) int
-		IDCliente       func(childComplexity int) int
-		IDTarjeta       func(childComplexity int) int
-		NumeroTarjeta   func(childComplexity int) int
+		Cliente       func(childComplexity int) int
+		IDCliente     func(childComplexity int) int
+		IDTarjeta     func(childComplexity int) int
+		NumeroTarjeta func(childComplexity int) int
+		Tipo          func(childComplexity int) int
 	}
 
 	Trabajador struct {
@@ -183,6 +196,9 @@ type MutationResolver interface {
 	CreateTarjetaCliente(ctx context.Context, input model.NewTarjetaCliente) (*model.TarjetaCliente, error)
 	UpdateTarjetaCliente(ctx context.Context, input model.UpdateTarjetaCliente) (*model.TarjetaCliente, error)
 	KillTarjetaCliente(ctx context.Context, idTarjeta string) (bool, error)
+	CreatePreguntas(ctx context.Context, input model.NewPreguntas) (*model.Preguntas, error)
+	UpdatePreguntas(ctx context.Context, input model.UpdatePreguntas) (*model.Preguntas, error)
+	KillPreguntas(ctx context.Context, id string) (bool, error)
 }
 type QueryResolver interface {
 	Clientes(ctx context.Context, limit *int32, offset *int32) ([]*model.Cliente, error)
@@ -191,6 +207,9 @@ type QueryResolver interface {
 	Obras(ctx context.Context, limit *int32, offset *int32) ([]*model.Obra, error)
 	Ordenes(ctx context.Context, limit *int32, offset *int32) ([]*model.Orden, error)
 	TarjetasCliente(ctx context.Context, limit *int32, offset *int32) ([]*model.TarjetaCliente, error)
+	Preguntas(ctx context.Context, limit *int32, offset *int32) ([]*model.Preguntas, error)
+	FindPreguntas(ctx context.Context, id string) (*model.Preguntas, error)
+	FindPreguntasByCliente(ctx context.Context, idCliente string) ([]*model.Preguntas, error)
 	FindTarjetaCliente(ctx context.Context, idTarjeta string) (*model.TarjetaCliente, error)
 	FindCliente(ctx context.Context, id string) ([]*model.Cliente, error)
 	FindTrabajador(ctx context.Context, id string) ([]*model.Trabajador, error)
@@ -198,7 +217,7 @@ type QueryResolver interface {
 	FindOrden(ctx context.Context, id string) (*model.Orden, error)
 	FindArtista(ctx context.Context, id string) ([]*model.Artista, error)
 	GetObra(ctx context.Context, id string) (*model.Obra, error)
-	LoginCliente(ctx context.Context, email string, password string) (*model.LoginResponseCliente, error)
+	LoginCliente(ctx context.Context, login string, password string) (*model.LoginResponseCliente, error)
 	LoginTrabajador(ctx context.Context, login string, password string) (*model.LoginResponseTrabajador, error)
 }
 
@@ -408,6 +427,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.CreateOrden(childComplexity, args["input"].(model.NewOrden)), true
+	case "Mutation.createPreguntas":
+		if e.ComplexityRoot.Mutation.CreatePreguntas == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createPreguntas_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.CreatePreguntas(childComplexity, args["input"].(model.NewPreguntas)), true
 	case "Mutation.createTarjetaCliente":
 		if e.ComplexityRoot.Mutation.CreateTarjetaCliente == nil {
 			break
@@ -485,6 +515,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.KillOrden(childComplexity, args["id"].(string)), true
+	case "Mutation.killPreguntas":
+		if e.ComplexityRoot.Mutation.KillPreguntas == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_killPreguntas_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.KillPreguntas(childComplexity, args["id"].(string)), true
 	case "Mutation.killTarjetaCliente":
 		if e.ComplexityRoot.Mutation.KillTarjetaCliente == nil {
 			break
@@ -562,6 +603,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.UpdateOrden(childComplexity, args["input"].(model.UpdateOrden)), true
+	case "Mutation.updatePreguntas":
+		if e.ComplexityRoot.Mutation.UpdatePreguntas == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updatePreguntas_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.UpdatePreguntas(childComplexity, args["input"].(model.UpdatePreguntas)), true
 	case "Mutation.updateTarjetaCliente":
 		if e.ComplexityRoot.Mutation.UpdateTarjetaCliente == nil {
 			break
@@ -719,6 +771,37 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.ComplexityRoot.Orden.Trabajador(childComplexity), true
 
+	case "Preguntas.cliente":
+		if e.ComplexityRoot.Preguntas.Cliente == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Preguntas.Cliente(childComplexity), true
+	case "Preguntas.id":
+		if e.ComplexityRoot.Preguntas.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Preguntas.ID(childComplexity), true
+	case "Preguntas.id_cliente":
+		if e.ComplexityRoot.Preguntas.IDCliente == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Preguntas.IDCliente(childComplexity), true
+	case "Preguntas.pregunta":
+		if e.ComplexityRoot.Preguntas.Pregunta == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Preguntas.Pregunta(childComplexity), true
+	case "Preguntas.respuesta":
+		if e.ComplexityRoot.Preguntas.Respuesta == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Preguntas.Respuesta(childComplexity), true
+
 	case "Query.Artistas":
 		if e.ComplexityRoot.Query.Artistas == nil {
 			break
@@ -785,6 +868,28 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Query.FindOrden(childComplexity, args["id"].(string)), true
+	case "Query.findPreguntas":
+		if e.ComplexityRoot.Query.FindPreguntas == nil {
+			break
+		}
+
+		args, err := ec.field_Query_findPreguntas_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.FindPreguntas(childComplexity, args["id"].(string)), true
+	case "Query.findPreguntasByCliente":
+		if e.ComplexityRoot.Query.FindPreguntasByCliente == nil {
+			break
+		}
+
+		args, err := ec.field_Query_findPreguntasByCliente_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.FindPreguntasByCliente(childComplexity, args["id_cliente"].(string)), true
 	case "Query.findTarjetaCliente":
 		if e.ComplexityRoot.Query.FindTarjetaCliente == nil {
 			break
@@ -829,7 +934,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.ComplexityRoot.Query.LoginCliente(childComplexity, args["email"].(string), args["password"].(string)), true
+		return e.ComplexityRoot.Query.LoginCliente(childComplexity, args["login"].(string), args["password"].(string)), true
 	case "Query.loginTrabajador":
 		if e.ComplexityRoot.Query.LoginTrabajador == nil {
 			break
@@ -863,6 +968,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Query.Ordenes(childComplexity, args["limit"].(*int32), args["offset"].(*int32)), true
+	case "Query.Preguntas":
+		if e.ComplexityRoot.Query.Preguntas == nil {
+			break
+		}
+
+		args, err := ec.field_Query_Preguntas_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.Preguntas(childComplexity, args["limit"].(*int32), args["offset"].(*int32)), true
 	case "Query.TarjetasCliente":
 		if e.ComplexityRoot.Query.TarjetasCliente == nil {
 			break
@@ -892,18 +1008,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.TarjetaCliente.Cliente(childComplexity), true
-	case "TarjetaCliente.codigo_seguridad":
-		if e.ComplexityRoot.TarjetaCliente.CodigoSeguridad == nil {
-			break
-		}
-
-		return e.ComplexityRoot.TarjetaCliente.CodigoSeguridad(childComplexity), true
-	case "TarjetaCliente.fecha_expiracion":
-		if e.ComplexityRoot.TarjetaCliente.FechaExpiracion == nil {
-			break
-		}
-
-		return e.ComplexityRoot.TarjetaCliente.FechaExpiracion(childComplexity), true
 	case "TarjetaCliente.id_cliente":
 		if e.ComplexityRoot.TarjetaCliente.IDCliente == nil {
 			break
@@ -922,6 +1026,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.TarjetaCliente.NumeroTarjeta(childComplexity), true
+	case "TarjetaCliente.tipo":
+		if e.ComplexityRoot.TarjetaCliente.Tipo == nil {
+			break
+		}
+
+		return e.ComplexityRoot.TarjetaCliente.Tipo(childComplexity), true
 
 	case "Trabajador.admin":
 		if e.ComplexityRoot.Trabajador.Admin == nil {
@@ -967,6 +1077,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputNewGenero,
 		ec.unmarshalInputNewObra,
 		ec.unmarshalInputNewOrden,
+		ec.unmarshalInputNewPreguntas,
 		ec.unmarshalInputNewTarjetaCliente,
 		ec.unmarshalInputNewTrabajador,
 		ec.unmarshalInputUpdateArtista,
@@ -974,6 +1085,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputUpdateGenero,
 		ec.unmarshalInputUpdateObra,
 		ec.unmarshalInputUpdateOrden,
+		ec.unmarshalInputUpdatePreguntas,
 		ec.unmarshalInputUpdateTarjetaCliente,
 		ec.unmarshalInputUpdateTrabajador,
 	)
@@ -1125,6 +1237,17 @@ func (ec *executionContext) field_Mutation_createOrden_args(ctx context.Context,
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createPreguntas_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNNewPreguntas2mainᚋgraphᚋmodelᚐNewPreguntas)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createTarjetaCliente_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -1192,6 +1315,17 @@ func (ec *executionContext) field_Mutation_killObra_args(ctx context.Context, ra
 }
 
 func (ec *executionContext) field_Mutation_killOrden_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_killPreguntas_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
@@ -1279,6 +1413,17 @@ func (ec *executionContext) field_Mutation_updateOrden_args(ctx context.Context,
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_updatePreguntas_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdatePreguntas2mainᚋgraphᚋmodelᚐUpdatePreguntas)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateTarjetaCliente_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -1350,6 +1495,22 @@ func (ec *executionContext) field_Query_Obras_args(ctx context.Context, rawArgs 
 }
 
 func (ec *executionContext) field_Query_Ordenes_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "limit", ec.unmarshalOInt2ᚖint32)
+	if err != nil {
+		return nil, err
+	}
+	args["limit"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "offset", ec.unmarshalOInt2ᚖint32)
+	if err != nil {
+		return nil, err
+	}
+	args["offset"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_Preguntas_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "limit", ec.unmarshalOInt2ᚖint32)
@@ -1452,6 +1613,28 @@ func (ec *executionContext) field_Query_findOrden_args(ctx context.Context, rawA
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_findPreguntasByCliente_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id_cliente", ec.unmarshalNID2string)
+	if err != nil {
+		return nil, err
+	}
+	args["id_cliente"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_findPreguntas_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_findTarjetaCliente_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -1488,11 +1671,11 @@ func (ec *executionContext) field_Query_getObra_args(ctx context.Context, rawArg
 func (ec *executionContext) field_Query_loginCliente_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "email", ec.unmarshalNString2string)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "login", ec.unmarshalNString2string)
 	if err != nil {
 		return nil, err
 	}
-	args["email"] = arg0
+	args["login"] = arg0
 	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "password", ec.unmarshalNString2string)
 	if err != nil {
 		return nil, err
@@ -3170,10 +3353,8 @@ func (ec *executionContext) fieldContext_Mutation_createTarjetaCliente(ctx conte
 				return ec.fieldContext_TarjetaCliente_cliente(ctx, field)
 			case "numero_tarjeta":
 				return ec.fieldContext_TarjetaCliente_numero_tarjeta(ctx, field)
-			case "fecha_expiracion":
-				return ec.fieldContext_TarjetaCliente_fecha_expiracion(ctx, field)
-			case "codigo_seguridad":
-				return ec.fieldContext_TarjetaCliente_codigo_seguridad(ctx, field)
+			case "tipo":
+				return ec.fieldContext_TarjetaCliente_tipo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type TarjetaCliente", field.Name)
 		},
@@ -3225,10 +3406,8 @@ func (ec *executionContext) fieldContext_Mutation_updateTarjetaCliente(ctx conte
 				return ec.fieldContext_TarjetaCliente_cliente(ctx, field)
 			case "numero_tarjeta":
 				return ec.fieldContext_TarjetaCliente_numero_tarjeta(ctx, field)
-			case "fecha_expiracion":
-				return ec.fieldContext_TarjetaCliente_fecha_expiracion(ctx, field)
-			case "codigo_seguridad":
-				return ec.fieldContext_TarjetaCliente_codigo_seguridad(ctx, field)
+			case "tipo":
+				return ec.fieldContext_TarjetaCliente_tipo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type TarjetaCliente", field.Name)
 		},
@@ -3282,6 +3461,153 @@ func (ec *executionContext) fieldContext_Mutation_killTarjetaCliente(ctx context
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_killTarjetaCliente_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createPreguntas(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_createPreguntas,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().CreatePreguntas(ctx, fc.Args["input"].(model.NewPreguntas))
+		},
+		nil,
+		ec.marshalNPreguntas2ᚖmainᚋgraphᚋmodelᚐPreguntas,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createPreguntas(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Preguntas_id(ctx, field)
+			case "id_cliente":
+				return ec.fieldContext_Preguntas_id_cliente(ctx, field)
+			case "cliente":
+				return ec.fieldContext_Preguntas_cliente(ctx, field)
+			case "pregunta":
+				return ec.fieldContext_Preguntas_pregunta(ctx, field)
+			case "respuesta":
+				return ec.fieldContext_Preguntas_respuesta(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Preguntas", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createPreguntas_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updatePreguntas(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_updatePreguntas,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().UpdatePreguntas(ctx, fc.Args["input"].(model.UpdatePreguntas))
+		},
+		nil,
+		ec.marshalNPreguntas2ᚖmainᚋgraphᚋmodelᚐPreguntas,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updatePreguntas(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Preguntas_id(ctx, field)
+			case "id_cliente":
+				return ec.fieldContext_Preguntas_id_cliente(ctx, field)
+			case "cliente":
+				return ec.fieldContext_Preguntas_cliente(ctx, field)
+			case "pregunta":
+				return ec.fieldContext_Preguntas_pregunta(ctx, field)
+			case "respuesta":
+				return ec.fieldContext_Preguntas_respuesta(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Preguntas", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updatePreguntas_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_killPreguntas(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_killPreguntas,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().KillPreguntas(ctx, fc.Args["id"].(string))
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_killPreguntas(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_killPreguntas_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4002,6 +4328,167 @@ func (ec *executionContext) fieldContext_Orden_status(_ context.Context, field g
 	return fc, nil
 }
 
+func (ec *executionContext) _Preguntas_id(ctx context.Context, field graphql.CollectedField, obj *model.Preguntas) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Preguntas_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalNID2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Preguntas_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Preguntas",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Preguntas_id_cliente(ctx context.Context, field graphql.CollectedField, obj *model.Preguntas) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Preguntas_id_cliente,
+		func(ctx context.Context) (any, error) {
+			return obj.IDCliente, nil
+		},
+		nil,
+		ec.marshalNID2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Preguntas_id_cliente(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Preguntas",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Preguntas_cliente(ctx context.Context, field graphql.CollectedField, obj *model.Preguntas) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Preguntas_cliente,
+		func(ctx context.Context) (any, error) {
+			return obj.Cliente, nil
+		},
+		nil,
+		ec.marshalNCliente2ᚖmainᚋgraphᚋmodelᚐCliente,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Preguntas_cliente(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Preguntas",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Cliente_id(ctx, field)
+			case "nombre":
+				return ec.fieldContext_Cliente_nombre(ctx, field)
+			case "email":
+				return ec.fieldContext_Cliente_email(ctx, field)
+			case "telefono":
+				return ec.fieldContext_Cliente_telefono(ctx, field)
+			case "login":
+				return ec.fieldContext_Cliente_login(ctx, field)
+			case "password":
+				return ec.fieldContext_Cliente_password(ctx, field)
+			case "codigo_seguridad":
+				return ec.fieldContext_Cliente_codigo_seguridad(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Cliente", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Preguntas_pregunta(ctx context.Context, field graphql.CollectedField, obj *model.Preguntas) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Preguntas_pregunta,
+		func(ctx context.Context) (any, error) {
+			return obj.Pregunta, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Preguntas_pregunta(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Preguntas",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Preguntas_respuesta(ctx context.Context, field graphql.CollectedField, obj *model.Preguntas) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Preguntas_respuesta,
+		func(ctx context.Context) (any, error) {
+			return obj.Respuesta, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Preguntas_respuesta(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Preguntas",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_Clientes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -4330,10 +4817,8 @@ func (ec *executionContext) fieldContext_Query_TarjetasCliente(ctx context.Conte
 				return ec.fieldContext_TarjetaCliente_cliente(ctx, field)
 			case "numero_tarjeta":
 				return ec.fieldContext_TarjetaCliente_numero_tarjeta(ctx, field)
-			case "fecha_expiracion":
-				return ec.fieldContext_TarjetaCliente_fecha_expiracion(ctx, field)
-			case "codigo_seguridad":
-				return ec.fieldContext_TarjetaCliente_codigo_seguridad(ctx, field)
+			case "tipo":
+				return ec.fieldContext_TarjetaCliente_tipo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type TarjetaCliente", field.Name)
 		},
@@ -4346,6 +4831,165 @@ func (ec *executionContext) fieldContext_Query_TarjetasCliente(ctx context.Conte
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_TarjetasCliente_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_Preguntas(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_Preguntas,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().Preguntas(ctx, fc.Args["limit"].(*int32), fc.Args["offset"].(*int32))
+		},
+		nil,
+		ec.marshalNPreguntas2ᚕᚖmainᚋgraphᚋmodelᚐPreguntasᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_Preguntas(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Preguntas_id(ctx, field)
+			case "id_cliente":
+				return ec.fieldContext_Preguntas_id_cliente(ctx, field)
+			case "cliente":
+				return ec.fieldContext_Preguntas_cliente(ctx, field)
+			case "pregunta":
+				return ec.fieldContext_Preguntas_pregunta(ctx, field)
+			case "respuesta":
+				return ec.fieldContext_Preguntas_respuesta(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Preguntas", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_Preguntas_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_findPreguntas(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_findPreguntas,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().FindPreguntas(ctx, fc.Args["id"].(string))
+		},
+		nil,
+		ec.marshalOPreguntas2ᚖmainᚋgraphᚋmodelᚐPreguntas,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_findPreguntas(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Preguntas_id(ctx, field)
+			case "id_cliente":
+				return ec.fieldContext_Preguntas_id_cliente(ctx, field)
+			case "cliente":
+				return ec.fieldContext_Preguntas_cliente(ctx, field)
+			case "pregunta":
+				return ec.fieldContext_Preguntas_pregunta(ctx, field)
+			case "respuesta":
+				return ec.fieldContext_Preguntas_respuesta(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Preguntas", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_findPreguntas_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_findPreguntasByCliente(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_findPreguntasByCliente,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().FindPreguntasByCliente(ctx, fc.Args["id_cliente"].(string))
+		},
+		nil,
+		ec.marshalNPreguntas2ᚕᚖmainᚋgraphᚋmodelᚐPreguntasᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_findPreguntasByCliente(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Preguntas_id(ctx, field)
+			case "id_cliente":
+				return ec.fieldContext_Preguntas_id_cliente(ctx, field)
+			case "cliente":
+				return ec.fieldContext_Preguntas_cliente(ctx, field)
+			case "pregunta":
+				return ec.fieldContext_Preguntas_pregunta(ctx, field)
+			case "respuesta":
+				return ec.fieldContext_Preguntas_respuesta(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Preguntas", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_findPreguntasByCliente_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4385,10 +5029,8 @@ func (ec *executionContext) fieldContext_Query_findTarjetaCliente(ctx context.Co
 				return ec.fieldContext_TarjetaCliente_cliente(ctx, field)
 			case "numero_tarjeta":
 				return ec.fieldContext_TarjetaCliente_numero_tarjeta(ctx, field)
-			case "fecha_expiracion":
-				return ec.fieldContext_TarjetaCliente_fecha_expiracion(ctx, field)
-			case "codigo_seguridad":
-				return ec.fieldContext_TarjetaCliente_codigo_seguridad(ctx, field)
+			case "tipo":
+				return ec.fieldContext_TarjetaCliente_tipo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type TarjetaCliente", field.Name)
 		},
@@ -4779,7 +5421,7 @@ func (ec *executionContext) _Query_loginCliente(ctx context.Context, field graph
 		ec.fieldContext_Query_loginCliente,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.Resolvers.Query().LoginCliente(ctx, fc.Args["email"].(string), fc.Args["password"].(string))
+			return ec.Resolvers.Query().LoginCliente(ctx, fc.Args["login"].(string), fc.Args["password"].(string))
 		},
 		nil,
 		ec.marshalNLoginResponseCliente2ᚖmainᚋgraphᚋmodelᚐLoginResponseCliente,
@@ -5111,14 +5753,14 @@ func (ec *executionContext) fieldContext_TarjetaCliente_numero_tarjeta(_ context
 	return fc, nil
 }
 
-func (ec *executionContext) _TarjetaCliente_fecha_expiracion(ctx context.Context, field graphql.CollectedField, obj *model.TarjetaCliente) (ret graphql.Marshaler) {
+func (ec *executionContext) _TarjetaCliente_tipo(ctx context.Context, field graphql.CollectedField, obj *model.TarjetaCliente) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_TarjetaCliente_fecha_expiracion,
+		ec.fieldContext_TarjetaCliente_tipo,
 		func(ctx context.Context) (any, error) {
-			return obj.FechaExpiracion, nil
+			return obj.Tipo, nil
 		},
 		nil,
 		ec.marshalNString2string,
@@ -5127,36 +5769,7 @@ func (ec *executionContext) _TarjetaCliente_fecha_expiracion(ctx context.Context
 	)
 }
 
-func (ec *executionContext) fieldContext_TarjetaCliente_fecha_expiracion(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "TarjetaCliente",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _TarjetaCliente_codigo_seguridad(ctx context.Context, field graphql.CollectedField, obj *model.TarjetaCliente) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_TarjetaCliente_codigo_seguridad,
-		func(ctx context.Context) (any, error) {
-			return obj.CodigoSeguridad, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_TarjetaCliente_codigo_seguridad(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_TarjetaCliente_tipo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "TarjetaCliente",
 		Field:      field,
@@ -7044,6 +7657,46 @@ func (ec *executionContext) unmarshalInputNewOrden(ctx context.Context, obj any)
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputNewPreguntas(ctx context.Context, obj any) (model.NewPreguntas, error) {
+	var it model.NewPreguntas
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id_cliente", "pregunta", "respuesta"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id_cliente":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id_cliente"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDCliente = data
+		case "pregunta":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pregunta"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Pregunta = data
+		case "respuesta":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("respuesta"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Respuesta = data
+		}
+	}
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewTarjetaCliente(ctx context.Context, obj any) (model.NewTarjetaCliente, error) {
 	var it model.NewTarjetaCliente
 	asMap := map[string]any{}
@@ -7051,7 +7704,7 @@ func (ec *executionContext) unmarshalInputNewTarjetaCliente(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id_cliente", "numero_tarjeta", "fecha_expiracion", "codigo_seguridad"}
+	fieldsInOrder := [...]string{"id_cliente", "numero_tarjeta", "tipo"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -7072,20 +7725,13 @@ func (ec *executionContext) unmarshalInputNewTarjetaCliente(ctx context.Context,
 				return it, err
 			}
 			it.NumeroTarjeta = data
-		case "fecha_expiracion":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fecha_expiracion"))
+		case "tipo":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tipo"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FechaExpiracion = data
-		case "codigo_seguridad":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codigo_seguridad"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.CodigoSeguridad = data
+			it.Tipo = data
 		}
 	}
 	return it, nil
@@ -7457,6 +8103,53 @@ func (ec *executionContext) unmarshalInputUpdateOrden(ctx context.Context, obj a
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdatePreguntas(ctx context.Context, obj any) (model.UpdatePreguntas, error) {
+	var it model.UpdatePreguntas
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "id_cliente", "pregunta", "respuesta"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "id_cliente":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id_cliente"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDCliente = data
+		case "pregunta":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pregunta"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Pregunta = data
+		case "respuesta":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("respuesta"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Respuesta = data
+		}
+	}
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateTarjetaCliente(ctx context.Context, obj any) (model.UpdateTarjetaCliente, error) {
 	var it model.UpdateTarjetaCliente
 	asMap := map[string]any{}
@@ -7464,7 +8157,7 @@ func (ec *executionContext) unmarshalInputUpdateTarjetaCliente(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id_tarjeta", "id_cliente", "numero_tarjeta", "fecha_expiracion", "codigo_seguridad"}
+	fieldsInOrder := [...]string{"id_tarjeta", "id_cliente", "numero_tarjeta", "tipo"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -7492,20 +8185,13 @@ func (ec *executionContext) unmarshalInputUpdateTarjetaCliente(ctx context.Conte
 				return it, err
 			}
 			it.NumeroTarjeta = data
-		case "fecha_expiracion":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fecha_expiracion"))
+		case "tipo":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tipo"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.FechaExpiracion = data
-		case "codigo_seguridad":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codigo_seguridad"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.CodigoSeguridad = data
+			it.Tipo = data
 		}
 	}
 	return it, nil
@@ -8004,6 +8690,27 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createPreguntas":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createPreguntas(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updatePreguntas":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updatePreguntas(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "killPreguntas":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_killPreguntas(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8205,6 +8912,65 @@ func (ec *executionContext) _Orden(ctx context.Context, sel ast.SelectionSet, ob
 	return out
 }
 
+var preguntasImplementors = []string{"Preguntas"}
+
+func (ec *executionContext) _Preguntas(ctx context.Context, sel ast.SelectionSet, obj *model.Preguntas) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, preguntasImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Preguntas")
+		case "id":
+			out.Values[i] = ec._Preguntas_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "id_cliente":
+			out.Values[i] = ec._Preguntas_id_cliente(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "cliente":
+			out.Values[i] = ec._Preguntas_cliente(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pregunta":
+			out.Values[i] = ec._Preguntas_pregunta(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "respuesta":
+			out.Values[i] = ec._Preguntas_respuesta(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var queryImplementors = []string{"Query"}
 
 func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -8344,6 +9110,69 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_TarjetasCliente(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "Preguntas":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_Preguntas(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "findPreguntas":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_findPreguntas(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "findPreguntasByCliente":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_findPreguntasByCliente(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -8607,13 +9436,8 @@ func (ec *executionContext) _TarjetaCliente(ctx context.Context, sel ast.Selecti
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "fecha_expiracion":
-			out.Values[i] = ec._TarjetaCliente_fecha_expiracion(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "codigo_seguridad":
-			out.Values[i] = ec._TarjetaCliente_codigo_seguridad(ctx, field, obj)
+		case "tipo":
+			out.Values[i] = ec._TarjetaCliente_tipo(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -9204,6 +10028,11 @@ func (ec *executionContext) unmarshalNNewOrden2mainᚋgraphᚋmodelᚐNewOrden(c
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNNewPreguntas2mainᚋgraphᚋmodelᚐNewPreguntas(ctx context.Context, v any) (model.NewPreguntas, error) {
+	res, err := ec.unmarshalInputNewPreguntas(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNNewTarjetaCliente2mainᚋgraphᚋmodelᚐNewTarjetaCliente(ctx context.Context, v any) (model.NewTarjetaCliente, error) {
 	res, err := ec.unmarshalInputNewTarjetaCliente(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -9272,6 +10101,36 @@ func (ec *executionContext) marshalNOrden2ᚖmainᚋgraphᚋmodelᚐOrden(ctx co
 		return graphql.Null
 	}
 	return ec._Orden(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNPreguntas2mainᚋgraphᚋmodelᚐPreguntas(ctx context.Context, sel ast.SelectionSet, v model.Preguntas) graphql.Marshaler {
+	return ec._Preguntas(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPreguntas2ᚕᚖmainᚋgraphᚋmodelᚐPreguntasᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Preguntas) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNPreguntas2ᚖmainᚋgraphᚋmodelᚐPreguntas(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNPreguntas2ᚖmainᚋgraphᚋmodelᚐPreguntas(ctx context.Context, sel ast.SelectionSet, v *model.Preguntas) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Preguntas(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNStatusObra2mainᚋgraphᚋmodelᚐStatusObra(ctx context.Context, v any) (model.StatusObra, error) {
@@ -9392,6 +10251,11 @@ func (ec *executionContext) unmarshalNUpdateObra2mainᚋgraphᚋmodelᚐUpdateOb
 
 func (ec *executionContext) unmarshalNUpdateOrden2mainᚋgraphᚋmodelᚐUpdateOrden(ctx context.Context, v any) (model.UpdateOrden, error) {
 	res, err := ec.unmarshalInputUpdateOrden(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdatePreguntas2mainᚋgraphᚋmodelᚐUpdatePreguntas(ctx context.Context, v any) (model.UpdatePreguntas, error) {
+	res, err := ec.unmarshalInputUpdatePreguntas(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -9624,6 +10488,13 @@ func (ec *executionContext) marshalOOrden2ᚖmainᚋgraphᚋmodelᚐOrden(ctx co
 		return graphql.Null
 	}
 	return ec._Orden(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPreguntas2ᚖmainᚋgraphᚋmodelᚐPreguntas(ctx context.Context, sel ast.SelectionSet, v *model.Preguntas) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Preguntas(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOStatusObra2ᚖmainᚋgraphᚋmodelᚐStatusObra(ctx context.Context, v any) (*model.StatusObra, error) {

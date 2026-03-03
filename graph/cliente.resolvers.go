@@ -134,17 +134,17 @@ func (r *mutationResolver) CreateCliente(ctx context.Context, input model.NewCli
     return cliente, nil
 }
 
-func (r *queryResolver) LoginCliente(ctx context.Context, email string, password string) (*model.LoginResponseCliente, error) {
+func (r *queryResolver) LoginCliente(ctx context.Context, login string, password string) (*model.LoginResponseCliente, error) {
     var cliente model.Cliente
-    query := `SELECT id_cliente, nombre, password FROM cliente WHERE email = ?`
-    err := r.DB.QueryRowContext(ctx, query, email).Scan(&cliente.ID, &cliente.Nombre, &cliente.Password)
+    query := `SELECT id_cliente, nombre, password FROM cliente WHERE login = ?`
+    err := r.DB.QueryRowContext(ctx, query, login).Scan(&cliente.ID, &cliente.Nombre, &cliente.Password)
     if err != nil {
         if err == sql.ErrNoRows {
             return &model.LoginResponseCliente{Success: false}, nil
         }
         return nil, err
     }
-
+//email
     if cliente.Password != password {
         return &model.LoginResponseCliente{Success: false}, nil
     }

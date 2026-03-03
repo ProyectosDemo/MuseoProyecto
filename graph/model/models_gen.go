@@ -91,11 +91,16 @@ type NewOrden struct {
 	Status       StatusOrden `json:"status"`
 }
 
+type NewPreguntas struct {
+	IDCliente string `json:"id_cliente"`
+	Pregunta  string `json:"pregunta"`
+	Respuesta string `json:"respuesta"`
+}
+
 type NewTarjetaCliente struct {
-	IDCliente       string `json:"id_cliente"`
-	NumeroTarjeta   string `json:"numero_tarjeta"`
-	FechaExpiracion string `json:"fecha_expiracion"`
-	CodigoSeguridad string `json:"codigo_seguridad"`
+	IDCliente     string `json:"id_cliente"`
+	NumeroTarjeta string `json:"numero_tarjeta"`
+	Tipo          string `json:"tipo"`
 }
 
 type NewTrabajador struct {
@@ -133,16 +138,23 @@ type Orden struct {
 	Status       StatusOrden `json:"status"`
 }
 
+type Preguntas struct {
+	ID        string   `json:"id"`
+	IDCliente string   `json:"id_cliente"`
+	Cliente   *Cliente `json:"cliente"`
+	Pregunta  string   `json:"pregunta"`
+	Respuesta string   `json:"respuesta"`
+}
+
 type Query struct {
 }
 
 type TarjetaCliente struct {
-	IDTarjeta       string   `json:"id_tarjeta"`
-	IDCliente       string   `json:"id_cliente"`
-	Cliente         *Cliente `json:"cliente"`
-	NumeroTarjeta   string   `json:"numero_tarjeta"`
-	FechaExpiracion string   `json:"fecha_expiracion"`
-	CodigoSeguridad string   `json:"codigo_seguridad"`
+	IDTarjeta     string   `json:"id_tarjeta"`
+	IDCliente     string   `json:"id_cliente"`
+	Cliente       *Cliente `json:"cliente"`
+	NumeroTarjeta string   `json:"numero_tarjeta"`
+	Tipo          string   `json:"tipo"`
 }
 
 type Trabajador struct {
@@ -200,12 +212,18 @@ type UpdateOrden struct {
 	Status       *StatusOrden `json:"status,omitempty"`
 }
 
+type UpdatePreguntas struct {
+	ID        string  `json:"id"`
+	IDCliente *string `json:"id_cliente,omitempty"`
+	Pregunta  *string `json:"pregunta,omitempty"`
+	Respuesta *string `json:"respuesta,omitempty"`
+}
+
 type UpdateTarjetaCliente struct {
-	IDTarjeta       string  `json:"id_tarjeta"`
-	IDCliente       *string `json:"id_cliente,omitempty"`
-	NumeroTarjeta   *string `json:"numero_tarjeta,omitempty"`
-	FechaExpiracion *string `json:"fecha_expiracion,omitempty"`
-	CodigoSeguridad *string `json:"codigo_seguridad,omitempty"`
+	IDTarjeta     string  `json:"id_tarjeta"`
+	IDCliente     *string `json:"id_cliente,omitempty"`
+	NumeroTarjeta *string `json:"numero_tarjeta,omitempty"`
+	Tipo          *string `json:"tipo,omitempty"`
 }
 
 type UpdateTrabajador struct {
