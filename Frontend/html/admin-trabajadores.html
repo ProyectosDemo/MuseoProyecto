@@ -5,10 +5,7 @@
     <title>Login | Museo Aurora</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- CSS global -->
     <link rel="stylesheet" href="../css/global.css">
-
-    <!-- Login específico -->
     <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
@@ -45,7 +42,6 @@ async function fetchGraphQL(query, variables = {}) {
     return await res.json();
 }
 
-// ===== CREAR TRABAJADOR =====
 document.getElementById("btnCrear").addEventListener("click", () => {
     limpiar();
     contenido.innerHTML = `
@@ -88,7 +84,6 @@ document.getElementById("btnCrear").addEventListener("click", () => {
     document.getElementById("cancelarCrear").addEventListener("click", limpiar);
 });
 
-// ===== OBTENER TRABAJADORES =====
 document.getElementById("btnObtener").addEventListener("click", async () => {
     limpiar();
     const query = `
@@ -111,7 +106,6 @@ document.getElementById("btnObtener").addEventListener("click", async () => {
     contenido.innerHTML = html;
 });
 
-// ===== ELIMINAR TRABAJADOR =====
 document.getElementById("btnEliminar").addEventListener("click", async () => {
     limpiar();
     const query = `query ($limit: Int, $offset: Int) {
@@ -152,7 +146,6 @@ document.getElementById("btnEliminar").addEventListener("click", async () => {
     document.getElementById("cancelarEliminar").addEventListener("click", limpiar);
 });
 
-// ===== EDITAR TRABAJADOR =====
 document.getElementById("btnEditar").addEventListener("click", async () => {
     limpiar();
     const query = `

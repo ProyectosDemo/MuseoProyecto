@@ -5,10 +5,7 @@
     <title>Artista | Museo Aurora</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- CSS global -->
     <link rel="stylesheet" href="../css/global.css">
-
-    <!-- Detalle del artista -->
     <link rel="stylesheet" href="../css/artista-detalle.css">
 </head>
 <body>
@@ -45,7 +42,6 @@
 </footer>
 
 <script>
-// Manejo de sesión
 const navMenu = document.getElementById("navMenu");
 const loginButton = document.getElementById("loginButton");
 const nombreCliente = localStorage.getItem("clienteNombre");
@@ -90,14 +86,12 @@ if (userType) {
     }
 }
 
-// Obtener ID del artista desde URL
 const params = new URLSearchParams(window.location.search);
 const artistaId = params.get("id");
 
 if (!artistaId) {
     document.getElementById("obrasContainer").innerHTML = "<p>Artista no especificado.</p>";
 } else {
-    // 1️⃣ Traer info del artista
     const queryArtista = `
         query FindArtista($id: ID!) {
             findArtista(id: $id) {
@@ -134,7 +128,6 @@ if (!artistaId) {
         }
     });
 
-    // 2️⃣ Traer obras filtrando por artista usando artista.id
     const queryObras = `
         query {
             Obras(limit: 100, offset: 0) {

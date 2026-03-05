@@ -159,7 +159,7 @@ form.addEventListener("submit", async (e) => {
     const tipo = document.getElementById("tipo").value;
 
     try {
-        // 1️⃣ Crear Cliente
+        // cliente
         const createClienteQuery = `
             mutation CreateCliente($input: NewCliente!) {
                 createCliente(input: $input) {
@@ -179,7 +179,7 @@ form.addEventListener("submit", async (e) => {
         const clienteId = dataCliente.data.createCliente?.id;
         if (!clienteId) throw new Error("No se pudo obtener el ID del cliente.");
 
-        // 2️⃣ Crear Tarjeta
+        //tarjeta
         const createTarjetaQuery = `
             mutation CreateTarjeta($input: NewTarjetaCliente!) {
                 createTarjetaCliente(input: $input) {
@@ -198,7 +198,7 @@ form.addEventListener("submit", async (e) => {
         const tarjetaId = dataTarjeta.data.createTarjetaCliente?.id_tarjeta;
         if (!tarjetaId) throw new Error("No se pudo obtener el ID de la tarjeta.");
 
-        // 3️⃣ Crear Membresía
+        // membresia
         const fechaHoy = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
         const createMembresiaQuery = `
             mutation CreateMembresia($input: NewMembresia!) {
@@ -221,7 +221,7 @@ form.addEventListener("submit", async (e) => {
         const membresiaId = dataMembresia.data.createMembresia?.id_membresia;
         if (!membresiaId) throw new Error("No se pudo crear la membresía.");
 
-        // 4️⃣ Crear Preguntas de seguridad
+        // preguntas
         for (let i = 1; i <= 3; i++) {
             const createPreguntaQuery = `
                 mutation CreatePreguntas($input: NewPreguntas!) {

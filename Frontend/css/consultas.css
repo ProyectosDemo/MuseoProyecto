@@ -1,98 +1,192 @@
+
 .admin-panel {
-    width: 90%;
-    max-width: 900px;
-    margin: 30px auto;
-    font-size: 15px;
+    display: flex;
+    gap: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9f9f9;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.side-menu {
+    width: 220px;
+    background: #1f2a38;
+    color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+}
+
+.side-menu h3 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    padding-bottom: 5px;
+}
+
+.side-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.side-menu li {
+    margin-bottom: 15px;
+}
+
+.side-menu a {
+    display: block;
+    color: #cfd8dc;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.3s;
+}
+
+.side-menu a:hover {
+    background: #cfd8dc;
+    color: #1f2a38;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .panel {
     background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 25px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.panel:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .panel h2 {
-    margin-bottom: 15px;
+    margin-top: 0;
     color: #1f2a38;
-    font-size: 20px;
 }
 
-.consulta-block {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+.orden-factura-wrapper {
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+    flex-wrap: wrap;
 }
 
-.factura-block {
-    margin-bottom: 20px;
+.orden-card {
+    background: #f5f7fa;
+    padding: 15px 20px;
+    border-radius: 10px;
+    border-left: 4px solid #1f2a38;
+    width: 280px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-.resultado {
-    margin-top: 10px;
+.orden-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.card {
-    border: 1px solid #ccc;
-    padding: 18px;
-    border-radius: 8px;
-    background: #f9f9f9;
-    margin-bottom: 0;
-    font-size: 16px;
-    min-height: 180px;
-}
-input,
-select {
-    display: block;
-    margin: 5px 0 10px 0;
-    padding: 6px;
-    width: 100%;
-    max-width: 300px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 15px;
+.factura-card {
+    background: #fff8e1;
+    padding: 15px 20px;
+    border-radius: 10px;
+    border-left: 4px solid #ffb74d;
+    width: 360px; /* más larga para caber info */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
+.factura-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Botones */
 button {
-    padding: 6px 12px;
-    cursor: pointer;
     background: #1f2a38;
-    color: white;
+    color: #fff;
     border: none;
-    border-radius: 4px;
-    transition: opacity 0.3s;
-    font-size: 15px;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
 }
 
 button:hover {
-    opacity: 0.8;
+    background: #2e3b4e;
 }
 
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+table th, table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #1f2a38;
+    color: #fff;
+    font-weight: 600;
+}
+
+table tr:hover {
+    background-color: #f1f3f6;
+}
+
+/* Responsive */
 @media (max-width: 1024px) {
-    .consulta-block {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-
-    input,
-    select,
-    button {
-        width: 100%;
-    }
-
     .admin-panel {
-        width: 95%;
-        margin: 20px auto;
+        flex-direction: column;
     }
 
-    .panel h2 {
-        font-size: 19px;
+    .side-menu {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
     }
 
-    .consulta-block {
-        grid-template-columns: 1fr;
+    .side-menu ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .side-menu li {
+        margin-bottom: 0;
+    }
+
+    .side-menu a {
+        padding: 10px 14px;
+    }
+
+    .orden-factura-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .orden-card, .factura-card {
+        width: 100%;
     }
 }

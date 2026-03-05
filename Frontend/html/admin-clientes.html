@@ -5,10 +5,7 @@
     <title>Login | Museo Aurora</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- CSS global -->
     <link rel="stylesheet" href="../css/global.css">
-
-    <!-- Login específico -->
     <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
@@ -47,9 +44,6 @@
         return await res.json();
     }
 
-    /* ========================
-       CREAR CLIENTE
-    ======================= */
     document.getElementById("btnCrear").addEventListener("click", () => {
         limpiar();
 
@@ -107,9 +101,6 @@
         document.getElementById("cancelarCrear").addEventListener("click", limpiar);
     });
 
-    /* ========================
-       OBTENER CLIENTES
-    ======================= */
     document.getElementById("btnObtener").addEventListener("click", async () => {
         limpiar();
 
@@ -152,9 +143,6 @@
         contenido.innerHTML = html;
     });
 
-    /* ========================
-       ELIMINAR CLIENTE
-    ======================= */
     document.getElementById("btnEliminar").addEventListener("click", async () => {
         limpiar();
 
@@ -212,9 +200,6 @@
         document.getElementById("cancelarEliminar").addEventListener("click", limpiar);
     });
 
-    /* ========================
-       EDITAR CLIENTE
-    ======================= */
     document.getElementById("btnEditar").addEventListener("click", async () => {
         limpiar();
 

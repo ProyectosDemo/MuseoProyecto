@@ -8,31 +8,58 @@
     <link rel="stylesheet" href="../css/consultas.css">
 </head>
 <body>
-
 <header>
     <h1>Museo Aurora - Consultas y Facturación</h1>
     <nav id="navMenu">
         <a href="index.html">Inicio</a>
-        <a href="exposiciones.html">Exposiciones</a>
-        <a href="artistas.html">Artistas</a>
-        <a href="login.html" id="loginButton">Iniciar Sesión</a>
+        <a href="reservas.html">Reservas</a>
+        <a href="admin.html">Administración</a>
     </nav>
 </header>
 
 <div class="admin-panel">
 
-    <div class="panel">
-        <h2>Órdenes Concretadas</h2>
-        <div id="ordenesContainer" class="consulta-block">
-        </div>
-    </div>
+    <aside class="side-menu">
+        <h3>Consultas</h3>
+        <ul>
+            <li><a href="#" id="menuOrdenes">Órdenes Concretadas</a></li>
+            <li><a href="#" id="menuClientes">Clientes</a></li>
+            <li><a href="#" id="menuObras">Obras</a></li>
+            <li><a href="#" id="menuReportes">Reportes</a></li>
+        </ul>
+    </aside>
 
-    <div class="panel">
-        <h2>Factura</h2>
-        <div id="facturaContainer" class="factura-block">
-            <p>Selecciona una orden para generar la factura.</p>
+    <main class="main-content">
+
+        <!-- Órdenes -->
+        <div class="panel" id="ordenesPanel">
+            <h2>Órdenes Concretadas</h2>
+            <div id="ordenesContainer"></div>
         </div>
-    </div>
+
+        <!-- Clientes -->
+        <div class="panel" id="clientesPanel" hidden>
+            <h2>Clientes</h2>
+            <div class="filtro-membresias">
+                <label>Desde: <input type="date" id="fechaInicio"></label>
+                <label>Hasta: <input type="date" id="fechaFin"></label>
+                <button id="btnFiltrarMembresias">Filtrar</button>
+            </div>
+            <div id="clientesContainer">
+                <p>Consulta de clientes aquí.</p>
+            </div>
+            <div id="resumenMembresias"></div>
+        </div>
+
+        <!-- Obras -->
+        <div class="panel" id="obrasPanel" hidden>
+            <h2>Obras</h2>
+            <div id="obrasContainer">
+                <p>Consulta de obras aquí.</p>
+            </div>
+        </div>
+
+    </main>
 
 </div>
 
@@ -46,12 +73,7 @@ const loginButton = document.getElementById("loginButton");
 const trabajadorId = localStorage.getItem("trabajadorId");
 const trabajadorNombre = localStorage.getItem("trabajadorNombre");
 
-if (!trabajadorId) {
-    location.href = "login.html";
-}
-
-loginButton.textContent = `Bienvenido, ${trabajadorNombre || "Trabajador"}`;
-loginButton.href = "#";
+if (!trabajadorId) location.href = "login.html";
 
 const logoutBtn = document.createElement("a");
 logoutBtn.href = "#";
@@ -65,20 +87,21 @@ logoutBtn.addEventListener("click", () => {
 });
 navMenu.appendChild(logoutBtn);
 
+// Funcionalidad de menú lateral
+document.getElementById("menuOrdenes").addEventListener("click", () => mostrarPanel("ordenesPanel"));
+document.getElementById("menuClientes").addEventListener("click", () => mostrarPanel("clientesPanel"));
+document.getElementById("menuObras").addEventListener("click", () => mostrarPanel("obrasPanel"));
+
+function mostrarPanel(panelId) {
+    const panels = document.querySelectorAll(".main-content .panel");
+    panels.forEach(p => p.hidden = true);
+    document.getElementById(panelId).hidden = false;
+}
+
+// Funciones para Órdenes y Facturas
 async function cargarOrdenesConcretadas() {
     try {
-        const query = `
-            query {
-                Ordenes(limit: 100, offset: 0) {
-                    id
-                    id_obra
-                    id_cliente
-                    id_trabajador
-                    fecha
-                    status
-                }
-            }
-        `;
+        const query = `query { Ordenes(limit: 100, offset: 0) { id id_obra id_cliente id_trabajador fecha status } }`;
         const res = await fetch("http://localhost:8080/query", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -86,14 +109,11 @@ async function cargarOrdenesConcretadas() {
         });
         const data = await res.json();
         const ordenes = data?.data?.Ordenes.filter(o => o.status === "CONCRETADA") || [];
-
         const container = document.getElementById("ordenesContainer");
         container.innerHTML = "";
 
         for (const orden of ordenes) {
-            const obraQuery = `
-                query { findObra(id: "${orden.id_obra}") { id nombre precio } }
-            `;
+            const obraQuery = `query { findObra(id: "${orden.id_obra}") { id nombre precio } }`;
             const obraRes = await fetch("http://localhost:8080/query", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -102,9 +122,7 @@ async function cargarOrdenesConcretadas() {
             const obraData = await obraRes.json();
             const obra = obraData?.data?.findObra[0];
 
-            const clienteQuery = `
-                query { findCliente(id: "${orden.id_cliente}") { id nombre } }
-            `;
+            const clienteQuery = `query { findCliente(id: "${orden.id_cliente}") { id nombre } }`;
             const clienteRes = await fetch("http://localhost:8080/query", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -113,9 +131,13 @@ async function cargarOrdenesConcretadas() {
             const clienteData = await clienteRes.json();
             const cliente = clienteData?.data?.findCliente[0];
 
-            const card = document.createElement("div");
-            card.className = "card";
-            card.innerHTML = `
+            // Crear wrapper de orden + factura
+            const wrapper = document.createElement("div");
+            wrapper.className = "orden-factura-wrapper";
+
+            const ordenCard = document.createElement("div");
+            ordenCard.className = "orden-card";
+            ordenCard.innerHTML = `
                 <p><strong>ID Orden:</strong> ${orden.id}</p>
                 <p><strong>Obra:</strong> ${obra?.nombre || "N/D"}</p>
                 <p><strong>Cliente:</strong> ${cliente?.nombre || "N/D"}</p>
@@ -123,39 +145,111 @@ async function cargarOrdenesConcretadas() {
                 <p><strong>Precio:</strong> $${obra?.precio || 0}</p>
                 <button class="facturaBtn">Generar Factura</button>
             `;
-            container.appendChild(card);
 
-            card.querySelector(".facturaBtn").addEventListener("click", () => generarFactura(orden, obra, cliente));
+            const facturaCard = document.createElement("div");
+            facturaCard.className = "factura-card";
+            facturaCard.innerHTML = `<p>Factura aparecerá aquí al seleccionar la orden.</p>`;
+
+            wrapper.appendChild(ordenCard);
+            wrapper.appendChild(facturaCard);
+            container.appendChild(wrapper);
+
+            // Botón generar factura
+            ordenCard.querySelector(".facturaBtn").addEventListener("click", () => {
+                generarFacturaEnCard(orden, obra, cliente, facturaCard);
+            });
         }
     } catch (err) {
         console.error("Error al cargar ordenes concretadas:", err);
     }
 }
 
-function generarFactura(orden, obra, cliente) {
+function generarFacturaEnCard(orden, obra, cliente, card) {
     const IVA = 0.21;
-    const porcentajeMuseo = (Math.random() * 5 + 5) / 100;
+    const porcentajeMuseo = 0.10;
     const precio = obra.precio;
     const iva = precio * IVA;
     const gananciaMuseo = precio * porcentajeMuseo;
     const total = precio + iva;
 
-    const container = document.getElementById("facturaContainer");
-    container.innerHTML = `
-        <div class="card">
-            <p><strong>Factura de la Orden ID:</strong> ${orden.id}</p>
-            <p><strong>Cliente:</strong> ${cliente.nombre}</p>
-            <p><strong>Obra:</strong> ${obra.nombre}</p>
-            <p><strong>Precio:</strong> $${precio.toFixed(2)}</p>
-            <p><strong>IVA (21%):</strong> $${iva.toFixed(2)}</p>
-            <p><strong>Total:</strong> $${total.toFixed(2)}</p>
-            <p><strong>Ganancia del Museo:</strong> $${gananciaMuseo.toFixed(2)}</p>
-            <p><strong>Fecha de Venta:</strong> ${orden.fecha}</p>
-        </div>
+    card.innerHTML = `
+        <p><strong>Factura ID:</strong> ${orden.id}</p>
+        <p><strong>Cliente:</strong> ${cliente.nombre}</p>
+        <p><strong>Obra:</strong> ${obra.nombre}</p>
+        <p><strong>Precio:</strong> $${precio.toFixed(2)}</p>
+        <p><strong>IVA (21%):</strong> $${iva.toFixed(2)}</p>
+        <p><strong>Total:</strong> $${total.toFixed(2)}</p>
+        <p><strong>Ganancia Museo:</strong> $${gananciaMuseo.toFixed(2)}</p>
+        <p><strong>Fecha:</strong> ${orden.fecha}</p>
     `;
 }
 
 cargarOrdenesConcretadas();
+
+// Funciones para resumen de membresías
+document.getElementById("btnFiltrarMembresias").addEventListener("click", async () => {
+    const desde = document.getElementById("fechaInicio").value;
+    const hasta = document.getElementById("fechaFin").value;
+    if (!desde || !hasta) {
+        alert("Selecciona ambas fechas.");
+        return;
+    }
+
+    cargarResumenMembresias(desde, hasta);
+});
+
+async function cargarResumenMembresias(fechaInicio, fechaFin) {
+    try {
+        const query = `query {
+            Membresias(limit: 1000, offset: 0) {
+                id_membresia
+                fecha
+                cliente { nombre }
+                tarjeta { numero_tarjeta }
+            }
+        }`;
+
+        const res = await fetch("http://localhost:8080/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query })
+        });
+
+        const data = await res.json();
+        const membresias = data?.data?.Membresias || [];
+
+        // Filtrar por fechas
+        const filtradas = membresias.filter(m => {
+            const fechaM = new Date(m.fecha);
+            const inicio = new Date(fechaInicio);
+            const fin = new Date(fechaFin);
+            return fechaM >= inicio && fechaM <= fin;
+        });
+
+        const container = document.getElementById("resumenMembresias");
+        container.innerHTML = "<h3>Resumen de Membresías</h3>";
+        if (filtradas.length === 0) {
+            container.innerHTML += "<p>No hay membresías en este periodo.</p>";
+            return;
+        }
+
+        const table = document.createElement("table");
+        table.innerHTML = "<tr><th>Cliente</th><th>Fecha de Membresía</th></tr>";
+
+        filtradas.forEach(m => {
+            const row = document.createElement("tr");
+            row.innerHTML = `<td>${m.cliente.nombre}</td><td>${new Date(m.fecha).toLocaleDateString()}</td>`;
+            table.appendChild(row);
+        });
+
+        container.appendChild(table);
+
+    } catch (err) {
+        console.error("Error al cargar resumen de membresías:", err);
+    }
+}
+
+
 </script>
 
 </body>

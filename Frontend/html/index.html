@@ -5,13 +5,8 @@
     <title>Museo Aurora</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- CSS global: reset, tipografía, header y footer -->
     <link rel="stylesheet" href="../css/global.css">
-    
-    <!-- Hero principal -->
     <link rel="stylesheet" href="../css/hero.css">
-    
-    <!-- Galería y cards de obras -->
     <link rel="stylesheet" href="../css/gallery.css">
 </head>
 <body>
@@ -70,7 +65,6 @@ if (userType) {
         const reservasBtn = document.createElement("a");
         reservasBtn.href = "reservas.html";
         reservasBtn.textContent = "Reservas";
-        reservasBtn.style.marginLeft = "10px";
         navMenu.appendChild(reservasBtn);
     }
 
@@ -78,7 +72,6 @@ if (userType) {
         const adminBtn = document.createElement("a");
         adminBtn.href = "admin.html";
         adminBtn.textContent = "Administración";
-        adminBtn.style.marginLeft = "10px";
         navMenu.appendChild(adminBtn);
     }
 
@@ -90,11 +83,9 @@ if (userType) {
         navMenu.appendChild(cuentaBtn);
     }
 
-    // Crear botón Cerrar Sesión y agregar al final
     const logoutBtn = document.createElement("a");
     logoutBtn.href = "#";
     logoutBtn.textContent = "Cerrar Sesión";
-    logoutBtn.style.marginLeft = "10px";
     logoutBtn.addEventListener("click", () => {
         if (userType === "cliente") {
             localStorage.removeItem("clienteNombre");
@@ -109,7 +100,6 @@ if (userType) {
     navMenu.appendChild(logoutBtn); // siempre al final
 }
 
-// Función para cargar obras desde GraphQL
 async function cargarObras() {
     const query = `
         query {
@@ -163,7 +153,6 @@ async function cargarObras() {
     }
 }
 
-// Cargar obras al abrir la página
 cargarObras();
 </script>
 

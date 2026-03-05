@@ -8,12 +8,11 @@ import (
 	"main/graph/model"
 )
 
-// Query: listar todas las membresías
 func (r *queryResolver) Membresias(ctx context.Context, limit *int32, offset *int32) ([]*model.Membresia, error) {
 	rows, err := r.DB.QueryContext(ctx,
 		`SELECT m.id_membresia, m.id_cliente, c.nombre, m.id_tarjeta, t.numero_tarjeta, m.fecha
 		 FROM membresia m
-		 JOIN cliente c ON m.id_cliente = c.id
+		 JOIN cliente c ON m.id_cliente = c.id_cliente
 		 JOIN tarjeta_cliente t ON m.id_tarjeta = t.id_tarjeta
 		 LIMIT ? OFFSET ?`,
 		limit, offset)
@@ -48,7 +47,6 @@ func (r *queryResolver) Membresias(ctx context.Context, limit *int32, offset *in
 	return membresias, nil
 }
 
-// Query: buscar membresía por ID
 func (r *queryResolver) FindMembresia(ctx context.Context, id string) (*model.Membresia, error) {
 	var m model.Membresia
 	var c model.Cliente
@@ -56,7 +54,7 @@ func (r *queryResolver) FindMembresia(ctx context.Context, id string) (*model.Me
 
 	query := `SELECT m.id_membresia, m.id_cliente, c.nombre, m.id_tarjeta, t.numero_tarjeta, m.fecha
 			  FROM membresia m
-			  JOIN cliente c ON m.id_cliente = c.id
+			  JOIN cliente c ON m.id_cliente = c.id_cliente
 			  JOIN tarjeta_cliente t ON m.id_tarjeta = t.id_tarjeta
 			  WHERE m.id_membresia = ?`
 
@@ -75,7 +73,6 @@ func (r *queryResolver) FindMembresia(ctx context.Context, id string) (*model.Me
 	return &m, nil
 }
 
-// Mutation: crear membresía
 func (r *mutationResolver) CreateMembresia(ctx context.Context, input model.NewMembresia) (*model.Membresia, error) {
 	if input.IDCliente == "" || input.IDTarjeta == "" || input.Fecha == "" {
 		return nil, fmt.Errorf("todos los campos son obligatorios")
@@ -107,10 +104,9 @@ func (r *mutationResolver) UpdateMembresia(ctx context.Context, input model.Upda
 	log.Printf("UpdateMembresia llamado con input: %+v", input)
 
 	if input.IDMembresia == "" {
-		return nil, fmt.Errorf("el ID de la membresía es obligatorio para la actualización")
+		return nil, fmt.Errorf("el ID de la membresia es obligatorio para la actualizacion")
 	}
 
-	// Actualizar la membresía usando COALESCE para no sobreescribir campos vacíos
 	query := `UPDATE membresia SET
 		id_cliente = COALESCE(?, id_cliente),
 		id_tarjeta = COALESCE(?, id_tarjeta),
@@ -123,14 +119,13 @@ func (r *mutationResolver) UpdateMembresia(ctx context.Context, input model.Upda
 		return nil, err
 	}
 
-	// Leer la membresía actualizada
 	var m model.Membresia
 	var c model.Cliente
 	var t model.TarjetaCliente
 
 	selectQuery := `SELECT m.id_membresia, m.id_cliente, c.nombre, m.id_tarjeta, t.numero_tarjeta, m.fecha
 					FROM membresia m
-					JOIN cliente c ON m.id_cliente = c.id
+					JOIN cliente c ON m.id_cliente = c.id_cliente
 					JOIN tarjeta_cliente t ON m.id_tarjeta = t.id_tarjeta
 					WHERE m.id_membresia = ?`
 
@@ -139,9 +134,9 @@ func (r *mutationResolver) UpdateMembresia(ctx context.Context, input model.Upda
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("membresía no encontrada")
+			return nil, fmt.Errorf("membresia no encontrada")
 		}
-		log.Printf("Error al leer membresía actualizada: %v", err)
+		log.Printf("Error al leer membresia actualizada: %v", err)
 		return nil, err
 	}
 
@@ -151,7 +146,6 @@ func (r *mutationResolver) UpdateMembresia(ctx context.Context, input model.Upda
 	return &m, nil
 }
 
-// Mutation: eliminar membresía
 func (r *mutationResolver) KillMembresia(ctx context.Context, id string) (bool, error) {
 	if id == "" {
 		return false, fmt.Errorf("el ID de la membresia es obligatorio")
