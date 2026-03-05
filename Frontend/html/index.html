@@ -82,6 +82,14 @@ if (userType) {
         navMenu.appendChild(adminBtn);
     }
 
+    if (userType === "cliente") {
+        const cuentaBtn = document.createElement("a");
+        cuentaBtn.href = "cuenta-cliente.html";
+        cuentaBtn.textContent = "Mi Cuenta";
+        cuentaBtn.style.marginLeft = "10px";
+        navMenu.appendChild(cuentaBtn);
+    }
+
     // Crear botón Cerrar Sesión y agregar al final
     const logoutBtn = document.createElement("a");
     logoutBtn.href = "#";

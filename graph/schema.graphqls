@@ -58,6 +58,30 @@ input UpdateTarjetaCliente {
 }
 
 # Types
+type Membresia {
+  id_membresia: ID!
+  id_cliente: ID!
+  cliente: Cliente!
+  id_tarjeta: ID!
+  tarjeta: TarjetaCliente!
+  fecha: String!
+}
+
+# Input Types
+input NewMembresia {
+  id_cliente: ID!
+  id_tarjeta: ID!
+  fecha: String!
+}
+
+input UpdateMembresia {
+  id_membresia: ID!
+  id_cliente: ID
+  id_tarjeta: ID
+  fecha: String
+}
+
+# Types
 type Cliente {
   id: ID!
   nombre: String!
@@ -245,6 +269,10 @@ type Query {
   Ordenes(limit: Int, offset: Int): [Orden!]!
   TarjetasCliente(limit: Int, offset: Int): [TarjetaCliente!]!
   Preguntas(limit: Int, offset: Int): [Preguntas!]!
+  Membresias(limit: Int, offset: Int): [Membresia!]!
+  findMembresia(id_membresia: ID!): Membresia
+  findMembresiasByCliente(id_cliente: ID!): [Membresia!]!
+  findMembresiasByTarjeta(id_tarjeta: ID!): [Membresia!]!
   findPreguntas(id: ID!): Preguntas
   findPreguntasByCliente(id_cliente: ID!): [Preguntas!]!
   findTarjetaCliente(id_tarjeta: ID!): TarjetaCliente
@@ -291,4 +319,8 @@ type Mutation {
   createPreguntas(input: NewPreguntas!): Preguntas!
   updatePreguntas(input: UpdatePreguntas!): Preguntas!
   killPreguntas(id: ID!): Boolean!
+
+  createMembresia(input: NewMembresia!): Membresia!
+  updateMembresia(input: UpdateMembresia!): Membresia!
+  killMembresia(id_membresia: ID!): Boolean!
 }

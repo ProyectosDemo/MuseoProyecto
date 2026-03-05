@@ -46,6 +46,15 @@ type LoginResponseTrabajador struct {
 	Admin   *bool   `json:"admin,omitempty"`
 }
 
+type Membresia struct {
+	IDMembresia string          `json:"id_membresia"`
+	IDCliente   string          `json:"id_cliente"`
+	Cliente     *Cliente        `json:"cliente"`
+	IDTarjeta   string          `json:"id_tarjeta"`
+	Tarjeta     *TarjetaCliente `json:"tarjeta"`
+	Fecha       string          `json:"fecha"`
+}
+
 type Mutation struct {
 }
 
@@ -68,6 +77,12 @@ type NewCliente struct {
 
 type NewGenero struct {
 	Nombre string `json:"nombre"`
+}
+
+type NewMembresia struct {
+	IDCliente string `json:"id_cliente"`
+	IDTarjeta string `json:"id_tarjeta"`
+	Fecha     string `json:"fecha"`
 }
 
 type NewObra struct {
@@ -187,6 +202,13 @@ type UpdateCliente struct {
 type UpdateGenero struct {
 	ID     string  `json:"id"`
 	Nombre *string `json:"nombre,omitempty"`
+}
+
+type UpdateMembresia struct {
+	IDMembresia string  `json:"id_membresia"`
+	IDCliente   *string `json:"id_cliente,omitempty"`
+	IDTarjeta   *string `json:"id_tarjeta,omitempty"`
+	Fecha       *string `json:"fecha,omitempty"`
 }
 
 type UpdateObra struct {

@@ -77,7 +77,7 @@ func (r *queryResolver) FindPreguntas(ctx context.Context, id string) (*model.Pr
 // FindPreguntasByCliente busca todas las preguntas de un cliente
 func (r *queryResolver) FindPreguntasByCliente(ctx context.Context, id_cliente string) ([]*model.Preguntas, error) {
 	rows, err := r.DB.QueryContext(ctx,
-		`SELECT id, id_cliente, pregunta, respuesta
+		`SELECT id_pregunta, id_cliente, pregunta, respuesta
 		 FROM preguntas
 		 WHERE id_cliente = ?`, id_cliente)
 	if err != nil {

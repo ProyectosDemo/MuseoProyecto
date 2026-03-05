@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"main/graph/model"
-	"strconv"
 )
 
 // TarjetasCliente lista de todas las tarjetas
@@ -99,7 +98,6 @@ func (r *mutationResolver) UpdateTarjetaCliente(ctx context.Context, input model
 func (r *mutationResolver) CreateTarjetaCliente(ctx context.Context, input model.NewTarjetaCliente) (*model.TarjetaCliente, error) {
 	log.Printf("CreateTarjetaCliente called with input: %+v", input)
 
-	// Validar campos obligatorios
 	if input.IDCliente == "" {
 		return nil, fmt.Errorf("id_cliente es obligatorio")
 	}
@@ -107,26 +105,25 @@ func (r *mutationResolver) CreateTarjetaCliente(ctx context.Context, input model
 		return nil, fmt.Errorf("numero_tarjeta y tipo son obligatorios")
 	}
 
-	if _, err := strconv.Atoi(input.IDCliente); err != nil {
-		log.Printf("Warning: id_cliente no es numérico, se enviará como string: %v", input.IDCliente)
-	}
-
-	// Insertar en la base de datos
-	tarjeta := &model.TarjetaCliente{
-		IDCliente:      input.IDCliente,
-		NumeroTarjeta:  input.NumeroTarjeta,
-		Tipo: input.Tipo,
-	}
-
-	log.Printf("Insertando tarjeta en DB: %+v", tarjeta)
-
-	_, err := r.DB.ExecContext(ctx, `
+	res, err := r.DB.ExecContext(ctx, `
 		INSERT INTO tarjeta_cliente (id_cliente, numero_tarjeta, tipo)
 		VALUES (?, ?, ?)`,
-		tarjeta.IDCliente, tarjeta.NumeroTarjeta, tarjeta.Tipo)
+		input.IDCliente, input.NumeroTarjeta, input.Tipo)
 	if err != nil {
 		log.Printf("CreateTarjetaCliente DB error: %v", err)
 		return nil, err
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return nil, fmt.Errorf("no se pudo obtener el id_tarjeta: %v", err)
+	}
+
+	tarjeta := &model.TarjetaCliente{
+		IDTarjeta:     fmt.Sprintf("%d", id),
+		IDCliente:     input.IDCliente,
+		NumeroTarjeta: input.NumeroTarjeta,
+		Tipo:          input.Tipo,
 	}
 
 	return tarjeta, nil

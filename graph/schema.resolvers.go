@@ -25,6 +25,16 @@ func (r *mutationResolver) KillCliente(ctx context.Context, id string) (bool, er
 
 type queryResolver struct{ *Resolver }
 
+// FindMembresiasByCliente implements [QueryResolver].
+func (r *queryResolver) FindMembresiasByCliente(ctx context.Context, idCliente string) ([]*model.Membresia, error) {
+	panic("unimplemented")
+}
+
+// FindMembresiasByTarjeta implements [QueryResolver].
+func (r *queryResolver) FindMembresiasByTarjeta(ctx context.Context, idTarjeta string) ([]*model.Membresia, error) {
+	panic("unimplemented")
+}
+
 // GetObra implements [QueryResolver].
 func (r *queryResolver) GetObra(ctx context.Context, id string) (*model.Obra, error) {
 	panic("unimplemented")
