@@ -33,7 +33,7 @@ CREATE TABLE `cliente` (
   PRIMARY KEY (`id_cliente`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `login` (`login`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +42,7 @@ CREATE TABLE `cliente` (
 
 LOCK TABLES `cliente` WRITE;
 /*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-INSERT INTO `cliente` VALUES (14,'Nadia Romero','nadiaRo@gmail.com','0424-424-0424','nadiaPao','123456789','nFQpbCMD'),(15,'Santiago Romero','santiago@gmail.com','0424-424-0424','santiagopzt','123123123','EJiDNSR5'),(16,'Jesús Ortiz','yisus@gmail.com','0424-424-0424','yisus_the_kawaii','ensalada','UcOqhWf7'),(17,'Nina Romero','ninaRor@gmail.com','0424-424-0424','ninaValle','vallez123','aMcXGntw');
+INSERT INTO `cliente` VALUES (1,'Santiago Romero','santiago@gmail.com','0424-424-0424','santiagopzt','santi123','tqkKLnJZ'),(2,'Nadia Paola','nadiaRo@gmail.com','0424-424-0424','nadiaPao','nadia123','H2UTP1OW'),(3,'Nark','whale@gmail.com','0424-424-0424','NarkWhale','whaling','YyUf4w9P'),(4,'Nina Rojas','ninaRo@gmail.com','0424-424-0424','ninaValle','nina123','HU4aVgBT');
 /*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -55,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-03 14:15:56
+-- Dump completed on 2026-03-05 16:49:44

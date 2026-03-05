@@ -16,32 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `preguntas`
+-- Table structure for table `membresia`
 --
 
-DROP TABLE IF EXISTS `preguntas`;
+DROP TABLE IF EXISTS `membresia`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `preguntas` (
-  `id_pregunta` bigint unsigned NOT NULL AUTO_INCREMENT,
+CREATE TABLE `membresia` (
+  `id_membresia` int NOT NULL AUTO_INCREMENT,
   `id_cliente` int NOT NULL,
-  `pregunta` varchar(255) NOT NULL,
-  `respuesta` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`id_pregunta`),
-  UNIQUE KEY `id_pregunta` (`id_pregunta`),
-  KEY `fk_cliente` (`id_cliente`),
-  CONSTRAINT `fk_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `id_tarjeta` int NOT NULL,
+  `fecha` varchar(20) NOT NULL,
+  PRIMARY KEY (`id_membresia`),
+  KEY `id_cliente` (`id_cliente`),
+  KEY `id_tarjeta` (`id_tarjeta`),
+  CONSTRAINT `membresia_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`),
+  CONSTRAINT `membresia_ibfk_2` FOREIGN KEY (`id_tarjeta`) REFERENCES `tarjeta_cliente` (`id_tarjeta`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `preguntas`
+-- Dumping data for table `membresia`
 --
 
-LOCK TABLES `preguntas` WRITE;
-/*!40000 ALTER TABLE `preguntas` DISABLE KEYS */;
-INSERT INTO `preguntas` VALUES (1,1,'Nombre de tu primera mascota?','Temmie'),(2,1,'Ciudad donde naciste?','guayana'),(3,1,'Primer colegio al que fuiste?','Fe y Alegria'),(4,2,'Nombre de tu primera mascota?','Ari'),(5,2,'Tu comida favorita?','galletas'),(6,2,'Tu película favorita?','barbie'),(7,3,'Nombre de tu primera mascota?','diluc'),(8,3,'Tu comida favorita?','ramen'),(9,3,'Ciudad donde naciste?','tokyo'),(10,4,'Primer colegio al que fuiste?','san pablo'),(11,4,'Nombre de tu primera mascota?','Pinchi'),(12,4,'Nombre de tu mejor amigo de infancia?','Yannil');
-/*!40000 ALTER TABLE `preguntas` ENABLE KEYS */;
+LOCK TABLES `membresia` WRITE;
+/*!40000 ALTER TABLE `membresia` DISABLE KEYS */;
+INSERT INTO `membresia` VALUES (1,1,1,'2026-03-05'),(2,2,2,'2026-02-25'),(3,3,3,'2026-03-05'),(4,4,4,'2026-01-10');
+/*!40000 ALTER TABLE `membresia` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

@@ -131,57 +131,64 @@ func (r *mutationResolver) CreateOrden(ctx context.Context, input model.NewOrden
 }
 
 func (r *mutationResolver) UpdateOrden(ctx context.Context, input model.UpdateOrden) (*model.Orden, error) {
-	log.Printf("UpdateOrden llamado con input: %+v", input)
+    log.Printf("UpdateOrden llamado con input: %+v", input)
+    if input.ID == "" {
+        return nil, fmt.Errorf("el ID de la orden es obligatorio para la actualizacion")
+    }
 
-	if input.ID == "" {
-		return nil, fmt.Errorf("el ID de la orden es obligatorio para la actualizacion")
-	}
+    // Validar status
+    var statusValue interface{}
+    if input.Status != nil {
+        statusStr := string(*input.Status)
+        if !validOrdenStatus[statusStr] {
+            return nil, fmt.Errorf("status inválido, debe ser PENDIENTE, CONCRETADA o CANCELADA")
+        }
+        statusValue = statusStr
+    }
 
-	// Validar status si viene
-	var statusValue interface{}
-	if input.Status != nil {
-		statusStr := string(*input.Status)
-		if !validOrdenStatus[statusStr] {
-			return nil, fmt.Errorf("status inválido, debe ser PENDIENTE, CONCRETADA o CANCELADA")
-		}
-		statusValue = statusStr
-	} else {
-		statusValue = nil
-	}
+    // Actualizar orden
+    query := `UPDATE orden SET 
+        id_obra = COALESCE(?, id_obra),
+        id_cliente = COALESCE(?, id_cliente),
+        id_trabajador = COALESCE(?, id_trabajador),
+        fecha = COALESCE(?, fecha),
+        status = COALESCE(?, status)
+        WHERE id_orden = ?`
+    _, err := r.DB.ExecContext(ctx, query,
+        input.IDObra, input.IDCliente, input.IDTrabajador, input.Fecha, statusValue, input.ID,
+    )
+    if err != nil {
+        log.Printf("UpdateOrden DB error: %v", err)
+        return nil, err
+    }
 
-	// UPDATE usando COALESCE como en UpdateObra
-	query := `UPDATE orden SET 
-		id_obra = COALESCE(?, id_obra),
-		id_cliente = COALESCE(?, id_cliente),
-		id_trabajador = COALESCE(?, id_trabajador),
-		fecha = COALESCE(?, fecha),
-		status = COALESCE(?, status)
-		WHERE id_orden = ?`
+    // Leer orden actualizada
+    var orden model.Orden
+    selectQuery := `SELECT id_orden, id_obra, id_cliente, id_trabajador, fecha, status
+                    FROM orden WHERE id_orden = ?`
+    err = r.DB.QueryRowContext(ctx, selectQuery, input.ID).Scan(
+        &orden.ID, &orden.IDObra, &orden.IDCliente, &orden.IDTrabajador, &orden.Fecha, &orden.Status,
+    )
+    if err != nil {
+        return nil, err
+    }
+	
+    obraStatus := "RESERVADA" // default para PENDIENTE
+    switch orden.Status {
+    case "CONCRETADA":
+        obraStatus = "VENDIDA"
+    case "CANCELADA":
+        obraStatus = "DISPONIBLE"
+    case "PENDIENTE":
+        obraStatus = "RESERVADA"
+    }
 
-	_, err := r.DB.ExecContext(ctx, query,
-		input.IDObra, input.IDCliente, input.IDTrabajador, input.Fecha, statusValue, input.ID,
-	)
-	if err != nil {
-		log.Printf("UpdateOrden DB error: %v", err)
-		return nil, err
-	}
+    _, err = r.DB.ExecContext(ctx, "UPDATE obra SET status = ? WHERE id_obra = ?", obraStatus, orden.IDObra)
+    if err != nil {
+        log.Printf("Error actualizando status de la obra: %v", err)
+    }
 
-	var orden model.Orden
-	selectQuery := `SELECT id_orden, id_obra, id_cliente, id_trabajador, fecha, status
-	                FROM orden WHERE id_orden = ?`
-
-	err = r.DB.QueryRowContext(ctx, selectQuery, input.ID).Scan(
-		&orden.ID, &orden.IDObra, &orden.IDCliente, &orden.IDTrabajador, &orden.Fecha, &orden.Status,
-	)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("orden no encontrada")
-		}
-		log.Printf("Error al leer orden actualizada: %v", err)
-		return nil, err
-	}
-
-	return &orden, nil
+    return &orden, nil
 }
 
 func (r *mutationResolver) KillOrden(ctx context.Context, id string) (bool, error) {

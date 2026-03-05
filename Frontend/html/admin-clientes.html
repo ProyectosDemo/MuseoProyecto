@@ -2,306 +2,360 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Login | Museo Aurora</title>
+    <title>Gestión de Clientes | Museo Aurora</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/menu-lateral.css">
 </head>
 <body>
 
 <header>
     <h1>Gestión de Clientes</h1>
-    <nav>
-        <button onclick="location.href='admin.html'">Volver al Dashboard</button>
+    <nav id="navMenu">
+        <a href="index.html">Inicio</a>
+        <a href="login.html" id="loginButton">Iniciar Sesión</a>
     </nav>
 </header>
 
-<main>
-    <div class="actionButtons">
-        <button id="btnCrear">Crear</button>
-        <button id="btnEditar">Editar</button>
-        <button id="btnEliminar">Eliminar</button>
-        <button id="btnObtener">Obtener</button>
+<div class="admin-panel">
+
+    <aside class="side-menu" id="menuLateral" hidden>
+        <h3>Clientes</h3>
+        <ul>
+            <li><a href="admin-trabajadores.html">Trabajadores</a></li>
+            <li><a href="admin-obras.html">Obras</a></li>
+            <li><a href="admin-artistas.html">Artistas</a></li>
+            <li><a href="consultas.html">Consultas y Reportes</a></li>
+            <li><a href="reservas.html" id="menuReserva">Reservas</a></li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <div class="action-buttons-container">
+            <div class="action-buttons">
+                <button id="btnCrear">Crear</button>
+                <button id="btnEditar">Editar</button>
+                <button id="btnEliminar">Eliminar</button>
+                <button id="btnObtener">Obtener</button>
+            </div>
+        </div>
+
+        <div class="content-container">
+            <div id="contenidoClientes"></div>
+        </div>
     </div>
-    <div id="contenidoClientes"></div>
-</main>
+
+</div>
+
+<footer>
+    © 2026 Museo Aurora | Todos los derechos reservados
+</footer>
 
 <script>
-    const contenido = document.getElementById("contenidoClientes");
-    const endpoint = "http://localhost:8080/query";
+const navMenu = document.getElementById("navMenu");
+const loginButton = document.getElementById("loginButton");
+const trabajadorId = localStorage.getItem("trabajadorId");
+const trabajadorNombre = localStorage.getItem("trabajadorNombre");
+const trabajadorAdmin = localStorage.getItem("trabajadorAdmin"); // "true" si es admin
 
-    function limpiar() {
-        contenido.innerHTML = "";
-    }
+if (!trabajadorId) {
+    console.log("Debe iniciar sesión como trabajador para usar esta página");
+    location.href = "login.html";
+}
 
-    async function fetchGraphQL(query, variables = {}) {
-        const res = await fetch(endpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query, variables })
-        });
-        return await res.json();
-    }
+if (trabajadorAdmin === "true") {
+    document.getElementById("menuLateral").hidden = false;
+}
 
-    document.getElementById("btnCrear").addEventListener("click", () => {
-        limpiar();
+loginButton.textContent = `Bienvenido, ${trabajadorNombre || "Trabajador"}`;
+loginButton.href = "#";
 
-        contenido.innerHTML = `
-            <h3>Crear Cliente</h3>
-            <form id="formCrear">
-                <input type="text" id="nombre" placeholder="Nombre" required>
-                <input type="email" id="email" placeholder="Email" required>
-                <input type="text" id="telefono" placeholder="Teléfono" required>
-                <input type="text" id="login" placeholder="Login" required>
-                <input type="text" id="password" placeholder="Contraseña" required>
-                <input type="text" id="codigoSeguridad" placeholder="Código Seguridad" required>
-                <div class="formButtons">
-                    <button type="button" id="cancelarCrear">Cancelar</button>
-                    <button type="submit">Guardar</button>
-                </div>
-            </form>
+const logoutBtn = document.createElement("a");
+logoutBtn.href = "#";
+logoutBtn.textContent = "Cerrar Sesión";
+logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("trabajadorNombre");
+    localStorage.removeItem("trabajadorId");
+    localStorage.removeItem("trabajadorAdmin");
+    location.reload();
+});
+navMenu.appendChild(logoutBtn);
+
+// --- Tu script completo para gestionar clientes ---
+const contenido = document.getElementById("contenidoClientes");
+const endpoint = "http://localhost:8080/query";
+
+function limpiar() {
+    contenido.innerHTML = "";
+}
+
+async function fetchGraphQL(query, variables = {}) {
+    const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, variables })
+    });
+    return await res.json();
+}
+
+document.getElementById("btnCrear").addEventListener("click", () => {
+    limpiar();
+
+    contenido.innerHTML = `
+        <h3>Crear Cliente</h3>
+        <form id="formCrear" class="form-container">
+            <input type="text" id="nombre" placeholder="Nombre" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="text" id="telefono" placeholder="Teléfono" required>
+            <input type="text" id="login" placeholder="Login" required>
+            <input type="text" id="password" placeholder="Contraseña" required>
+            <input type="text" id="codigoSeguridad" placeholder="Código Seguridad" required>
+            <div class="form-buttons">
+                <button type="button" id="cancelarCrear" class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-primary">Guardar</button>
+            </div>
+        </form>
+    `;
+
+    document.getElementById("formCrear").addEventListener("submit", async e => {
+        e.preventDefault();
+
+        const query = `
+            mutation ($input: NewCliente!) {
+                createCliente(input: $input) {
+                    id
+                    nombre
+                }
+            }
         `;
 
-        document.getElementById("formCrear").addEventListener("submit", async e => {
+        const variables = {
+            input: {
+                nombre: document.getElementById("nombre").value,
+                email: document.getElementById("email").value,
+                telefono: document.getElementById("telefono").value,
+                login: document.getElementById("login").value,
+                password: document.getElementById("password").value,
+                codigo_seguridad: document.getElementById("codigoSeguridad").value
+            }
+        };
+
+        const data = await fetchGraphQL(query, variables);
+        console.log(data);
+
+        if (data.errors) {
+            console.error(data.errors);
+            alert("Error al crear cliente");
+        } else {
+            alert("Cliente creado correctamente");
+            limpiar();
+        }
+    });
+
+    document.getElementById("cancelarCrear").addEventListener("click", limpiar);
+});
+
+document.getElementById("btnObtener").addEventListener("click", async () => {
+    limpiar();
+
+    const query = `
+        query ObtenerClientes($limit: Int, $offset: Int) {
+            Clientes(limit: $limit, offset: $offset) {
+                id
+                nombre
+                email
+                telefono
+                login
+                codigo_seguridad
+            }
+        }
+    `;
+
+    const variables = { limit: 100, offset: 0 };
+
+    const data = await fetchGraphQL(query, variables);
+    console.log(data);
+
+    const clientes = data?.data?.Clientes;
+
+    if (!clientes || clientes.length === 0) {
+        contenido.innerHTML = "<p>No hay clientes registrados.</p>";
+        return;
+    }
+
+    let html = '<div class="list-box"><h3>Clientes Registrados</h3><ul>';
+    clientes.forEach(c => {
+        html += `
+            <li>
+                ${c.nombre} | Email: ${c.email} | Tel: ${c.telefono} 
+                | Login: ${c.login} | Código: ${c.codigo_seguridad}
+            </li>
+        `;
+    });
+    html += '</ul></div>';
+
+    contenido.innerHTML = html;
+});
+
+document.getElementById("btnEliminar").addEventListener("click", async () => {
+    limpiar();
+
+    const query = `
+        query ($limit: Int, $offset: Int) {
+            Clientes(limit: $limit, offset: $offset) {
+                id
+                nombre
+            }
+        }
+    `;
+    const variables = { limit: 100, offset: 0 };
+    const data = await fetchGraphQL(query, variables);
+    const clientes = data?.data?.Clientes;
+
+    if (!clientes || clientes.length === 0) {
+        contenido.innerHTML = "<p>No hay clientes para eliminar.</p>";
+        return;
+    }
+
+    const opciones = clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join("");
+
+    contenido.innerHTML = `
+        <h3>Eliminar Cliente</h3>
+        <select id="selectCliente" class="select-box">${opciones}</select>
+        <div class="form-buttons">
+            <button id="cancelarEliminar" class="btn-cancel">Cancelar</button>
+            <button id="confirmarEliminar" class="btn-delete">Eliminar</button>
+        </div>
+    `;
+
+    document.getElementById("confirmarEliminar").addEventListener("click", async () => {
+        const id = document.getElementById("selectCliente").value;
+        if (!id) return alert("Selecciona un cliente para eliminar");
+
+        const mutation = `
+            mutation KillCliente($id: ID!) {
+                killCliente(id: $id)
+            }
+        `;
+        const variables = { id };
+
+        const result = await fetchGraphQL(mutation, variables);
+        if (result.errors) {
+            console.error(result.errors);
+            alert("Error al eliminar cliente");
+        } else if (result.data.killCliente) {
+            alert("Cliente eliminado correctamente");
+            limpiar();
+        } else {
+            alert("No se pudo eliminar el cliente");
+        }
+    });
+
+    document.getElementById("cancelarEliminar").addEventListener("click", limpiar);
+});
+
+document.getElementById("btnEditar").addEventListener("click", async () => {
+    limpiar();
+
+    const query = `
+        query ($limit: Int, $offset: Int) {
+            Clientes(limit: $limit, offset: $offset) {
+                id
+                nombre
+                email
+                telefono
+                login
+                password
+                codigo_seguridad
+            }
+        }
+    `;
+    const variables = { limit: 100, offset: 0 };
+    const data = await fetchGraphQL(query, variables);
+    const clientes = data?.data?.Clientes;
+
+    if (!clientes || clientes.length === 0) {
+        contenido.innerHTML = "<p>No hay clientes para editar.</p>";
+        return;
+    }
+
+    const opciones = clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join("");
+
+    contenido.innerHTML = `
+        <h3>Editar Cliente</h3>
+        <select id="selectCliente" class="select-box">${opciones}</select>
+        <form id="updateForm" class="form-container"></form>
+    `;
+
+    const form = document.getElementById("updateForm");
+    form.classList.add("edit-form");
+
+    function renderForm(cliente) {
+        if (!cliente) return;
+        form.innerHTML = `
+            <input type="text" id="nombre" value="${cliente.nombre || ''}" required>
+            <input type="email" id="email" value="${cliente.email || ''}" required>
+            <input type="text" id="telefono" value="${cliente.telefono || ''}" required>
+            <input type="text" id="login" value="${cliente.login || ''}" required>
+            <input type="text" id="password" value="${cliente.password || ''}" required>
+            <input type="text" id="codigo_seguridad" value="${cliente.codigo_seguridad || ''}" required>
+            <div class="form-buttons">
+                <button type="button" id="cancelarEditar" class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-primary">Actualizar</button>
+            </div>
+        `;
+
+        document.getElementById("updateForm").addEventListener("submit", async e => {
             e.preventDefault();
 
-            const query = `
-                mutation ($input: NewCliente!) {
-                    createCliente(input: $input) {
+            const mutation = `
+                mutation updateCliente($input: UpdateCliente!) {
+                    updateCliente(input: $input) {
                         id
                         nombre
+                        email
+                        telefono
+                        login
+                        password
+                        codigo_seguridad
                     }
                 }
             `;
 
             const variables = {
                 input: {
+                    id: cliente.id,
                     nombre: document.getElementById("nombre").value,
                     email: document.getElementById("email").value,
                     telefono: document.getElementById("telefono").value,
                     login: document.getElementById("login").value,
                     password: document.getElementById("password").value,
-                    codigo_seguridad: document.getElementById("codigoSeguridad").value
+                    codigo_seguridad: document.getElementById("codigo_seguridad").value
                 }
             };
-
-            const data = await fetchGraphQL(query, variables);
-            console.log(data);
-
-            if (data.errors) {
-                console.error(data.errors);
-                alert("Error al crear cliente");
-            } else {
-                alert("Cliente creado correctamente");
-                limpiar();
-            }
-        });
-
-        document.getElementById("cancelarCrear").addEventListener("click", limpiar);
-    });
-
-    document.getElementById("btnObtener").addEventListener("click", async () => {
-        limpiar();
-
-        const query = `
-            query ObtenerClientes($limit: Int, $offset: Int) {
-                Clientes(limit: $limit, offset: $offset) {
-                    id
-                    nombre
-                    email
-                    telefono
-                    login
-                    codigo_seguridad
-                }
-            }
-        `;
-
-        const variables = { limit: 100, offset: 0 };
-
-        const data = await fetchGraphQL(query, variables);
-        console.log(data);
-
-        const clientes = data?.data?.Clientes;
-
-        if (!clientes || clientes.length === 0) {
-            contenido.innerHTML = "<p>No hay clientes registrados.</p>";
-            return;
-        }
-
-        let html = '<div class="listContainer"><h3>Clientes Registrados</h3><ul>';
-        clientes.forEach(c => {
-            html += `
-                <li>
-                    ${c.nombre} | Email: ${c.email} | Tel: ${c.telefono} 
-                    | Login: ${c.login} | Código: ${c.codigo_seguridad}
-                </li>
-            `;
-        });
-        html += '</ul></div>';
-
-        contenido.innerHTML = html;
-    });
-
-    document.getElementById("btnEliminar").addEventListener("click", async () => {
-        limpiar();
-
-        const query = `
-            query ($limit: Int, $offset: Int) {
-                Clientes(limit: $limit, offset: $offset) {
-                    id
-                    nombre
-                }
-            }
-        `;
-        const variables = { limit: 100, offset: 0 };
-        const data = await fetchGraphQL(query, variables);
-        const clientes = data?.data?.Clientes;
-
-        if (!clientes || clientes.length === 0) {
-            contenido.innerHTML = "<p>No hay clientes para eliminar.</p>";
-            return;
-        }
-
-        const opciones = clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join("");
-
-        contenido.innerHTML = `
-            <h3>Eliminar Cliente</h3>
-            <select id="selectCliente" class="selectItem">${opciones}</select>
-            <div class="formButtons">
-                <button id="cancelarEliminar" class="buttonCancel">Cancelar</button>
-                <button id="confirmarEliminar" class="buttonDelete">Eliminar</button>
-            </div>
-        `;
-
-        document.getElementById("confirmarEliminar").addEventListener("click", async () => {
-            const id = document.getElementById("selectCliente").value;
-            if (!id) return alert("Selecciona un cliente para eliminar");
-
-            const mutation = `
-                mutation KillCliente($id: ID!) {
-                    killCliente(id: $id)
-                }
-            `;
-            const variables = { id };
 
             const result = await fetchGraphQL(mutation, variables);
             if (result.errors) {
                 console.error(result.errors);
-                alert("Error al eliminar cliente");
-            } else if (result.data.killCliente) {
-                alert("Cliente eliminado correctamente");
-                limpiar();
+                alert("Error al actualizar cliente");
             } else {
-                alert("No se pudo eliminar el cliente");
+                alert("Cliente actualizado correctamente");
+                limpiar();
             }
         });
 
-        document.getElementById("cancelarEliminar").addEventListener("click", limpiar);
+        document.getElementById("cancelarEditar").addEventListener("click", limpiar);
+    }
+
+    renderForm(clientes[0]);
+
+    document.getElementById("selectCliente").addEventListener("change", e => {
+        const cliente = clientes.find(c => c.id === e.target.value);
+        renderForm(cliente);
     });
-
-    document.getElementById("btnEditar").addEventListener("click", async () => {
-        limpiar();
-
-        const query = `
-            query ($limit: Int, $offset: Int) {
-                Clientes(limit: $limit, offset: $offset) {
-                    id
-                    nombre
-                    email
-                    telefono
-                    login
-                    password
-                    codigo_seguridad
-                }
-            }
-        `;
-        const variables = { limit: 100, offset: 0 };
-        const data = await fetchGraphQL(query, variables);
-        const clientes = data?.data?.Clientes;
-
-        if (!clientes || clientes.length === 0) {
-            contenido.innerHTML = "<p>No hay clientes para editar.</p>";
-            return;
-        }
-
-        const opciones = clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join("");
-
-        contenido.innerHTML = `
-            <h3>Editar Cliente</h3>
-            <select id="selectCliente" class="selectItem">${opciones}</select>
-            <div id="formEditContainer"></div>
-        `;
-
-        const formDiv = document.getElementById("formEditContainer");
-
-        function renderForm(cliente) {
-            if (!cliente) return;
-            formDiv.innerHTML = `
-                <form id="updateForm">
-                    <input type="text" id="nombre" value="${cliente.nombre || ''}" required>
-                    <input type="email" id="email" value="${cliente.email || ''}" required>
-                    <input type="text" id="telefono" value="${cliente.telefono || ''}" required>
-                    <input type="text" id="login" value="${cliente.login || ''}" required>
-                    <input type="text" id="password" value="${cliente.password || ''}" required>
-                    <input type="text" id="codigo_seguridad" value="${cliente.codigo_seguridad || ''}" required>
-                    <div class="formButtons">
-                        <button type="button" id="cancelarEditar">Cancelar</button>
-                        <button type="submit">Actualizar</button>
-                    </div>
-                </form>
-            `;
-
-            document.getElementById("updateForm").addEventListener("submit", async e => {
-                e.preventDefault();
-
-                const mutation = `
-                    mutation updateCliente($input: UpdateCliente!) {
-                        updateCliente(input: $input) {
-                            id
-                            nombre
-                            email
-                            telefono
-                            login
-                            password
-                            codigo_seguridad
-                        }
-                    }
-                `;
-
-                const variables = {
-                    input: {
-                        id: cliente.id,
-                        nombre: document.getElementById("nombre").value,
-                        email: document.getElementById("email").value,
-                        telefono: document.getElementById("telefono").value,
-                        login: document.getElementById("login").value,
-                        password: document.getElementById("password").value,
-                        codigo_seguridad: document.getElementById("codigo_seguridad").value
-                    }
-                };
-
-                const result = await fetchGraphQL(mutation, variables);
-                if (result.errors) {
-                    console.error(result.errors);
-                    alert("Error al actualizar cliente");
-                } else {
-                    alert("Cliente actualizado correctamente");
-                    limpiar();
-                }
-            });
-
-            document.getElementById("cancelarEditar").addEventListener("click", limpiar);
-        }
-
-        renderForm(clientes[0]);
-
-        document.getElementById("selectCliente").addEventListener("change", e => {
-            const cliente = clientes.find(c => c.id === e.target.value);
-            renderForm(cliente);
-        });
-    });
-
+});
 </script>
 
 </body>

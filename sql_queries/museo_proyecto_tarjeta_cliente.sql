@@ -30,7 +30,7 @@ CREATE TABLE `tarjeta_cliente` (
   PRIMARY KEY (`id_tarjeta`),
   KEY `id_cliente` (`id_cliente`),
   CONSTRAINT `tarjeta_cliente_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,7 +39,7 @@ CREATE TABLE `tarjeta_cliente` (
 
 LOCK TABLES `tarjeta_cliente` WRITE;
 /*!40000 ALTER TABLE `tarjeta_cliente` DISABLE KEYS */;
-INSERT INTO `tarjeta_cliente` VALUES (3,14,'1234','Crédito'),(4,15,'5678','Crédito'),(5,16,'5692','Prepago'),(6,17,'4367','Prepago');
+INSERT INTO `tarjeta_cliente` VALUES (1,1,'1234','Crédito'),(2,2,'3421','Prepago'),(3,3,'4365','Débito'),(4,4,'6974','Prepago');
 /*!40000 ALTER TABLE `tarjeta_cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-03 14:15:56
+-- Dump completed on 2026-03-05 16:49:44

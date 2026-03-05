@@ -1,32 +1,60 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Panel de Administración | Museo Aurora</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/global.css">
-    <link rel="stylesheet" href="../css/admin-dashboard.css">
+<meta charset="UTF-8">
+<title>Panel de Administración | Museo Aurora</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/menu-lateral.css">
+
 </head>
+
 <body>
 
 <header>
-    <h1>Panel de Administración - Museo Aurora</h1>
+    <h1>Museo Aurora - Panel de Administración</h1>
+
+    <nav id="navMenu">
+        <a href="index.html">Inicio</a>
+        <a href="reservas.html">Reservas</a>
+        <a href="admin.html">Administración</a>
+    </nav>
 </header>
-<main id="contenidoAdmin">
-    <h2>Seleccione la sección a administrar</h2>
 
-    <div class="dashboardAdmin">
-        <button onclick="location.href='admin-clientes.html'">Clientes</button>
-        <button onclick="location.href='admin-trabajadores.html'">Trabajadores</button>
-        <button onclick="location.href='admin-obras.html'">Obras</button>
-        <button onclick="location.href='admin-artistas.html'">Artistas</button>
-        <button onclick="location.href='consultas.html'">Consultas</button>
-    </div>
+<div class="admin-panel">
 
-    <div style="margin-top:20px;">
-        <button onclick="location.href='index.html'">Volver al Inicio</button>
-    </div>
-</main>
+    <aside class="side-menu">
+        <h3>Administración</h3>
+        <ul>
+            <li><a href="admin-clientes.html">Clientes</a></li>
+            <li><a href="admin-trabajadores.html">Trabajadores</a></li>
+            <li><a href="admin-obras.html">Obras</a></li>
+            <li><a href="admin-artistas.html">Artistas</a></li>
+            <li><a href="consultas.html">Consultas y Reportes</a></li>
+            <li><a href="reservas.html" id="menuReserva">Reservas</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+
+        <div class="panel">
+            <h2>Panel de Control</h2>
+
+            <p>
+                Bienvenido al sistema de administración del Museo Aurora.
+                Seleccione una opción del menú lateral para gestionar la información.
+            </p>
+
+        </div>
+
+    </main>
+
+</div>
+
+<footer>
+© 2026 Museo Aurora | Todos los derechos reservados
+</footer>
 
 </body>
 </html>
