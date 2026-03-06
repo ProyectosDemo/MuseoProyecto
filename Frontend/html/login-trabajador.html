@@ -5,97 +5,48 @@
     <title>Login | Museo Aurora</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="../css/global.css">
-    <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="/static/css/global.css">
+    <link rel="stylesheet" href="/static/css/login.css">
 </head>
 <body>
 
-<header>
-    <h1>Museo Aurora - Área de Trabajadores</h1>
-</header>
+    <header>
+        <h1>Museo Aurora - Área de Trabajadores</h1>
+    </header>
 
-<section class="login-container">
-    <div class="login-box">
-        <h2>Iniciar Sesión Trabajador</h2>
+    <section class="login-container">
+        <div class="login-box">
+            <h2>Iniciar Sesión Trabajador</h2>
 
-        <form id="loginTrabajadorForm" autocomplete="off">
-            <input type="text" style="display:none">
+            <form id="loginTrabajadorForm" autocomplete="off">
+                <input type="text" style="display:none">
 
-            <div class="input-group">
-                <label for="login_fake">Usuario</label>
-                <input type="text" id="login_fake" name="login_fake"required 
-               autocomplete="off">
-            </div>
+                <div class="input-group">
+                    <label for="login_fake">Usuario</label>
+                    <input type="text" id="login_fake" name="login_fake"required
+                   autocomplete="off">
+                </div>
 
-            <div class="input-group">
-                <label for="password_fake">Contraseña</label>
-                <input type="password" id="password_fake" name="password_fake"required 
-               autocomplete="off">
-            </div>
+                <div class="input-group">
+                    <label for="password_fake">Contraseña</label>
+                    <input type="password" id="password_fake" name="password_fake"required
+                   autocomplete="off">
+                </div>
 
-            <button type="submit" class="btn-primary">Entrar</button>
-        </form>
+                <button type="submit" class="btn-primary">Entrar</button>
+            </form>
 
-        <p style="margin-top: 1em; text-align: center;">
-            ¿Eres cliente? 
-            <a href="login.html" class="btn-secondary">Iniciar sesión como cliente</a>
-        </p>
-    </div>
-</section>
+            <p style="margin-top: 1em; text-align: center;">
+                ¿Eres cliente?
+                <a href="login.html" class="btn-secondary">Iniciar sesión como cliente</a>
+            </p>
+        </div>
+    </section>
 
-<footer>
-    © 2026 Museo Aurora
-</footer>
-
-<script>
-const form = document.getElementById("loginTrabajadorForm");
-
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const login = document.getElementById("login_fake").value;
-    const password = document.getElementById("password_fake").value;
-
-    const query = `
-        query {
-            loginTrabajador(login: "${login}", password: "${password}") {
-                success
-                id
-                nombre
-                admin
-            }
-        }
-    `;
-
-    try {
-        const res = await fetch("http://localhost:8080/query", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query })
-        });
-
-        const data = await res.json();
-        const trabajador = data.data.loginTrabajador;
-
-        if (trabajador.success) {
-            localStorage.setItem("trabajadorNombre", trabajador.nombre);
-            localStorage.setItem("trabajadorId", trabajador.id);
-            localStorage.setItem("trabajadorAdmin", trabajador.admin);
-
-            if (trabajador.admin) {
-                window.location.href = "admin.html";
-            } else {
-                window.location.href = "index.html";
-            }
-        } else {
-            alert("Usuario o contraseña incorrectos");
-        }
-    } catch (err) {
-        console.error(err);
-        alert("Error conectando al servidor");
-    }
-});
-</script>
+    <footer>
+        © 2026 Museo Aurora
+    </footer>
+    <script src="/static/html/scripts/login-trabajadores.js" defer></script> <!-- carga primero el DOM luego el script -->
 
 </body>
 </html>

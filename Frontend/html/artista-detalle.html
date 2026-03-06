@@ -10,167 +10,28 @@
 </head>
 <body>
 
-<header>
-    <h1>Museo Aurora</h1>
-    <nav id="navMenu">
-        <a href="index.html">Inicio</a>
-        <a href="exposiciones.html">Exposiciones</a>
-        <a href="artistas.html">Artistas</a>
-        <a href="login.html" id="loginButton">Iniciar Sesión</a>
-    </nav>
-</header>
+    <section class="artista-detalle-container">
+        <div class="artista-info">
+            <!-- Imagen del artista -->
+            <img id="artistaFoto" class="artista-foto" alt="Foto del artista">
 
-<section class="artista-detalle-container">
-    <div class="artista-info">
-        <!-- Imagen del artista -->
-        <img id="artistaFoto" class="artista-foto" alt="Foto del artista">
+            <h2 id="artistaNombre"></h2>
+            <p><strong>Fecha de nacimiento:</strong> <span id="artistaFecha"></span></p>
+            <p><strong>Nacionalidad:</strong> <span id="artistaNacionalidad"></span></p>
+            <p id="artistaBio"></p>
+        </div>
 
-        <h2 id="artistaNombre"></h2>
-        <p><strong>Fecha de nacimiento:</strong> <span id="artistaFecha"></span></p>
-        <p><strong>Nacionalidad:</strong> <span id="artistaNacionalidad"></span></p>
-        <p id="artistaBio"></p>
-    </div>
+        <div class="artista-obras-wrapper">
+            <h3>Obras de este artista</h3>
+            <div class="obras-container" id="obrasContainer"></div>
+        </div>
+    </section>
 
-    <div class="artista-obras-wrapper">
-        <h3>Obras de este artista</h3>
-        <div class="obras-container" id="obrasContainer"></div>
-    </div>
-</section>
+    <footer>
+        © 2026 Museo Aurora | Todos los derechos reservados
+    </footer>
 
-<footer>
-    © 2026 Museo Aurora | Todos los derechos reservados
-</footer>
-
-<script>
-const navMenu = document.getElementById("navMenu");
-const loginButton = document.getElementById("loginButton");
-const nombreCliente = localStorage.getItem("clienteNombre");
-const nombreTrabajador = localStorage.getItem("trabajadorNombre");
-const esAdmin = localStorage.getItem("trabajadorAdmin") === "true";
-let userType = "";
-
-if (nombreCliente) {
-    loginButton.textContent = `Bienvenido, ${nombreCliente}`;
-    loginButton.href = "#";
-    userType = "cliente";
-} else if (nombreTrabajador) {
-    loginButton.textContent = `Bienvenido, ${nombreTrabajador}`;
-    loginButton.href = "#";
-    userType = esAdmin ? "admin" : "trabajador";
-}
-
-if (userType) {
-    const logoutBtn = document.createElement("a");
-    logoutBtn.href = "#";
-    logoutBtn.textContent = "Cerrar Sesión";
-    logoutBtn.style.marginLeft = "10px";
-    logoutBtn.addEventListener("click", () => {
-        if (userType === "cliente") {
-            localStorage.removeItem("clienteNombre");
-            localStorage.removeItem("clienteId");
-        } else {
-            localStorage.removeItem("trabajadorNombre");
-            localStorage.removeItem("trabajadorId");
-            localStorage.removeItem("trabajadorAdmin");
-        }
-        location.reload();
-    });
-    navMenu.appendChild(logoutBtn);
-
-    if (esAdmin) {
-        const adminBtn = document.createElement("a");
-        adminBtn.href = "admin.html";
-        adminBtn.textContent = "Administración";
-        adminBtn.style.marginLeft = "10px";
-        navMenu.appendChild(adminBtn);
-    }
-}
-
-const params = new URLSearchParams(window.location.search);
-const artistaId = params.get("id");
-
-if (!artistaId) {
-    document.getElementById("obrasContainer").innerHTML = "<p>Artista no especificado.</p>";
-} else {
-    const queryArtista = `
-        query FindArtista($id: ID!) {
-            findArtista(id: $id) {
-                id
-                nombre
-                fecha_nacimiento
-                nacionalidad
-                biografia
-                foto
-            }
-        }
-    `;
-
-    fetch("http://localhost:8080/query", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            query: queryArtista,
-            variables: { id: artistaId }
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        const artista = data.data.findArtista[0];
-        if (!artista) return;
-
-        document.getElementById("artistaNombre").textContent = artista.nombre;
-        document.getElementById("artistaFecha").textContent = artista.fecha_nacimiento;
-        document.getElementById("artistaNacionalidad").textContent = artista.nacionalidad;
-        document.getElementById("artistaBio").textContent = artista.biografia;
-
-        if (artista.foto) {
-            document.getElementById("artistaFoto").src = artista.foto;
-        }
-    });
-
-    const queryObras = `
-        query {
-            Obras(limit: 100, offset: 0) {
-                id
-                nombre
-                foto
-                artista {
-                    id
-                    nombre
-                }
-            }
-        }
-    `;
-
-    fetch("http://localhost:8080/query", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: queryObras })
-    })
-    .then(res => res.json())
-    .then(data => {
-        const obras = data.data.Obras.filter(o => o.artista.id === artistaId);
-        const cont = document.getElementById("obrasContainer");
-
-        if (obras.length === 0) {
-            cont.innerHTML = "<p>No hay obras para este artista.</p>";
-            return;
-        }
-
-        obras.forEach(o => {
-            const div = document.createElement("div");
-            div.className = "obra-card";
-            div.innerHTML = `
-                <a href="obra.html?id=${o.id}">
-                    <img src="${o.foto}" alt="${o.nombre}">
-                    <h4>${o.nombre}</h4>
-                </a>
-            `;
-            cont.appendChild(div);
-        });
-    });
-}
-</script>
-
+    <script src="/static/html/scripts/menu_superior.js" defer></script>
+    <script src="/static/html/scripts/artista-detalle.js" defer></script>
 </body>
 </html>

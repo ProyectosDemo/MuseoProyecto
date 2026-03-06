@@ -9,88 +9,48 @@
 </head>
 <body>
 
-<header>
-    <h1>Museo Aurora</h1>
-</header>
+    <header>
+        <h1>Museo Aurora</h1>
+    </header>
 
-<section class="login-container">
-    <div class="login-box">
-        <h2>Iniciar Sesión</h2>
+    <section class="login-container">
+        <div class="login-box">
+            <h2>Iniciar Sesión</h2>
 
-        <input type="text" class="hidden-input" autocomplete="username">
-        <input type="password" class="hidden-input" autocomplete="new-password">
+            <input type="text" class="hidden-input" autocomplete="username">
+            <input type="password" class="hidden-input" autocomplete="new-password">
 
-        <form id="loginForm" autocomplete="off">
-            <div class="input-group">
-                <label for="login">Usuario</label>
-                <input type="text" id="login" name="login" autocomplete="off" required>
-            </div>
+            <form id="loginForm" autocomplete="off">
+                <div class="input-group">
+                    <label for="login">Usuario</label>
+                    <input type="text" id="login" name="login" autocomplete="off" required>
+                </div>
 
-            <div class="input-group">
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" name="password" autocomplete="new-password" required>
-            </div>
+                <div class="input-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" autocomplete="new-password" required>
+                </div>
 
-            <button type="submit" class="btn-primary">Entrar</button>
-        </form>
+                <button type="submit" class="btn-primary">Entrar</button>
+            </form>
 
-        <p>
-            ¿Eres trabajador? 
-            <a href="login-trabajador.html" class="btn-secondary">Iniciar sesión como trabajador</a>
-        </p>
+            <p>
+                ¿Eres trabajador?
+                <a href="login-trabajador.html" class="btn-secondary">Iniciar sesión como trabajador</a>
+            </p>
 
-        <p>
-            ¿No tienes cuenta? 
-            <a href="registro.html" class="btn-secondary">Crear cuenta</a>
-        </p>
-    </div>
-</section>
+            <p>
+                ¿No tienes cuenta?
+                <a href="registro.html" class="btn-secondary">Crear cuenta</a>
+            </p>
+        </div>
+    </section>
 
-<footer>
-    © 2026 Museo Aurora
-</footer>
+    <footer>
+        © 2026 Museo Aurora
+    </footer>
 
-<script>
-const form = document.getElementById("loginForm");
-
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const login = document.getElementById("login").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    const query = `
-        query {
-            loginCliente(login: "${login}", password: "${password}") {
-                success
-                id
-                nombre
-            }
-        }
-    `;
-
-    try {
-        const res = await fetch("http://localhost:8080/query", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query })
-        });
-
-        const data = await res.json();
-
-        if (data.data.loginCliente.success) {
-            localStorage.setItem("clienteNombre", data.data.loginCliente.nombre);
-            localStorage.setItem("clienteId", data.data.loginCliente.id);
-            window.location.href = "index.html"; 
-        } else {
-            alert("Usuario o contraseña incorrectos");
-        }
-    } catch (err) {
-        console.error(err);
-        alert("Error conectando al servidor");
-    }
-});
-</script>
+    <script src="/static/html/scripts/login.js" defer></script> <!-- carga primero el DOM luego el script -->
 
 </body>
 </html>
