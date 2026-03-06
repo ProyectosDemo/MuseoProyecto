@@ -10,7 +10,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
-	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	gqlparser "github.com/vektah/gqlparser/v2"
@@ -72,9 +71,24 @@ func main() {
 		log.Fatalf("Error al configurar proxies: %v", err)
 	}
 
+	// Home de la web
 	router.GET("/", func(c *gin.Context) {
-		playground.Handler("GraphQL playground", "/query").ServeHTTP(c.Writer, c.Request)
+		//playground.Handler("GraphQL playground", "/query").ServeHTTP(c.Writer, c.Request)
+		c.File("./Frontend/html/index.html")
 	})
+
+	// las paginas nuevas las agregas aqui para servirlas
+	paginas := []string{"index", "login", "exposiciones", "artistas", "obra", "admin", "admin-clientes", "admin-trabajadores",
+		"artista-detalle", "consultas", "cuenta-cliente", "login-trabajador", "registro", "reservas"}
+
+	for _, pagina := range paginas {
+		router.GET("/"+pagina+".html", func(c *gin.Context) {
+			c.File("./Frontend/html/" + pagina + ".html")
+		})
+	}
+
+	router.Static("/static", "./Frontend")
+
 	router.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
