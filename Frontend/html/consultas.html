@@ -20,58 +20,63 @@
 
     <div class="admin-panel">
 
-    <aside class="side-menu">
-        <h3>Consultas</h3>
-        <ul>
-            <li><a href="#" id="menuOrdenes">Órdenes Concretadas</a></li>
-            <li><a href="#" id="menuClientes">Reporte de Clientes</a></li>
-            <li><a href="#" id="menuObras">Reporte de Obras</a></li>
-            <li><a href="#" id="menuReportes">Reportes</a></li>
-            <li><a href="admin.html" id="menuAdmin">Administración</a></li>
-            <li><a href="reservas.html" id="menuReserva">Reservas</a></li>
-        </ul>
-    </aside>
+        <aside class="side-menu">
+            <h3>Consultas</h3>
+            <ul>
+                <li><a href="#" id="menuOrdenes">Órdenes Concretadas</a></li>
+                <li><a href="#" id="menuClientes">Reporte de Clientes</a></li>
+                <li><a href="#" id="menuObras">Obras Vendidas</a></li>
+                <li><a href="#" id="menuFacturas">Reportes de Facturas</a></li>
+                <li><a href="admin.html" id="menuAdmin">Administración</a></li>
+                <li><a href="reservas.html" id="menuReserva">Reservas</a></li>
+            </ul>
+        </aside>
 
-    <main class="main-content">
+        <main class="main-content">
 
-        <div class="panel" id="ordenesPanel">
-            <h2>Órdenes Concretadas</h2>
-            <div id="ordenesContainer"></div>
-        </div>
-
-        <div class="panel" id="clientesPanel" hidden>
-            <h2>Reporte de Clientes</h2>
-            <div class="filtro-membresias">
-                <label>Desde: <input type="date" id="fechaInicio"></label>
-                <label>Hasta: <input type="date" id="fechaFin"></label>
-                <button id="btnFiltrarMembresias">Filtrar</button>
+            <div class="panel" id="ordenesPanel">
+                <h2>Órdenes Concretadas</h2>
+                <div id="ordenesContainer"></div>
             </div>
-            <div id="clientesContainer">
-                <p>Consulta de clientes aquí.</p>
-            </div>
-            <div id="resumenMembresias"></div>
-        </div>
 
-        <div class="panel" id="obrasPanel" hidden>
-            <h2>Reporte de Obras</h2>
-            <div id="obrasContainer">
-                <p>Consulta de obras aquí.</p>
+            <div class="panel" id="clientesPanel" hidden>
+                <h2>Reporte de Clientes</h2>
+                <div class="filtro-membresias">
+                    <label>Desde: <input type="date" id="fechaInicio"></label>
+                    <label>Hasta: <input type="date" id="fechaFin"></label>
+                    <button id="btnFiltrarMembresias">Filtrar</button>
+                </div>
+                <div id="clientesContainer">
+                    <p>Consulta de clientes aquí.</p>
+                </div>
+                <div id="resumenMembresias"></div>
             </div>
-        </div>
 
-        <div class="panel" id="reportesPanel" hidden>
-            <h2>Reportes de Facturas</h2>
-            <div class="filtro-reportes">
-                <label>Desde: <input type="date" id="fechaReporteInicio"></label>
-                <label>Hasta: <input type="date" id="fechaReporteFin"></label>
-                <button id="btnFiltrarReportes">Filtrar</button>
+            <div class="panel" id="obrasPanel" hidden>
+                <h2>Obras Vendidas por Fecha</h2>
+                <div class="filtro-reportes">
+                    <label>Desde: <input type="date" id="fechaObrasInicio"></label>
+                    <label>Hasta: <input type="date" id="fechaObrasFin"></label>
+                    <button id="btnFiltrarObras">Filtrar</button>
+                </div>
+                <div id="obrasContainer">
+                    <p>Selecciona un periodo para ver las obras vendidas.</p>
+                </div>
             </div>
-            <div id="reportesContainer">
-                <p>Selecciona un periodo para ver las facturas.</p>
-            </div>
-        </div>
 
-    </main>
+            <div class="panel" id="facturasPanel" hidden>
+                <h2>Reportes de Facturas</h2>
+                <div class="filtro-reportes">
+                    <label>Desde: <input type="date" id="fechaFacturasInicio"></label>
+                    <label>Hasta: <input type="date" id="fechaFacturasFin"></label>
+                    <button id="btnFiltrarFacturas">Filtrar</button>
+                </div>
+                <div id="facturasContainer">
+                    <p>Selecciona un periodo para ver las facturas.</p>
+                </div>
+            </div>
+
+        </main>
 
     </div>
 
@@ -79,42 +84,6 @@
         © 2026 Museo Aurora | Todos los derechos reservados
     </footer>
 
-    <script>
-        logoutBtn.href = "#";
-        logoutBtn.textContent = "Cerrar Sesión";
-        logoutBtn.style.marginLeft = "10px";
-        logoutBtn.addEventListener("click", () => {
-            localStorage.removeItem("trabajadorNombre");
-            localStorage.removeItem("trabajadorId");
-            localStorage.removeItem("trabajadorAdmin");
-            location.reload();
-        });
-        navMenu.appendChild(logoutBtn);
-
-        document.getElementById("menuOrdenes").addEventListener("click", () => mostrarPanel("ordenesPanel"));
-        document.getElementById("menuClientes").addEventListener("click", () => mostrarPanel("clientesPanel"));
-        document.getElementById("menuObras").addEventListener("click", () => mostrarPanel("obrasPanel"));
-        document.getElementById("menuReportes").addEventListener("click", () => mostrarPanel("reportesPanel"));
-        document.getElementById("btnFiltrarMembresias").addEventListener("click", async () => {
-            const desde = document.getElementById("fechaInicio").value;
-            const hasta = document.getElementById("fechaFin").value;
-            if (!desde || !hasta) {
-                alert("Selecciona ambas fechas.");
-                return;
-            }
-            cargarResumenMembresias(desde, hasta);
-        });
-        document.getElementById("btnFiltrarReportes").addEventListener("click", async () => {
-            const desde = document.getElementById("fechaReporteInicio").value;
-            const hasta = document.getElementById("fechaReporteFin").value;
-            if (!desde || !hasta) {
-                alert("Selecciona ambas fechas.");
-                return;
-            }
-            cargarFacturasPorPeriodo(desde, hasta);
-        });
-    </script>
-
-    <script src="/static/html/scripts/consultas.js" defer></script> <!-- carga primero el DOM luego el script -->
+    <script src="/static/html/scripts/consultas.js" defer></script>
 </body>
 </html>
