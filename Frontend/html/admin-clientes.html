@@ -24,15 +24,15 @@
     <aside class="side-menu" id="menuLateral" hidden>
         <h3>Clientes</h3>
         <ul>
-            <li><a href="admin-clientes.html">Clientes</a></li>
+           <li><a href="admin-clientes.html">Clientes</a></li>
             <li><a href="admin-trabajadores.html">Trabajadores</a></li>
             <li><a href="admin-obras.html">Obras</a></li>
             <li><a href="admin-artistas.html">Artistas</a></li>
             <li><a href="admin-generos.html">Géneros</a></li>
             <li><a href="admin-membresias.html">Membresías</a></li>
             <li><a href="admin-tarjetas.html">Tarjetas</a></li>
-            <li><a href="consultas.html">Consultas y Reportes</a></li>
-            <li><a href="reservas.html" id="menuReserva">Reservas</a></li>
+            <li><a href="admin-preguntas.html">Preguntas</a></li>
+            <li><a href="admin.html">Panel de Control</a></li>
         </ul>
     </aside>
 
@@ -158,7 +158,6 @@ document.getElementById("btnCrear").addEventListener("click", () => {
 
     document.getElementById("cancelarCrear").addEventListener("click", limpiar);
 });
-
 document.getElementById("btnObtener").addEventListener("click", async () => {
     limpiar();
 
@@ -187,16 +186,20 @@ document.getElementById("btnObtener").addEventListener("click", async () => {
         return;
     }
 
-    let html = '<div class="list-box"><h3>Clientes Registrados</h3><ul>';
+    // Generar HTML con tarjetas neutras en rejilla
+    let html = '<div class="grid-container"><h3>Clientes Registrados</h3>';
+
     clientes.forEach(c => {
-        html += `
-            <li>
-                ${c.nombre} | Email: ${c.email} | Tel: ${c.telefono} 
-                | Login: ${c.login} | Código: ${c.codigo_seguridad}
-            </li>
-        `;
+        html += `<div class="grid-item">
+                    <h4>${c.nombre}</h4>
+                    <p><strong>Email:</strong> ${c.email}</p>
+                    <p><strong>Teléfono:</strong> ${c.telefono}</p>
+                    <p><strong>Login:</strong> ${c.login}</p>
+                    <p><strong>Código de Seguridad:</strong> ${c.codigo_seguridad}</p>
+                 </div>`;
     });
-    html += '</ul></div>';
+
+    html += '</div>';
 
     contenido.innerHTML = html;
 });

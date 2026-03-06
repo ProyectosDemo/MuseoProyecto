@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gestión de Géneros | Museo Aurora</title>
+    <title>Gestión de Preguntas | Museo Aurora</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="/static/css/global.css">
@@ -12,7 +12,7 @@
 <body>
 
 <header>
-    <h1>Gestión de Géneros</h1>
+    <h1>Gestión de Preguntas</h1>
     <nav id="navMenu">
         <a href="index.html">Inicio</a>
         <a href="login.html" id="loginButton">Iniciar Sesión</a>
@@ -22,9 +22,9 @@
 <div class="admin-panel">
 
     <aside class="side-menu" id="menuLateral" hidden>
-        <h3>Géneros</h3>
+        <h3>Preguntas</h3>
         <ul>
-            <li><a href="admin-clientes.html">Clientes</a></li>
+           <li><a href="admin-clientes.html">Clientes</a></li>
             <li><a href="admin-trabajadores.html">Trabajadores</a></li>
             <li><a href="admin-obras.html">Obras</a></li>
             <li><a href="admin-artistas.html">Artistas</a></li>
@@ -46,7 +46,7 @@
         </div>
 
         <div class="content-container">
-            <div id="contenidoGeneros"></div>
+            <div id="contenidoPreguntas"></div>
         </div>
     </div>
 
@@ -86,7 +86,7 @@ logoutBtn.addEventListener("click", () => {
 });
 navMenu.appendChild(logoutBtn);
 
-const contenido = document.getElementById("contenidoGeneros");
+const contenido = document.getElementById("contenidoPreguntas");
 const endpoint = "http://localhost:8080/query";
 
 function limpiar() {
@@ -101,107 +101,91 @@ async function fetchGraphQL(query, variables = {}) {
     });
     return await res.json();
 }
-
-document.getElementById("btnCrear").addEventListener("click", () => {
-    limpiar();
-    contenido.innerHTML = `
-        <form id="formCrear" class="form-container">
-            <input type="text" id="nombre" placeholder="Nombre" required>
-            <div class="form-buttons">
-                <button type="button" id="cancelarCrear" class="btn-cancel">Cancelar</button>
-                <button type="submit" class="btn-primary">Guardar</button>
-            </div>
-        </form>
-    `;
-    document.getElementById("formCrear").addEventListener("submit", async e => {
-        e.preventDefault();
-        const query = `
-            mutation ($nombre: String!) {
-                createGenero(nombre: $nombre) {
-                    id_genero
-                    nombre
-                }
-            }
-        `;
-        const variables = { nombre: document.getElementById("nombre").value };
-        const data = await fetchGraphQL(query, variables);
-        console.log(data);
-        if (data.errors) {
-            console.error(data.errors);
-            alert("Error al crear género");
-        } else {
-            alert("Género creado correctamente");
-            limpiar();
-        }
-    });
-    document.getElementById("cancelarCrear").addEventListener("click", limpiar);
-});
-
-
+// Mostrar ítems en tarjetas agrupadas
 document.getElementById("btnObtener").addEventListener("click", async () => {
     limpiar();
 
     const query = `
-        query ObtenerGeneros($limit: Int, $offset: Int) {
-            Genero(limit: $limit, offset: $offset) {
+        query ObtenerItems($limit: Int, $offset: Int) {
+            Preguntas(limit: $limit, offset: $offset) {
                 id
-                nombre
+                pregunta
+                respuesta
+                cliente {
+                    nombre
+                }
             }
         }
     `;
+
     const variables = { limit: 100, offset: 0 };
     const data = await fetchGraphQL(query, variables);
-    console.log(data);
 
-    const generos = data?.data?.Genero;
-    if (!generos || generos.length === 0) {
-        contenido.innerHTML = "<p>No hay géneros registrados.</p>";
+    const items = data?.data?.Preguntas;
+    if (!items || items.length === 0) {
+        contenido.innerHTML = "<p>No hay registros.</p>";
         return;
     }
 
-    // Generar HTML con tarjetas neutras en rejilla
-    let html = '<div class="grid-container"><h3>Géneros Registrados</h3>';
-
-    generos.forEach(g => {
-        html += `<div class="grid-item">
-                    <h4>${g.nombre}</h4>
-                 </div>`;
+    // Agrupar por categoría/neutro (antes cliente)
+    const groupedItems = {};
+    items.forEach(i => {
+        const group = i.cliente?.nombre || 'Desconocido';
+        if (!groupedItems[group]) groupedItems[group] = [];
+        groupedItems[group].push(i);
     });
 
+    // Generar HTML neutral
+    let html = '<div class="grid-container"><h3>Registros</h3>';
+    for (const group in groupedItems) {
+        html += `<div class="grid-item">
+                    <h4>${group}</h4>`;
+        groupedItems[group].forEach(i => {
+            html += `<p><strong>Pregunta:</strong> ${i.pregunta}</p>
+                     <p><strong>Respuesta:</strong> ${i.respuesta}</p>
+                     <hr>`;
+        });
+        html += `</div>`;
+    }
     html += '</div>';
 
     contenido.innerHTML = html;
 });
-
+// Editar Preguntas
 document.getElementById("btnEditar").addEventListener("click", async () => {
     limpiar();
     const query = `
         query ($limit: Int, $offset: Int) {
-            Genero(limit: $limit, offset: $offset) {
+            Preguntas(limit: $limit, offset: $offset) {
                 id
-                nombre
+                pregunta
+                respuesta
+                cliente {
+                    nombre
+                }
             }
         }
     `;
     const variables = { limit: 100, offset: 0 };
     const data = await fetchGraphQL(query, variables);
-    const generos = data?.data?.Genero;
-    if (!generos || generos.length === 0) {
-        contenido.innerHTML = "<p>No hay géneros para editar.</p>";
+    const preguntas = data?.data?.Preguntas;
+    if (!preguntas || preguntas.length === 0) {
+        contenido.innerHTML = "<p>No hay preguntas para editar.</p>";
         return;
     }
-    const opciones = generos.map(g => `<option value="${g.id_genero}">${g.nombre}</option>`).join("");
+    const opciones = preguntas.map(p => `<option value="${p.id}">${p.pregunta} (Cliente: ${p.cliente?.nombre || 'Desconocido'})</option>`).join("");
     contenido.innerHTML = `
-        <select id="selectGenero" class="select-box">${opciones}</select>
+        <select id="selectPregunta" class="select-box">${opciones}</select>
         <form id="updateForm" class="form-container"></form>
     `;
     const form = document.getElementById("updateForm");
     form.classList.add("edit-form");
 
-    function renderForm(genero) {
-        if (!genero) return;
+    function renderForm(pregunta) {
+        if (!pregunta) return;
         form.innerHTML = `
-            <input type="text" id="nombre" value="${genero.nombre || ''}" required>
+            <input type="text" id="pregunta" value="${pregunta.pregunta || ''}" required>
+            <input type="text" id="respuesta" value="${pregunta.respuesta || ''}" required>
             <div class="form-buttons">
                 <button type="button" id="cancelarEditar" class="btn-cancel">Cancelar</button>
                 <button type="submit" class="btn-primary">Actualizar</button>
@@ -210,35 +194,37 @@ document.getElementById("btnEditar").addEventListener("click", async () => {
         document.getElementById("updateForm").addEventListener("submit", async e => {
             e.preventDefault();
             const mutation = `
-                mutation updateGenero($input: UpdateGenero!) {
-                    updateGenero(input: $input) {
-                        id_genero
-                        nombre
+                mutation updatePreguntas($input: UpdatePreguntas!) {
+                    updatePreguntas(input: $input) {
+                        id
+                        pregunta
+                        respuesta
                     }
                 }
             `;
             const variables = {
                 input: {
-                    id: genero.id_genero,
-                    nombre: document.getElementById("nombre").value
+                    id: pregunta.id,
+                    pregunta: document.getElementById("pregunta").value,
+                    respuesta: document.getElementById("respuesta").value
                 }
             };
             const result = await fetchGraphQL(mutation, variables);
             if (result.errors) {
                 console.error(result.errors);
-                alert("Error al actualizar género");
+                alert("Error al actualizar pregunta");
             } else {
-                alert("Género actualizado correctamente");
+                alert("Pregunta actualizada correctamente");
                 limpiar();
             }
         });
         document.getElementById("cancelarEditar").addEventListener("click", limpiar);
     }
 
-    renderForm(generos[0]);
-    document.getElementById("selectGenero").addEventListener("change", e => {
-        const genero = generos.find(g => g.id_genero === e.target.value);
-        renderForm(genero);
+    renderForm(preguntas[0]);
+    document.getElementById("selectPregunta").addEventListener("change", e => {
+        const pregunta = preguntas.find(p => p.id === e.target.value);
+        renderForm(pregunta);
     });
 });
 </script>

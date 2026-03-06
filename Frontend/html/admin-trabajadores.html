@@ -30,8 +30,8 @@
             <li><a href="admin-generos.html">Géneros</a></li>
             <li><a href="admin-membresias.html">Membresías</a></li>
             <li><a href="admin-tarjetas.html">Tarjetas</a></li>
-            <li><a href="consultas.html">Consultas y Reportes</a></li>
-            <li><a href="reservas.html" id="menuReserva">Reservas</a></li>
+            <li><a href="admin-preguntas.html">Preguntas</a></li>
+            <li><a href="admin.html">Panel de Control</a></li>
         </ul>
     </aside>
 
@@ -142,25 +142,44 @@ document.getElementById("btnCrear").addEventListener("click", () => {
 // --- OBTENER ---
 document.getElementById("btnObtener").addEventListener("click", async () => {
     limpiar();
+
     const query = `
         query ObtenerTrabajadores($limit: Int, $offset: Int) {
-            Trabajadores(limit: $limit, offset: $offset) { id nombre login admin }
+            Trabajadores(limit: $limit, offset: $offset) { 
+                id
+                nombre
+                login
+                admin 
+            }
         }
     `;
+
     const variables = { limit: 100, offset: 0 };
     const data = await fetchGraphQL(query, variables);
     const trabajadores = data?.data?.Trabajadores;
+
     if (!trabajadores || trabajadores.length === 0) {
         contenido.innerHTML = "<p>No hay trabajadores registrados.</p>";
         return;
     }
-    let html = '<div class="list-box"><h3>Trabajadores Registrados</h3><ul>';
+
+    // Generar HTML con tarjetas neutras en rejilla
+    let html = '<div class="grid-container"><h3>Trabajadores Registrados</h3>';
+
     trabajadores.forEach(t => {
-        html += `<li>${t.nombre} | Login: ${t.login} | Admin: ${t.admin}</li>`;
+        html += `<div class="grid-item">
+                    <h4>${t.nombre}</h4>
+                    <p><strong>Login:</strong> ${t.login}</p>
+                    <p><strong>Admin:</strong> ${t.admin}</p>
+                 </div>`;
     });
-    html += '</ul></div>';
+
+    html += '</div>';
     contenido.innerHTML = html;
 });
+
+
+
 
 // --- ELIMINAR ---
 document.getElementById("btnEliminar").addEventListener("click", async () => {

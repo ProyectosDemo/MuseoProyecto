@@ -153,6 +153,7 @@ type ComplexityRoot struct {
 		Clientes                func(childComplexity int, limit *int32, offset *int32) int
 		FindArtista             func(childComplexity int, id string) int
 		FindCliente             func(childComplexity int, id string) int
+		FindGenero              func(childComplexity int, id string) int
 		FindMembresia           func(childComplexity int, idMembresia string) int
 		FindMembresiasByCliente func(childComplexity int, idCliente string) int
 		FindMembresiasByTarjeta func(childComplexity int, idTarjeta string) int
@@ -162,6 +163,7 @@ type ComplexityRoot struct {
 		FindPreguntasByCliente  func(childComplexity int, idCliente string) int
 		FindTarjetaCliente      func(childComplexity int, idTarjeta string) int
 		FindTrabajador          func(childComplexity int, id string) int
+		Genero                  func(childComplexity int, limit *int32, offset *int32) int
 		GetObra                 func(childComplexity int, id string) int
 		LoginCliente            func(childComplexity int, login string, password string) int
 		LoginTrabajador         func(childComplexity int, login string, password string) int
@@ -228,6 +230,8 @@ type QueryResolver interface {
 	TarjetasCliente(ctx context.Context, limit *int32, offset *int32) ([]*model.TarjetaCliente, error)
 	Preguntas(ctx context.Context, limit *int32, offset *int32) ([]*model.Preguntas, error)
 	Membresias(ctx context.Context, limit *int32, offset *int32) ([]*model.Membresia, error)
+	Genero(ctx context.Context, limit *int32, offset *int32) ([]*model.Genero, error)
+	FindGenero(ctx context.Context, id string) ([]*model.Genero, error)
 	FindMembresia(ctx context.Context, idMembresia string) (*model.Membresia, error)
 	FindMembresiasByCliente(ctx context.Context, idCliente string) ([]*model.Membresia, error)
 	FindMembresiasByTarjeta(ctx context.Context, idTarjeta string) ([]*model.Membresia, error)
@@ -939,6 +943,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Query.FindCliente(childComplexity, args["id"].(string)), true
+	case "Query.FindGenero":
+		if e.ComplexityRoot.Query.FindGenero == nil {
+			break
+		}
+
+		args, err := ec.field_Query_FindGenero_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.FindGenero(childComplexity, args["id"].(string)), true
 	case "Query.findMembresia":
 		if e.ComplexityRoot.Query.FindMembresia == nil {
 			break
@@ -1038,6 +1053,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Query.FindTrabajador(childComplexity, args["id"].(string)), true
+	case "Query.Genero":
+		if e.ComplexityRoot.Query.Genero == nil {
+			break
+		}
+
+		args, err := ec.field_Query_Genero_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.Genero(childComplexity, args["limit"].(*int32), args["offset"].(*int32)), true
 	case "Query.getObra":
 		if e.ComplexityRoot.Query.GetObra == nil {
 			break
@@ -1635,6 +1661,33 @@ func (ec *executionContext) field_Query_Artistas_args(ctx context.Context, rawAr
 }
 
 func (ec *executionContext) field_Query_Clientes_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "limit", ec.unmarshalOInt2ᚖint32)
+	if err != nil {
+		return nil, err
+	}
+	args["limit"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "offset", ec.unmarshalOInt2ᚖint32)
+	if err != nil {
+		return nil, err
+	}
+	args["offset"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_FindGenero_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_Genero_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "limit", ec.unmarshalOInt2ᚖint32)
@@ -5513,6 +5566,100 @@ func (ec *executionContext) fieldContext_Query_Membresias(ctx context.Context, f
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_Membresias_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_Genero(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_Genero,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().Genero(ctx, fc.Args["limit"].(*int32), fc.Args["offset"].(*int32))
+		},
+		nil,
+		ec.marshalNGenero2ᚕᚖmainᚋgraphᚋmodelᚐGeneroᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_Genero(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Genero_id(ctx, field)
+			case "nombre":
+				return ec.fieldContext_Genero_nombre(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Genero", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_Genero_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_FindGenero(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_FindGenero,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().FindGenero(ctx, fc.Args["id"].(string))
+		},
+		nil,
+		ec.marshalNGenero2ᚕᚖmainᚋgraphᚋmodelᚐGeneroᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_FindGenero(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Genero_id(ctx, field)
+			case "nombre":
+				return ec.fieldContext_Genero_nombre(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Genero", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_FindGenero_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -10132,6 +10279,50 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "Genero":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_Genero(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "FindGenero":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_FindGenero(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "findMembresia":
 			field := field
 
@@ -10987,6 +11178,22 @@ func (ec *executionContext) marshalNCliente2ᚖmainᚋgraphᚋmodelᚐCliente(ct
 
 func (ec *executionContext) marshalNGenero2mainᚋgraphᚋmodelᚐGenero(ctx context.Context, sel ast.SelectionSet, v model.Genero) graphql.Marshaler {
 	return ec._Genero(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNGenero2ᚕᚖmainᚋgraphᚋmodelᚐGeneroᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Genero) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNGenero2ᚖmainᚋgraphᚋmodelᚐGenero(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNGenero2ᚖmainᚋgraphᚋmodelᚐGenero(ctx context.Context, sel ast.SelectionSet, v *model.Genero) graphql.Marshaler {

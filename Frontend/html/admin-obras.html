@@ -31,8 +31,8 @@
             <li><a href="admin-generos.html">Géneros</a></li>
             <li><a href="admin-membresias.html">Membresías</a></li>
             <li><a href="admin-tarjetas.html">Tarjetas</a></li>
-            <li><a href="consultas.html">Consultas y Reportes</a></li>
-            <li><a href="reservas.html" id="menuReserva">Reservas</a></li>
+            <li><a href="admin-preguntas.html">Preguntas</a></li>
+            <li><a href="admin.html">Panel de Control</a></li>
         </ul>
     </aside>
 
@@ -162,25 +162,56 @@ document.getElementById("btnCrear").addEventListener("click", () => {
 // OBTENER
 document.getElementById("btnObtener").addEventListener("click", async () => {
     limpiar();
+
     const query = `
         query ObtenerObras($limit: Int, $offset: Int) {
             Obras(limit: $limit, offset: $offset) {
-                id nombre id_artista id_genero precio fecha_creacion status foto material peso dimensiones
+                id
+                nombre
+                id_artista
+                id_genero
+                precio
+                fecha_creacion
+                status
+                foto
+                material
+                peso
+                dimensiones
             }
         }
     `;
+
     const data = await fetchGraphQL(query, { limit: 100, offset: 0 });
     const obras = data?.data?.Obras;
-    if (!obras || obras.length === 0) { contenido.innerHTML = "<p>No hay obras registradas.</p>"; return; }
 
-    let html = '<div class="list-box"><h3>Obras Registradas</h3><ul>';
+    if (!obras || obras.length === 0) {
+        contenido.innerHTML = "<p>No hay obras registradas.</p>";
+        return;
+    }
+
+    // Generar HTML con tarjetas neutras en rejilla de 3 columnas
+    let html = '<div class="grid-container"><h3>Obras Registradas</h3>';
+
     obras.forEach(o => {
-        html += `<li>${o.nombre} | Artista ID: ${o.id_artista} | Género ID: ${o.id_genero} | Precio: ${o.precio} | Fecha: ${o.fecha_creacion} | Status: ${o.status} | Material: ${o.material} | Peso: ${o.peso} | Dimensiones: ${o.dimensiones}</li>`;
+        html += `<div class="grid-item">
+                    <h4>${o.nombre}</h4>
+                    <p><strong>Artista ID:</strong> ${o.id_artista}</p>
+                    <p><strong>Género ID:</strong> ${o.id_genero}</p>
+                    <p><strong>Precio:</strong> ${o.precio}</p>
+                    <p><strong>Fecha de Creación:</strong> ${o.fecha_creacion}</p>
+                    <p><strong>Status:</strong> ${o.status}</p>
+                    <p><strong>Material:</strong> ${o.material}</p>
+                    <p><strong>Peso:</strong> ${o.peso}</p>
+                    <p><strong>Dimensiones:</strong> ${o.dimensiones}</p>`;
+        if (o.foto) {
+            html += `<p><strong>Foto:</strong><br><img src="${o.foto}" alt="${o.nombre}" style="max-width:100%; border-radius:4px;"></p>`;
+        }
+        html += `</div>`;
     });
-    html += '</ul></div>';
+
+    html += '</div>';
     contenido.innerHTML = html;
 });
-
 // ELIMINAR
 document.getElementById("btnEliminar").addEventListener("click", async () => {
     limpiar();

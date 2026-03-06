@@ -31,8 +31,8 @@
             <li><a href="admin-generos.html">Géneros</a></li>
             <li><a href="admin-membresias.html">Membresías</a></li>
             <li><a href="admin-tarjetas.html">Tarjetas</a></li>
-            <li><a href="consultas.html">Consultas y Reportes</a></li>
-            <li><a href="reservas.html" id="menuReserva">Reservas</a></li>
+            <li><a href="admin-preguntas.html">Preguntas</a></li>
+            <li><a href="admin.html">Panel de Control</a></li>
         </ul>
     </aside>
 
@@ -99,7 +99,6 @@ async function fetchGraphQL(query, variables = {}) {
     });
     return await res.json();
 }
-
 document.getElementById("btnObtener").addEventListener("click", async () => {
     limpiar();
 
@@ -115,7 +114,6 @@ document.getElementById("btnObtener").addEventListener("click", async () => {
             }
         }
     `;
-
     const variables = { limit: 100, offset: 0 };
     const data = await fetchGraphQL(query, variables);
     const membresias = data?.data?.Membresias;
@@ -125,19 +123,23 @@ document.getElementById("btnObtener").addEventListener("click", async () => {
         return;
     }
 
-    let html = '<div class="list-box"><h3>Membresías Registradas</h3><ul>';
+    // Generar HTML con tarjetas neutras en rejilla
+    let html = '<div class="grid-container"><h3>Membresías Registradas</h3>';
+
     membresias.forEach(m => {
-        html += `
-            <li>
-                ID Membresía: ${m.id_membresia} | Cliente: ${m.cliente?.nombre || 'N/A'} 
-                | ID Tarjeta: ${m.id_tarjeta} | Fecha: ${m.fecha}
-            </li>
-        `;
+        html += `<div class="grid-item">
+                    <p><strong>ID Membresía:</strong> ${m.id_membresia}</p>
+                    <p><strong>Cliente:</strong> ${m.cliente?.nombre || 'N/A'}</p>
+                    <p><strong>ID Tarjeta:</strong> ${m.id_tarjeta}</p>
+                    <p><strong>Fecha:</strong> ${m.fecha}</p>
+                 </div>`;
     });
-    html += '</ul></div>';
+
+    html += '</div>';
 
     contenido.innerHTML = html;
 });
+
 </script>
 
 </body>

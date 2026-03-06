@@ -31,8 +31,8 @@
             <li><a href="admin-generos.html">Géneros</a></li>
             <li><a href="admin-membresias.html">Membresías</a></li>
             <li><a href="admin-tarjetas.html">Tarjetas</a></li>
-            <li><a href="consultas.html">Consultas y Reportes</a></li>
-            <li><a href="reservas.html" id="menuReserva">Reservas</a></li>
+            <li><a href="admin-preguntas.html">Preguntas</a></li>
+            <li><a href="admin.html">Panel de Control</a></li>
         </ul>
     </aside>
 
@@ -99,7 +99,6 @@ async function fetchGraphQL(query, variables = {}) {
     });
     return await res.json();
 }
-
 document.getElementById("btnObtener").addEventListener("click", async () => {
     limpiar();
 
@@ -125,19 +124,22 @@ document.getElementById("btnObtener").addEventListener("click", async () => {
         return;
     }
 
-    let html = '<div class="list-box"><h3>Tarjetas Registradas</h3><ul>';
-    tarjetas.forEach(t => {
-        html += `
-            <li>
-                ID Tarjeta: ${t.id_tarjeta} | Cliente: ${t.cliente?.nombre || 'N/A'} 
-                | Número: ${t.numero_tarjeta} | Tipo: ${t.tipo}
-            </li>
-        `;
-    });
-    html += '</ul></div>';
+    // Generar HTML con tarjetas neutras en rejilla
+    let html = '<div class="grid-container"><h3>Tarjetas Registradas</h3>';
 
+    tarjetas.forEach(t => {
+        html += `<div class="grid-item">
+                    <p><strong>ID Tarjeta:</strong> ${t.id_tarjeta}</p>
+                    <p><strong>Cliente:</strong> ${t.cliente?.nombre || 'N/A'}</p>
+                    <p><strong>Número:</strong> ${t.numero_tarjeta}</p>
+                    <p><strong>Tipo:</strong> ${t.tipo}</p>
+                 </div>`;
+    });
+
+    html += '</div>';
     contenido.innerHTML = html;
 });
+
 </script>
 
 </body>

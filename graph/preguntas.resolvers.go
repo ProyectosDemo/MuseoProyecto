@@ -11,8 +11,8 @@ import (
 // Preguntas lista todas las preguntas
 func (r *queryResolver) Preguntas(ctx context.Context, limit *int32, offset *int32) ([]*model.Preguntas, error) {
 	rows, err := r.DB.QueryContext(ctx,
-		`SELECT p.id, p.id_cliente, p.pregunta, p.respuesta,
-		        c.id, c.nombre, c.email, c.telefono, c.login, c.password, c.codigo_seguridad
+		`SELECT p.id_pregunta, p.id_cliente, p.pregunta, p.respuesta,
+		        c.id_cliente, c.nombre, c.email, c.telefono, c.login, c.password, c.codigo_seguridad
 		 FROM preguntas p
 		 JOIN cliente c ON p.id_cliente = c.id_cliente
 		 LIMIT ? OFFSET ?`,

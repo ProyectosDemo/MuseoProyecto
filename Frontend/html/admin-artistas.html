@@ -24,15 +24,15 @@
     <aside class="side-menu" id="menuLateral" hidden>
         <h3>Artistas</h3>
         <ul>
-            <li><a href="admin-clientes.html">Clientes</a></li>
+          <li><a href="admin-clientes.html">Clientes</a></li>
             <li><a href="admin-trabajadores.html">Trabajadores</a></li>
             <li><a href="admin-obras.html">Obras</a></li>
             <li><a href="admin-artistas.html">Artistas</a></li>
             <li><a href="admin-generos.html">Géneros</a></li>
             <li><a href="admin-membresias.html">Membresías</a></li>
             <li><a href="admin-tarjetas.html">Tarjetas</a></li>
-            <li><a href="consultas.html">Consultas y Reportes</a></li>
-            <li><a href="reservas.html" id="menuReserva">Reservas</a></li>
+            <li><a href="admin-preguntas.html">Preguntas</a></li>
+            <li><a href="admin.html">Panel de Control</a></li>
         </ul>
     </aside>
 
@@ -155,7 +155,6 @@ document.getElementById("btnCrear").addEventListener("click", () => {
 
     document.getElementById("cancelarCrear").addEventListener("click", limpiar);
 });
-
 document.getElementById("btnObtener").addEventListener("click", async () => {
     limpiar();
 
@@ -184,16 +183,20 @@ document.getElementById("btnObtener").addEventListener("click", async () => {
         return;
     }
 
-    let html = '<div class="list-box"><h3>Artistas Registrados</h3><ul>';
+    // Generar HTML con tarjetas neutras y rejilla de 3 columnas
+    let html = '<div class="grid-container"><h3>Artistas Registrados</h3>';
+
     artistas.forEach(a => {
-        html += `
-            <li>
-                ${a.nombre} | Fecha de Nacimiento: ${a.fecha_nacimiento} | Nacionalidad: ${a.nacionalidad} 
-                | Biografía: ${a.biografia} | Foto: ${a.foto}
-            </li>
-        `;
+        html += `<div class="grid-item">
+                    <h4>${a.nombre}</h4>
+                    <p><strong>Fecha de Nacimiento:</strong> ${a.fecha_nacimiento}</p>
+                    <p><strong>Nacionalidad:</strong> ${a.nacionalidad}</p>
+                    <p><strong>Biografía:</strong> ${a.biografia}</p>`;
+       
+        html += `</div>`;
     });
-    html += '</ul></div>';
+
+    html += '</div>';
 
     contenido.innerHTML = html;
 });
