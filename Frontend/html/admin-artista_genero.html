@@ -2,17 +2,18 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gestión de Clientes | Museo Aurora</title>
+    <title>Gestión de Artista-Genero | Museo Aurora</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="/static/css/global.css">
     <link rel="stylesheet" href="/static/css/admin.css">
     <link rel="stylesheet" href="/static/css/menu-lateral.css">
+    <link rel="stylesheet" href="/static/css/artista-genero.css">
 </head>
 <body>
 
 <header>
-    <h1>Gestión de Clientes</h1>
+    <h1>Gestión de Artista-Genero</h1>
     <nav id="navMenu">
         <a href="index.html">Inicio</a>
         <a href="login.html" id="loginButton">Iniciar Sesión</a>
@@ -22,18 +23,18 @@
 <div class="admin-panel">
 
     <aside class="side-menu" id="menuLateral" hidden>
-        <h3>Clientes</h3>
+        <h3>Artista-Genero</h3>
         <ul>
            <li><a href="admin-clientes.html">Clientes</a></li>
-            <li><a href="admin-trabajadores.html">Trabajadores</a></li>
-            <li><a href="admin-obras.html">Obras</a></li>
-            <li><a href="admin-artistas.html">Artistas</a></li>
-            <li><a href="admin-generos.html">Géneros</a></li>
-            <li><a href="admin-artista_genero.html">Artista-Genero</a></li>
-            <li><a href="admin-membresias.html">Membresías</a></li>
-            <li><a href="admin-tarjetas.html">Tarjetas</a></li>
-            <li><a href="admin-preguntas.html">Preguntas</a></li>
-            <li><a href="admin.html">Panel de Control</a></li>
+           <li><a href="admin-trabajadores.html">Trabajadores</a></li>
+           <li><a href="admin-obras.html">Obras</a></li>
+           <li><a href="admin-artistas.html">Artistas</a></li>
+           <li><a href="admin-generos.html">Géneros</a></li>
+           <li><a href="admin-artista_genero.html">Artista-Genero</a></li>
+           <li><a href="admin-membresias.html">Membresías</a></li>
+           <li><a href="admin-tarjetas.html">Tarjetas</a></li>
+           <li><a href="admin-preguntas.html">Preguntas</a></li>
+           <li><a href="admin.html">Panel de Control</a></li>
         </ul>
     </aside>
 
@@ -48,7 +49,7 @@
         </div>
 
         <div class="content-container">
-            <div id="contenidoClientes"></div>
+            <div id="contenidoArtistaGenero"></div>
         </div>
     </div>
 
@@ -63,7 +64,7 @@ const navMenu = document.getElementById("navMenu");
 const loginButton = document.getElementById("loginButton");
 const trabajadorId = localStorage.getItem("trabajadorId");
 const trabajadorNombre = localStorage.getItem("trabajadorNombre");
-const trabajadorAdmin = localStorage.getItem("trabajadorAdmin"); // "true" si es admin
+const trabajadorAdmin = localStorage.getItem("trabajadorAdmin");
 
 if (!trabajadorId) {
     console.log("Debe iniciar sesión como trabajador para usar esta página");
@@ -88,7 +89,7 @@ logoutBtn.addEventListener("click", () => {
 });
 navMenu.appendChild(logoutBtn);
 
-const contenido = document.getElementById("contenidoClientes");
+const contenido = document.getElementById("contenidoArtistaGenero");
 const endpoint = "http://localhost:8080/query";
 
 function limpiar() {
@@ -109,12 +110,8 @@ document.getElementById("btnCrear").addEventListener("click", () => {
 
     contenido.innerHTML = `
         <form id="formCrear" class="form-container">
-            <input type="text" id="nombre" placeholder="Nombre" required>
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="text" id="telefono" placeholder="Teléfono" required>
-            <input type="text" id="login" placeholder="Login" required>
-            <input type="text" id="password" placeholder="Contraseña" required>
-            <input type="text" id="codigoSeguridad" placeholder="Código Seguridad" required>
+            <input type="text" id="id_artista" placeholder="ID Artista" required>
+            <input type="text" id="id_genero" placeholder="ID Genero" required>
             <div class="form-buttons">
                 <button type="button" id="cancelarCrear" class="btn-cancel">Cancelar</button>
                 <button type="submit" class="btn-primary">Guardar</button>
@@ -126,22 +123,18 @@ document.getElementById("btnCrear").addEventListener("click", () => {
         e.preventDefault();
 
         const query = `
-            mutation ($input: NewCliente!) {
-                createCliente(input: $input) {
-                    id
-                    nombre
+            mutation ($input: NewArtistaGenero!) {
+                createArtistaGenero(input: $input) {
+                    id_artista
+                    id_genero
                 }
             }
         `;
 
         const variables = {
             input: {
-                nombre: document.getElementById("nombre").value,
-                email: document.getElementById("email").value,
-                telefono: document.getElementById("telefono").value,
-                login: document.getElementById("login").value,
-                password: document.getElementById("password").value,
-                codigo_seguridad: document.getElementById("codigoSeguridad").value
+                id_artista: document.getElementById("id_artista").value,
+                id_genero: document.getElementById("id_genero").value
             }
         };
 
@@ -150,27 +143,30 @@ document.getElementById("btnCrear").addEventListener("click", () => {
 
         if (data.errors) {
             console.error(data.errors);
-            alert("Error al crear cliente");
+            alert("Error al crear relación Artista-Genero");
         } else {
-            alert("Cliente creado correctamente");
+            alert("Relación creada correctamente");
             limpiar();
         }
     });
 
     document.getElementById("cancelarCrear").addEventListener("click", limpiar);
 });
+
 document.getElementById("btnObtener").addEventListener("click", async () => {
     limpiar();
 
     const query = `
-        query ObtenerClientes($limit: Int, $offset: Int) {
-            Clientes(limit: $limit, offset: $offset) {
-                id
-                nombre
-                email
-                telefono
-                login
-                codigo_seguridad
+        query ObtenerArtistaGenero($limit: Int, $offset: Int) {
+            ArtistaGenero(limit: $limit, offset: $offset) {
+                id_artista
+                artista {
+                    nombre
+                }
+                id_genero
+                genero {
+                    nombre
+                }
             }
         }
     `;
@@ -180,23 +176,33 @@ document.getElementById("btnObtener").addEventListener("click", async () => {
     const data = await fetchGraphQL(query, variables);
     console.log(data);
 
-    const clientes = data?.data?.Clientes;
+    let relaciones = data?.data?.ArtistaGenero;
 
-    if (!clientes || clientes.length === 0) {
-        contenido.innerHTML = "<p>No hay clientes registrados.</p>";
+    if (!relaciones || relaciones.length === 0) {
+        contenido.innerHTML = "<p>No hay relaciones registradas.</p>";
         return;
     }
 
-    // Generar HTML con tarjetas neutras en rejilla
-    let html = '<div class="grid-container"><h3>Clientes Registrados</h3>';
+    const agrupados = {};
+    relaciones.forEach(r => {
+        if (!agrupados[r.genero.nombre]) {
+            agrupados[r.genero.nombre] = [];
+        }
+        agrupados[r.genero.nombre].push({ nombre: r.artista.nombre, id: r.id_artista });
+    });
 
-    clientes.forEach(c => {
-        html += `<div class="grid-item">
-                    <h4>${c.nombre}</h4>
-                    <p><strong>Email:</strong> ${c.email}</p>
-                    <p><strong>Teléfono:</strong> ${c.telefono}</p>
-                    <p><strong>Login:</strong> ${c.login}</p>
-                    <p><strong>Código de Seguridad:</strong> ${c.codigo_seguridad}</p>
+    const generosOrdenados = Object.keys(agrupados).sort((a, b) => a.localeCompare(b));
+
+    let html = '<div class="ag-grid-container">';
+
+    generosOrdenados.forEach(genero => {
+        html += `<div class="ag-grid-item">
+                    <h4>${genero}</h4>
+                    <ul>`;
+        agrupados[genero].forEach(artista => {
+            html += `<li>${artista.nombre}  <strong>ID:</strong> ${artista.id}</li>`;
+        });
+        html += `   </ul>
                  </div>`;
     });
 
@@ -205,30 +211,32 @@ document.getElementById("btnObtener").addEventListener("click", async () => {
     contenido.innerHTML = html;
 });
 
+
 document.getElementById("btnEliminar").addEventListener("click", async () => {
     limpiar();
 
     const query = `
         query ($limit: Int, $offset: Int) {
-            Clientes(limit: $limit, offset: $offset) {
-                id
-                nombre
+            ArtistaGenero(limit: $limit, offset: $offset) {
+                id_artista
+                id_genero
+                artista { nombre }
             }
         }
     `;
     const variables = { limit: 100, offset: 0 };
     const data = await fetchGraphQL(query, variables);
-    const clientes = data?.data?.Clientes;
+    const relaciones = data?.data?.ArtistaGenero;
 
-    if (!clientes || clientes.length === 0) {
-        contenido.innerHTML = "<p>No hay clientes para eliminar.</p>";
+    if (!relaciones || relaciones.length === 0) {
+        contenido.innerHTML = "<p>No hay relaciones para eliminar.</p>";
         return;
     }
 
-    const opciones = clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join("");
+    const opciones = relaciones.map(r => `<option value="${r.id_artista}|${r.id_genero}">${r.artista.nombre}</option>`).join("");
 
     contenido.innerHTML = `
-        <select id="selectCliente" class="select-box">${opciones}</select>
+        <select id="selectRelacion" class="select-box">${opciones}</select>
         <div class="form-buttons">
             <button id="cancelarEliminar" class="btn-cancel">Cancelar</button>
             <button id="confirmarEliminar" class="btn-delete">Eliminar</button>
@@ -236,25 +244,27 @@ document.getElementById("btnEliminar").addEventListener("click", async () => {
     `;
 
     document.getElementById("confirmarEliminar").addEventListener("click", async () => {
-        const id = document.getElementById("selectCliente").value;
-        if (!id) return alert("Selecciona un cliente para eliminar");
+        const val = document.getElementById("selectRelacion").value;
+        if (!val) return alert("Selecciona una relación para eliminar");
+
+        const [idArtista, idGenero] = val.split("|");
 
         const mutation = `
-            mutation KillCliente($id: ID!) {
-                killCliente(id: $id)
+            mutation KillArtistaGenero($idArtista: ID!, $idGenero: ID!) {
+                killArtistaGenero(id_artista: $idArtista, id_genero: $idGenero)
             }
         `;
-        const variables = { id };
+        const variables = { idArtista, idGenero };
 
         const result = await fetchGraphQL(mutation, variables);
         if (result.errors) {
             console.error(result.errors);
-            alert("Error al eliminar cliente");
-        } else if (result.data.killCliente) {
-            alert("Cliente eliminado correctamente");
+            alert("Error al eliminar relación");
+        } else if (result.data.killArtistaGenero) {
+            alert("Relación eliminada correctamente");
             limpiar();
         } else {
-            alert("No se pudo eliminar el cliente");
+            alert("No se pudo eliminar la relación");
         }
     });
 
@@ -266,45 +276,36 @@ document.getElementById("btnEditar").addEventListener("click", async () => {
 
     const query = `
         query ($limit: Int, $offset: Int) {
-            Clientes(limit: $limit, offset: $offset) {
-                id
-                nombre
-                email
-                telefono
-                login
-                password
-                codigo_seguridad
+            ArtistaGenero(limit: $limit, offset: $offset) {
+                id_artista
+                id_genero
             }
         }
     `;
     const variables = { limit: 100, offset: 0 };
     const data = await fetchGraphQL(query, variables);
-    const clientes = data?.data?.Clientes;
+    const relaciones = data?.data?.ArtistaGenero;
 
-    if (!clientes || clientes.length === 0) {
-        contenido.innerHTML = "<p>No hay clientes para editar.</p>";
+    if (!relaciones || relaciones.length === 0) {
+        contenido.innerHTML = "<p>No hay relaciones para editar.</p>";
         return;
     }
 
-    const opciones = clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join("");
+    const opciones = relaciones.map(r => `<option value="${r.id_artista}|${r.id_genero}">${r.id_artista} - ${r.id_genero}</option>`).join("");
 
     contenido.innerHTML = `
-        <select id="selectCliente" class="select-box">${opciones}</select>
+        <select id="selectRelacion" class="select-box">${opciones}</select>
         <form id="updateForm" class="form-container"></form>
     `;
 
     const form = document.getElementById("updateForm");
     form.classList.add("edit-form");
 
-    function renderForm(cliente) {
-        if (!cliente) return;
+    function renderForm(rel) {
+        if (!rel) return;
         form.innerHTML = `
-            <input type="text" id="nombre" value="${cliente.nombre || ''}" required>
-            <input type="email" id="email" value="${cliente.email || ''}" required>
-            <input type="text" id="telefono" value="${cliente.telefono || ''}" required>
-            <input type="text" id="login" value="${cliente.login || ''}" required>
-            <input type="text" id="password" value="${cliente.password || ''}" required>
-            <input type="text" id="codigo_seguridad" value="${cliente.codigo_seguridad || ''}" required>
+            <input type="text" id="id_artista" value="${rel.id_artista}" required>
+            <input type="text" id="id_genero" value="${rel.id_genero}" required>
             <div class="form-buttons">
                 <button type="button" id="cancelarEditar" class="btn-cancel">Cancelar</button>
                 <button type="submit" class="btn-primary">Actualizar</button>
@@ -315,37 +316,29 @@ document.getElementById("btnEditar").addEventListener("click", async () => {
             e.preventDefault();
 
             const mutation = `
-                mutation updateCliente($input: UpdateCliente!) {
-                    updateCliente(input: $input) {
-                        id
-                        nombre
-                        email
-                        telefono
-                        login
-                        password
-                        codigo_seguridad
+                mutation updateArtistaGenero($input: UpdateArtistaGenero!) {
+                    updateArtistaGenero(input: $input) {
+                        id_artista
+                        id_genero
                     }
                 }
             `;
 
             const variables = {
                 input: {
-                    id: cliente.id,
-                    nombre: document.getElementById("nombre").value,
-                    email: document.getElementById("email").value,
-                    telefono: document.getElementById("telefono").value,
-                    login: document.getElementById("login").value,
-                    password: document.getElementById("password").value,
-                    codigo_seguridad: document.getElementById("codigo_seguridad").value
+                    id_artista: rel.id_artista,
+                    id_genero: rel.id_genero,
+                    nuevo_id_artista: document.getElementById("id_artista").value,
+                    nuevo_id_genero: document.getElementById("id_genero").value
                 }
             };
 
             const result = await fetchGraphQL(mutation, variables);
             if (result.errors) {
                 console.error(result.errors);
-                alert("Error al actualizar cliente");
+                alert("Error al actualizar relación");
             } else {
-                alert("Cliente actualizado correctamente");
+                alert("Relación actualizada correctamente");
                 limpiar();
             }
         });
@@ -353,11 +346,12 @@ document.getElementById("btnEditar").addEventListener("click", async () => {
         document.getElementById("cancelarEditar").addEventListener("click", limpiar);
     }
 
-    renderForm(clientes[0]);
+    renderForm(relaciones[0]);
 
-    document.getElementById("selectCliente").addEventListener("change", e => {
-        const cliente = clientes.find(c => c.id === e.target.value);
-        renderForm(cliente);
+    document.getElementById("selectRelacion").addEventListener("change", e => {
+        const [idArtista, idGenero] = e.target.value.split("|");
+        const rel = relaciones.find(r => r.id_artista === idArtista && r.id_genero === idGenero);
+        renderForm(rel);
     });
 });
 </script>

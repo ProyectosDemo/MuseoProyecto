@@ -23,7 +23,22 @@ func (r *mutationResolver) KillCliente(ctx context.Context, id string) (bool, er
 	panic("unimplemented")
 }
 
+// UpdateArtistaGenero implements [MutationResolver].
+func (r *mutationResolver) UpdateArtistaGenero(ctx context.Context, input model.UpdateArtistaGenero) (*model.ArtistaGenero, error) {
+	panic("unimplemented")
+}
+
 type queryResolver struct{ *Resolver }
+
+// FindArtistaGeneroByArtista implements [QueryResolver].
+func (r *queryResolver) FindArtistaGeneroByArtista(ctx context.Context, idArtista string) ([]*model.ArtistaGenero, error) {
+	panic("unimplemented")
+}
+
+// FindArtistaGeneroByGenero implements [QueryResolver].
+func (r *queryResolver) FindArtistaGeneroByGenero(ctx context.Context, idGenero string) ([]*model.ArtistaGenero, error) {
+	panic("unimplemented")
+}
 
 // FindMembresiasByCliente implements [QueryResolver].
 func (r *queryResolver) FindMembresiasByCliente(ctx context.Context, idCliente string) ([]*model.Membresia, error) {

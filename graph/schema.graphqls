@@ -12,76 +12,6 @@ enum StatusOrden {
 }
 
 # Types
-type Preguntas {
-  id: ID!
-  id_cliente: ID!
-  cliente: Cliente!
-  pregunta: String!
-  respuesta: String!
-}
-
-# Input Types
-input NewPreguntas {
-  id_cliente: ID!
-  pregunta: String!
-  respuesta: String!
-}
-
-input UpdatePreguntas {
-  id: ID!
-  id_cliente: ID
-  pregunta: String
-  respuesta: String
-}
-
-# Types
-type TarjetaCliente {
-  id_tarjeta: ID!
-  id_cliente: ID!
-  cliente: Cliente!
-  numero_tarjeta: String!
-  tipo: String!
-}
-
-# Input Types
-input NewTarjetaCliente {
-  id_cliente: ID!
-  numero_tarjeta: String!
-  tipo: String!
-}
-
-input UpdateTarjetaCliente {
-  id_tarjeta: ID!
-  id_cliente: ID
-  numero_tarjeta: String
-  tipo: String
-}
-
-# Types
-type Membresia {
-  id_membresia: ID!
-  id_cliente: ID!
-  cliente: Cliente!
-  id_tarjeta: ID!
-  tarjeta: TarjetaCliente!
-  fecha: String!
-}
-
-# Input Types
-input NewMembresia {
-  id_cliente: ID!
-  id_tarjeta: ID!
-  fecha: String!
-}
-
-input UpdateMembresia {
-  id_membresia: ID!
-  id_cliente: ID
-  id_tarjeta: ID
-  fecha: String
-}
-
-# Types
 type Cliente {
   id: ID!
   nombre: String!
@@ -142,6 +72,31 @@ type Orden {
   status: StatusOrden!
 }
 
+type TarjetaCliente {
+  id_tarjeta: ID!
+  id_cliente: ID!
+  cliente: Cliente!
+  numero_tarjeta: String!
+  tipo: String!
+}
+
+type Preguntas {
+  id: ID!
+  id_cliente: ID!
+  cliente: Cliente!
+  pregunta: String!
+  respuesta: String!
+}
+
+type Membresia {
+  id_membresia: ID!
+  id_cliente: ID!
+  cliente: Cliente!
+  id_tarjeta: ID!
+  tarjeta: TarjetaCliente!
+  fecha: String!
+}
+
 type LoginResponseCliente {
   success: Boolean!
   id: ID
@@ -153,6 +108,13 @@ type LoginResponseTrabajador {
   id: ID
   nombre: String
   admin: Boolean
+}
+
+type ArtistaGenero {
+  id_artista: ID!
+  artista: Artista!
+  id_genero: ID!
+  genero: Genero!
 }
 
 # Input Types
@@ -260,6 +222,57 @@ input UpdateOrden {
   status: StatusOrden
 }
 
+input NewTarjetaCliente {
+  id_cliente: ID!
+  numero_tarjeta: String!
+  tipo: String!
+}
+
+input UpdateTarjetaCliente {
+  id_tarjeta: ID!
+  id_cliente: ID
+  numero_tarjeta: String
+  tipo: String
+}
+
+input NewPreguntas {
+  id_cliente: ID!
+  pregunta: String!
+  respuesta: String!
+}
+
+input UpdatePreguntas {
+  id: ID!
+  id_cliente: ID
+  pregunta: String
+  respuesta: String
+}
+
+input NewMembresia {
+  id_cliente: ID!
+  id_tarjeta: ID!
+  fecha: String!
+}
+
+input UpdateMembresia {
+  id_membresia: ID!
+  id_cliente: ID
+  id_tarjeta: ID
+  fecha: String
+}
+
+input NewArtistaGenero {
+  id_artista: ID!
+  id_genero: ID!
+}
+
+input UpdateArtistaGenero {
+  id_artista: ID!
+  id_genero: ID!
+  nuevo_id_artista: ID
+  nuevo_id_genero: ID
+}
+
 # Queries
 type Query {
   Clientes(limit: Int, offset: Int): [Cliente!]!
@@ -271,6 +284,9 @@ type Query {
   Preguntas(limit: Int, offset: Int): [Preguntas!]!
   Membresias(limit: Int, offset: Int): [Membresia!]!
   Genero(limit: Int, offset: Int): [Genero!]!
+  ArtistaGenero(limit: Int, offset: Int): [ArtistaGenero!]!
+  FindArtistaGeneroByArtista(id_artista: ID!): [ArtistaGenero!]!
+  FindArtistaGeneroByGenero(id_genero: ID!): [ArtistaGenero!]!
   FindGenero(id: ID!): [Genero!]!
   findMembresia(id_membresia: ID!): Membresia
   findMembresiasByCliente(id_cliente: ID!): [Membresia!]!
@@ -325,4 +341,8 @@ type Mutation {
   createMembresia(input: NewMembresia!): Membresia!
   updateMembresia(input: UpdateMembresia!): Membresia!
   killMembresia(id_membresia: ID!): Boolean!
+
+  createArtistaGenero(input: NewArtistaGenero!): ArtistaGenero!
+  updateArtistaGenero(input: UpdateArtistaGenero!): ArtistaGenero!
+  killArtistaGenero(id_artista: ID!, id_genero: ID!): Boolean!
 }

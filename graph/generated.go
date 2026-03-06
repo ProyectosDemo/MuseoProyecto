@@ -45,6 +45,13 @@ type ComplexityRoot struct {
 		Nombre          func(childComplexity int) int
 	}
 
+	ArtistaGenero struct {
+		Artista   func(childComplexity int) int
+		Genero    func(childComplexity int) int
+		IDArtista func(childComplexity int) int
+		IDGenero  func(childComplexity int) int
+	}
+
 	Cliente struct {
 		CodigoSeguridad func(childComplexity int) int
 		Email           func(childComplexity int) int
@@ -84,6 +91,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateArtista        func(childComplexity int, input model.NewArtista) int
+		CreateArtistaGenero  func(childComplexity int, input model.NewArtistaGenero) int
 		CreateCliente        func(childComplexity int, input model.NewCliente) int
 		CreateGenero         func(childComplexity int, nombre string) int
 		CreateMembresia      func(childComplexity int, input model.NewMembresia) int
@@ -93,6 +101,7 @@ type ComplexityRoot struct {
 		CreateTarjetaCliente func(childComplexity int, input model.NewTarjetaCliente) int
 		CreateTrabajador     func(childComplexity int, input model.NewTrabajador) int
 		KillArtista          func(childComplexity int, id string) int
+		KillArtistaGenero    func(childComplexity int, idArtista string, idGenero string) int
 		KillCliente          func(childComplexity int, id string) int
 		KillGenero           func(childComplexity int, id string) int
 		KillMembresia        func(childComplexity int, idMembresia string) int
@@ -102,6 +111,7 @@ type ComplexityRoot struct {
 		KillTarjetaCliente   func(childComplexity int, idTarjeta string) int
 		KillTrabajador       func(childComplexity int, id string) int
 		UpdateArtista        func(childComplexity int, input model.UpdateArtista) int
+		UpdateArtistaGenero  func(childComplexity int, input model.UpdateArtistaGenero) int
 		UpdateCliente        func(childComplexity int, input model.UpdateCliente) int
 		UpdateGenero         func(childComplexity int, input model.UpdateGenero) int
 		UpdateMembresia      func(childComplexity int, input model.UpdateMembresia) int
@@ -149,30 +159,33 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Artistas                func(childComplexity int, limit *int32, offset *int32) int
-		Clientes                func(childComplexity int, limit *int32, offset *int32) int
-		FindArtista             func(childComplexity int, id string) int
-		FindCliente             func(childComplexity int, id string) int
-		FindGenero              func(childComplexity int, id string) int
-		FindMembresia           func(childComplexity int, idMembresia string) int
-		FindMembresiasByCliente func(childComplexity int, idCliente string) int
-		FindMembresiasByTarjeta func(childComplexity int, idTarjeta string) int
-		FindObra                func(childComplexity int, id string) int
-		FindOrden               func(childComplexity int, id string) int
-		FindPreguntas           func(childComplexity int, id string) int
-		FindPreguntasByCliente  func(childComplexity int, idCliente string) int
-		FindTarjetaCliente      func(childComplexity int, idTarjeta string) int
-		FindTrabajador          func(childComplexity int, id string) int
-		Genero                  func(childComplexity int, limit *int32, offset *int32) int
-		GetObra                 func(childComplexity int, id string) int
-		LoginCliente            func(childComplexity int, login string, password string) int
-		LoginTrabajador         func(childComplexity int, login string, password string) int
-		Membresias              func(childComplexity int, limit *int32, offset *int32) int
-		Obras                   func(childComplexity int, limit *int32, offset *int32) int
-		Ordenes                 func(childComplexity int, limit *int32, offset *int32) int
-		Preguntas               func(childComplexity int, limit *int32, offset *int32) int
-		TarjetasCliente         func(childComplexity int, limit *int32, offset *int32) int
-		Trabajadores            func(childComplexity int, limit *int32, offset *int32) int
+		ArtistaGenero              func(childComplexity int, limit *int32, offset *int32) int
+		Artistas                   func(childComplexity int, limit *int32, offset *int32) int
+		Clientes                   func(childComplexity int, limit *int32, offset *int32) int
+		FindArtista                func(childComplexity int, id string) int
+		FindArtistaGeneroByArtista func(childComplexity int, idArtista string) int
+		FindArtistaGeneroByGenero  func(childComplexity int, idGenero string) int
+		FindCliente                func(childComplexity int, id string) int
+		FindGenero                 func(childComplexity int, id string) int
+		FindMembresia              func(childComplexity int, idMembresia string) int
+		FindMembresiasByCliente    func(childComplexity int, idCliente string) int
+		FindMembresiasByTarjeta    func(childComplexity int, idTarjeta string) int
+		FindObra                   func(childComplexity int, id string) int
+		FindOrden                  func(childComplexity int, id string) int
+		FindPreguntas              func(childComplexity int, id string) int
+		FindPreguntasByCliente     func(childComplexity int, idCliente string) int
+		FindTarjetaCliente         func(childComplexity int, idTarjeta string) int
+		FindTrabajador             func(childComplexity int, id string) int
+		Genero                     func(childComplexity int, limit *int32, offset *int32) int
+		GetObra                    func(childComplexity int, id string) int
+		LoginCliente               func(childComplexity int, login string, password string) int
+		LoginTrabajador            func(childComplexity int, login string, password string) int
+		Membresias                 func(childComplexity int, limit *int32, offset *int32) int
+		Obras                      func(childComplexity int, limit *int32, offset *int32) int
+		Ordenes                    func(childComplexity int, limit *int32, offset *int32) int
+		Preguntas                  func(childComplexity int, limit *int32, offset *int32) int
+		TarjetasCliente            func(childComplexity int, limit *int32, offset *int32) int
+		Trabajadores               func(childComplexity int, limit *int32, offset *int32) int
 	}
 
 	TarjetaCliente struct {
@@ -220,6 +233,9 @@ type MutationResolver interface {
 	CreateMembresia(ctx context.Context, input model.NewMembresia) (*model.Membresia, error)
 	UpdateMembresia(ctx context.Context, input model.UpdateMembresia) (*model.Membresia, error)
 	KillMembresia(ctx context.Context, idMembresia string) (bool, error)
+	CreateArtistaGenero(ctx context.Context, input model.NewArtistaGenero) (*model.ArtistaGenero, error)
+	UpdateArtistaGenero(ctx context.Context, input model.UpdateArtistaGenero) (*model.ArtistaGenero, error)
+	KillArtistaGenero(ctx context.Context, idArtista string, idGenero string) (bool, error)
 }
 type QueryResolver interface {
 	Clientes(ctx context.Context, limit *int32, offset *int32) ([]*model.Cliente, error)
@@ -231,6 +247,9 @@ type QueryResolver interface {
 	Preguntas(ctx context.Context, limit *int32, offset *int32) ([]*model.Preguntas, error)
 	Membresias(ctx context.Context, limit *int32, offset *int32) ([]*model.Membresia, error)
 	Genero(ctx context.Context, limit *int32, offset *int32) ([]*model.Genero, error)
+	ArtistaGenero(ctx context.Context, limit *int32, offset *int32) ([]*model.ArtistaGenero, error)
+	FindArtistaGeneroByArtista(ctx context.Context, idArtista string) ([]*model.ArtistaGenero, error)
+	FindArtistaGeneroByGenero(ctx context.Context, idGenero string) ([]*model.ArtistaGenero, error)
 	FindGenero(ctx context.Context, id string) ([]*model.Genero, error)
 	FindMembresia(ctx context.Context, idMembresia string) (*model.Membresia, error)
 	FindMembresiasByCliente(ctx context.Context, idCliente string) ([]*model.Membresia, error)
@@ -298,6 +317,31 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Artista.Nombre(childComplexity), true
+
+	case "ArtistaGenero.artista":
+		if e.ComplexityRoot.ArtistaGenero.Artista == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ArtistaGenero.Artista(childComplexity), true
+	case "ArtistaGenero.genero":
+		if e.ComplexityRoot.ArtistaGenero.Genero == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ArtistaGenero.Genero(childComplexity), true
+	case "ArtistaGenero.id_artista":
+		if e.ComplexityRoot.ArtistaGenero.IDArtista == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ArtistaGenero.IDArtista(childComplexity), true
+	case "ArtistaGenero.id_genero":
+		if e.ComplexityRoot.ArtistaGenero.IDGenero == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ArtistaGenero.IDGenero(childComplexity), true
 
 	case "Cliente.codigo_seguridad":
 		if e.ComplexityRoot.Cliente.CodigoSeguridad == nil {
@@ -447,6 +491,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.CreateArtista(childComplexity, args["input"].(model.NewArtista)), true
+	case "Mutation.createArtistaGenero":
+		if e.ComplexityRoot.Mutation.CreateArtistaGenero == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createArtistaGenero_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.CreateArtistaGenero(childComplexity, args["input"].(model.NewArtistaGenero)), true
 	case "Mutation.createCliente":
 		if e.ComplexityRoot.Mutation.CreateCliente == nil {
 			break
@@ -546,6 +601,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.KillArtista(childComplexity, args["id"].(string)), true
+	case "Mutation.killArtistaGenero":
+		if e.ComplexityRoot.Mutation.KillArtistaGenero == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_killArtistaGenero_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.KillArtistaGenero(childComplexity, args["id_artista"].(string), args["id_genero"].(string)), true
 	case "Mutation.killCliente":
 		if e.ComplexityRoot.Mutation.KillCliente == nil {
 			break
@@ -645,6 +711,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.UpdateArtista(childComplexity, args["input"].(model.UpdateArtista)), true
+	case "Mutation.updateArtistaGenero":
+		if e.ComplexityRoot.Mutation.UpdateArtistaGenero == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateArtistaGenero_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.UpdateArtistaGenero(childComplexity, args["input"].(model.UpdateArtistaGenero)), true
 	case "Mutation.updateCliente":
 		if e.ComplexityRoot.Mutation.UpdateCliente == nil {
 			break
@@ -899,6 +976,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.ComplexityRoot.Preguntas.Respuesta(childComplexity), true
 
+	case "Query.ArtistaGenero":
+		if e.ComplexityRoot.Query.ArtistaGenero == nil {
+			break
+		}
+
+		args, err := ec.field_Query_ArtistaGenero_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.ArtistaGenero(childComplexity, args["limit"].(*int32), args["offset"].(*int32)), true
 	case "Query.Artistas":
 		if e.ComplexityRoot.Query.Artistas == nil {
 			break
@@ -932,6 +1020,28 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Query.FindArtista(childComplexity, args["id"].(string)), true
+	case "Query.FindArtistaGeneroByArtista":
+		if e.ComplexityRoot.Query.FindArtistaGeneroByArtista == nil {
+			break
+		}
+
+		args, err := ec.field_Query_FindArtistaGeneroByArtista_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.FindArtistaGeneroByArtista(childComplexity, args["id_artista"].(string)), true
+	case "Query.FindArtistaGeneroByGenero":
+		if e.ComplexityRoot.Query.FindArtistaGeneroByGenero == nil {
+			break
+		}
+
+		args, err := ec.field_Query_FindArtistaGeneroByGenero_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.FindArtistaGeneroByGenero(childComplexity, args["id_genero"].(string)), true
 	case "Query.findCliente":
 		if e.ComplexityRoot.Query.FindCliente == nil {
 			break
@@ -1236,6 +1346,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := newExecutionContext(opCtx, e, make(chan graphql.DeferredResult))
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputNewArtista,
+		ec.unmarshalInputNewArtistaGenero,
 		ec.unmarshalInputNewCliente,
 		ec.unmarshalInputNewGenero,
 		ec.unmarshalInputNewMembresia,
@@ -1245,6 +1356,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputNewTarjetaCliente,
 		ec.unmarshalInputNewTrabajador,
 		ec.unmarshalInputUpdateArtista,
+		ec.unmarshalInputUpdateArtistaGenero,
 		ec.unmarshalInputUpdateCliente,
 		ec.unmarshalInputUpdateGenero,
 		ec.unmarshalInputUpdateMembresia,
@@ -1347,6 +1459,17 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
+func (ec *executionContext) field_Mutation_createArtistaGenero_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNNewArtistaGenero2mainᚋgraphᚋmodelᚐNewArtistaGenero)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createArtista_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -1443,6 +1566,22 @@ func (ec *executionContext) field_Mutation_createTrabajador_args(ctx context.Con
 		return nil, err
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_killArtistaGenero_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id_artista", ec.unmarshalNID2string)
+	if err != nil {
+		return nil, err
+	}
+	args["id_artista"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "id_genero", ec.unmarshalNID2string)
+	if err != nil {
+		return nil, err
+	}
+	args["id_genero"] = arg1
 	return args, nil
 }
 
@@ -1545,6 +1684,17 @@ func (ec *executionContext) field_Mutation_killTrabajador_args(ctx context.Conte
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_updateArtistaGenero_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateArtistaGenero2mainᚋgraphᚋmodelᚐUpdateArtistaGenero)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateArtista_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -1644,6 +1794,22 @@ func (ec *executionContext) field_Mutation_updateTrabajador_args(ctx context.Con
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_ArtistaGenero_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "limit", ec.unmarshalOInt2ᚖint32)
+	if err != nil {
+		return nil, err
+	}
+	args["limit"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "offset", ec.unmarshalOInt2ᚖint32)
+	if err != nil {
+		return nil, err
+	}
+	args["offset"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_Artistas_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -1673,6 +1839,28 @@ func (ec *executionContext) field_Query_Clientes_args(ctx context.Context, rawAr
 		return nil, err
 	}
 	args["offset"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_FindArtistaGeneroByArtista_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id_artista", ec.unmarshalNID2string)
+	if err != nil {
+		return nil, err
+	}
+	args["id_artista"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_FindArtistaGeneroByGenero_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id_genero", ec.unmarshalNID2string)
+	if err != nil {
+		return nil, err
+	}
+	args["id_genero"] = arg0
 	return args, nil
 }
 
@@ -2195,6 +2383,142 @@ func (ec *executionContext) fieldContext_Artista_foto(_ context.Context, field g
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ArtistaGenero_id_artista(ctx context.Context, field graphql.CollectedField, obj *model.ArtistaGenero) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ArtistaGenero_id_artista,
+		func(ctx context.Context) (any, error) {
+			return obj.IDArtista, nil
+		},
+		nil,
+		ec.marshalNID2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ArtistaGenero_id_artista(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ArtistaGenero",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ArtistaGenero_artista(ctx context.Context, field graphql.CollectedField, obj *model.ArtistaGenero) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ArtistaGenero_artista,
+		func(ctx context.Context) (any, error) {
+			return obj.Artista, nil
+		},
+		nil,
+		ec.marshalNArtista2ᚖmainᚋgraphᚋmodelᚐArtista,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ArtistaGenero_artista(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ArtistaGenero",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Artista_id(ctx, field)
+			case "nombre":
+				return ec.fieldContext_Artista_nombre(ctx, field)
+			case "fecha_nacimiento":
+				return ec.fieldContext_Artista_fecha_nacimiento(ctx, field)
+			case "nacionalidad":
+				return ec.fieldContext_Artista_nacionalidad(ctx, field)
+			case "biografia":
+				return ec.fieldContext_Artista_biografia(ctx, field)
+			case "foto":
+				return ec.fieldContext_Artista_foto(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Artista", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ArtistaGenero_id_genero(ctx context.Context, field graphql.CollectedField, obj *model.ArtistaGenero) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ArtistaGenero_id_genero,
+		func(ctx context.Context) (any, error) {
+			return obj.IDGenero, nil
+		},
+		nil,
+		ec.marshalNID2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ArtistaGenero_id_genero(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ArtistaGenero",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ArtistaGenero_genero(ctx context.Context, field graphql.CollectedField, obj *model.ArtistaGenero) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ArtistaGenero_genero,
+		func(ctx context.Context) (any, error) {
+			return obj.Genero, nil
+		},
+		nil,
+		ec.marshalNGenero2ᚖmainᚋgraphᚋmodelᚐGenero,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ArtistaGenero_genero(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ArtistaGenero",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Genero_id(ctx, field)
+			case "nombre":
+				return ec.fieldContext_Genero_nombre(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Genero", field.Name)
 		},
 	}
 	return fc, nil
@@ -4241,6 +4565,149 @@ func (ec *executionContext) fieldContext_Mutation_killMembresia(ctx context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createArtistaGenero(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_createArtistaGenero,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().CreateArtistaGenero(ctx, fc.Args["input"].(model.NewArtistaGenero))
+		},
+		nil,
+		ec.marshalNArtistaGenero2ᚖmainᚋgraphᚋmodelᚐArtistaGenero,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createArtistaGenero(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id_artista":
+				return ec.fieldContext_ArtistaGenero_id_artista(ctx, field)
+			case "artista":
+				return ec.fieldContext_ArtistaGenero_artista(ctx, field)
+			case "id_genero":
+				return ec.fieldContext_ArtistaGenero_id_genero(ctx, field)
+			case "genero":
+				return ec.fieldContext_ArtistaGenero_genero(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ArtistaGenero", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createArtistaGenero_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateArtistaGenero(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_updateArtistaGenero,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().UpdateArtistaGenero(ctx, fc.Args["input"].(model.UpdateArtistaGenero))
+		},
+		nil,
+		ec.marshalNArtistaGenero2ᚖmainᚋgraphᚋmodelᚐArtistaGenero,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateArtistaGenero(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id_artista":
+				return ec.fieldContext_ArtistaGenero_id_artista(ctx, field)
+			case "artista":
+				return ec.fieldContext_ArtistaGenero_artista(ctx, field)
+			case "id_genero":
+				return ec.fieldContext_ArtistaGenero_id_genero(ctx, field)
+			case "genero":
+				return ec.fieldContext_ArtistaGenero_genero(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ArtistaGenero", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateArtistaGenero_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_killArtistaGenero(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_killArtistaGenero,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().KillArtistaGenero(ctx, fc.Args["id_artista"].(string), fc.Args["id_genero"].(string))
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_killArtistaGenero(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_killArtistaGenero_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Obra_id(ctx context.Context, field graphql.CollectedField, obj *model.Obra) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -5613,6 +6080,159 @@ func (ec *executionContext) fieldContext_Query_Genero(ctx context.Context, field
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_Genero_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_ArtistaGenero(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_ArtistaGenero,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().ArtistaGenero(ctx, fc.Args["limit"].(*int32), fc.Args["offset"].(*int32))
+		},
+		nil,
+		ec.marshalNArtistaGenero2ᚕᚖmainᚋgraphᚋmodelᚐArtistaGeneroᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_ArtistaGenero(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id_artista":
+				return ec.fieldContext_ArtistaGenero_id_artista(ctx, field)
+			case "artista":
+				return ec.fieldContext_ArtistaGenero_artista(ctx, field)
+			case "id_genero":
+				return ec.fieldContext_ArtistaGenero_id_genero(ctx, field)
+			case "genero":
+				return ec.fieldContext_ArtistaGenero_genero(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ArtistaGenero", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_ArtistaGenero_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_FindArtistaGeneroByArtista(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_FindArtistaGeneroByArtista,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().FindArtistaGeneroByArtista(ctx, fc.Args["id_artista"].(string))
+		},
+		nil,
+		ec.marshalNArtistaGenero2ᚕᚖmainᚋgraphᚋmodelᚐArtistaGeneroᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_FindArtistaGeneroByArtista(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id_artista":
+				return ec.fieldContext_ArtistaGenero_id_artista(ctx, field)
+			case "artista":
+				return ec.fieldContext_ArtistaGenero_artista(ctx, field)
+			case "id_genero":
+				return ec.fieldContext_ArtistaGenero_id_genero(ctx, field)
+			case "genero":
+				return ec.fieldContext_ArtistaGenero_genero(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ArtistaGenero", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_FindArtistaGeneroByArtista_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_FindArtistaGeneroByGenero(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_FindArtistaGeneroByGenero,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().FindArtistaGeneroByGenero(ctx, fc.Args["id_genero"].(string))
+		},
+		nil,
+		ec.marshalNArtistaGenero2ᚕᚖmainᚋgraphᚋmodelᚐArtistaGeneroᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_FindArtistaGeneroByGenero(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id_artista":
+				return ec.fieldContext_ArtistaGenero_id_artista(ctx, field)
+			case "artista":
+				return ec.fieldContext_ArtistaGenero_artista(ctx, field)
+			case "id_genero":
+				return ec.fieldContext_ArtistaGenero_id_genero(ctx, field)
+			case "genero":
+				return ec.fieldContext_ArtistaGenero_genero(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ArtistaGenero", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_FindArtistaGeneroByGenero_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -8368,6 +8988,39 @@ func (ec *executionContext) unmarshalInputNewArtista(ctx context.Context, obj an
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputNewArtistaGenero(ctx context.Context, obj any) (model.NewArtistaGenero, error) {
+	var it model.NewArtistaGenero
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id_artista", "id_genero"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id_artista":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id_artista"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDArtista = data
+		case "id_genero":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id_genero"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDGenero = data
+		}
+	}
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewCliente(ctx context.Context, obj any) (model.NewCliente, error) {
 	var it model.NewCliente
 	asMap := map[string]any{}
@@ -8821,6 +9474,53 @@ func (ec *executionContext) unmarshalInputUpdateArtista(ctx context.Context, obj
 				return it, err
 			}
 			it.Foto = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateArtistaGenero(ctx context.Context, obj any) (model.UpdateArtistaGenero, error) {
+	var it model.UpdateArtistaGenero
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id_artista", "id_genero", "nuevo_id_artista", "nuevo_id_genero"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id_artista":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id_artista"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDArtista = data
+		case "id_genero":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id_genero"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDGenero = data
+		case "nuevo_id_artista":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nuevo_id_artista"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NuevoIDArtista = data
+		case "nuevo_id_genero":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nuevo_id_genero"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NuevoIDGenero = data
 		}
 	}
 	return it, nil
@@ -9351,6 +10051,60 @@ func (ec *executionContext) _Artista(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var artistaGeneroImplementors = []string{"ArtistaGenero"}
+
+func (ec *executionContext) _ArtistaGenero(ctx context.Context, sel ast.SelectionSet, obj *model.ArtistaGenero) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, artistaGeneroImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ArtistaGenero")
+		case "id_artista":
+			out.Values[i] = ec._ArtistaGenero_id_artista(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "artista":
+			out.Values[i] = ec._ArtistaGenero_artista(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "id_genero":
+			out.Values[i] = ec._ArtistaGenero_id_genero(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "genero":
+			out.Values[i] = ec._ArtistaGenero_genero(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var clienteImplementors = []string{"Cliente"}
 
 func (ec *executionContext) _Cliente(ctx context.Context, sel ast.SelectionSet, obj *model.Cliente) graphql.Marshaler {
@@ -9824,6 +10578,27 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createArtistaGenero":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createArtistaGenero(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateArtistaGenero":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateArtistaGenero(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "killArtistaGenero":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_killArtistaGenero(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10289,6 +11064,72 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_Genero(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "ArtistaGenero":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_ArtistaGenero(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "FindArtistaGeneroByArtista":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_FindArtistaGeneroByArtista(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "FindArtistaGeneroByGenero":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_FindArtistaGeneroByGenero(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -11130,6 +11971,36 @@ func (ec *executionContext) marshalNArtista2ᚖmainᚋgraphᚋmodelᚐArtista(ct
 	return ec._Artista(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNArtistaGenero2mainᚋgraphᚋmodelᚐArtistaGenero(ctx context.Context, sel ast.SelectionSet, v model.ArtistaGenero) graphql.Marshaler {
+	return ec._ArtistaGenero(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNArtistaGenero2ᚕᚖmainᚋgraphᚋmodelᚐArtistaGeneroᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.ArtistaGenero) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNArtistaGenero2ᚖmainᚋgraphᚋmodelᚐArtistaGenero(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNArtistaGenero2ᚖmainᚋgraphᚋmodelᚐArtistaGenero(ctx context.Context, sel ast.SelectionSet, v *model.ArtistaGenero) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._ArtistaGenero(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v any) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -11298,6 +12169,11 @@ func (ec *executionContext) marshalNMembresia2ᚖmainᚋgraphᚋmodelᚐMembresi
 
 func (ec *executionContext) unmarshalNNewArtista2mainᚋgraphᚋmodelᚐNewArtista(ctx context.Context, v any) (model.NewArtista, error) {
 	res, err := ec.unmarshalInputNewArtista(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNNewArtistaGenero2mainᚋgraphᚋmodelᚐNewArtistaGenero(ctx context.Context, v any) (model.NewArtistaGenero, error) {
+	res, err := ec.unmarshalInputNewArtistaGenero(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -11524,6 +12400,11 @@ func (ec *executionContext) marshalNTrabajador2ᚖmainᚋgraphᚋmodelᚐTrabaja
 
 func (ec *executionContext) unmarshalNUpdateArtista2mainᚋgraphᚋmodelᚐUpdateArtista(ctx context.Context, v any) (model.UpdateArtista, error) {
 	res, err := ec.unmarshalInputUpdateArtista(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateArtistaGenero2mainᚋgraphᚋmodelᚐUpdateArtistaGenero(ctx context.Context, v any) (model.UpdateArtistaGenero, error) {
+	res, err := ec.unmarshalInputUpdateArtistaGenero(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

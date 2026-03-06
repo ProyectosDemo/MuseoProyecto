@@ -92,6 +92,7 @@ func main() {
 		"admin-membresias",
 		"admin-artistas",
 		"admin-generos",
+		"admin-artista_genero",
 		"admin-tarjetas",
 		"admin-preguntas",
 		"artista-detalle",

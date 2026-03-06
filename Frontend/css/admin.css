@@ -296,16 +296,14 @@ p {
     margin-top: 20px;
 }
 
-/* Título de la sección */
 .grid-container h3 {
-    grid-column: 1 / -1; /* Título ocupa toda la fila */
+    grid-column: 1 / -1;
     text-align: center;
     margin-bottom: 10px;
     font-size: 1.3rem;
     color: #333;
 }
 
-/* Tarjeta individual */
 .grid-item {
     background-color: #f9f9f9;
     border-radius: 8px;
@@ -314,13 +312,11 @@ p {
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
-/* Efecto hover */
 .grid-item:hover {
     transform: translateY(-4px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Título de la tarjeta */
 .grid-item h4 {
     margin-bottom: 10px;
     font-size: 1.1rem;
@@ -329,7 +325,6 @@ p {
     color: #222;
 }
 
-/* Elementos dentro de la tarjeta */
 .grid-item p {
     margin: 6px 0;
     font-size: 0.95rem;
@@ -337,7 +332,6 @@ p {
     color: #444;
 }
 
-/* Línea separadora */
 .grid-item hr {
     border: none;
     border-top: 1px solid #eee;

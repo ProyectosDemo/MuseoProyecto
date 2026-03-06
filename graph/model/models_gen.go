@@ -18,6 +18,13 @@ type Artista struct {
 	Foto            string `json:"foto"`
 }
 
+type ArtistaGenero struct {
+	IDArtista string   `json:"id_artista"`
+	Artista   *Artista `json:"artista"`
+	IDGenero  string   `json:"id_genero"`
+	Genero    *Genero  `json:"genero"`
+}
+
 type Cliente struct {
 	ID              string `json:"id"`
 	Nombre          string `json:"nombre"`
@@ -64,6 +71,11 @@ type NewArtista struct {
 	Nacionalidad    string `json:"nacionalidad"`
 	Biografia       string `json:"biografia"`
 	Foto            string `json:"foto"`
+}
+
+type NewArtistaGenero struct {
+	IDArtista string `json:"id_artista"`
+	IDGenero  string `json:"id_genero"`
 }
 
 type NewCliente struct {
@@ -187,6 +199,13 @@ type UpdateArtista struct {
 	Nacionalidad    *string `json:"nacionalidad,omitempty"`
 	Biografia       *string `json:"biografia,omitempty"`
 	Foto            *string `json:"foto,omitempty"`
+}
+
+type UpdateArtistaGenero struct {
+	IDArtista      string  `json:"id_artista"`
+	IDGenero       string  `json:"id_genero"`
+	NuevoIDArtista *string `json:"nuevo_id_artista,omitempty"`
+	NuevoIDGenero  *string `json:"nuevo_id_genero,omitempty"`
 }
 
 type UpdateCliente struct {
