@@ -23,9 +23,13 @@
     <aside class="side-menu" id="menuLateral" hidden>
         <h3>Trabajadores</h3>
         <ul>
-            <li><a href="admin-clientes.html">Clientes</a></li>
+           <li><a href="admin-clientes.html">Clientes</a></li>
+            <li><a href="admin-trabajadores.html">Trabajadores</a></li>
             <li><a href="admin-obras.html">Obras</a></li>
             <li><a href="admin-artistas.html">Artistas</a></li>
+            <li><a href="admin-generos.html">Géneros</a></li>
+            <li><a href="admin-membresias.html">Membresías</a></li>
+            <li><a href="admin-tarjetas.html">Tarjetas</a></li>
             <li><a href="consultas.html">Consultas y Reportes</a></li>
             <li><a href="reservas.html" id="menuReserva">Reservas</a></li>
         </ul>
@@ -97,7 +101,6 @@ async function fetchGraphQL(query, variables = {}) {
 document.getElementById("btnCrear").addEventListener("click", () => {
     limpiar();
     contenido.innerHTML = `
-        <h3>Crear Trabajador</h3>
         <form id="formCrear" class="form-container">
             <input type="text" id="nombre" placeholder="Nombre" required>
             <input type="text" id="login" placeholder="Login" required>
@@ -174,7 +177,6 @@ document.getElementById("btnEliminar").addEventListener("click", async () => {
     }
     const opciones = trabajadores.map(t => `<option value="${t.id}">${t.nombre}</option>`).join("");
     contenido.innerHTML = `
-        <h3>Eliminar Trabajador</h3>
         <select id="selectCliente" class="select-box">${opciones}</select>
         <div class="form-buttons">
             <button id="cancelarEliminar" class="btn-cancel">Cancelar</button>
@@ -228,7 +230,6 @@ document.getElementById("btnEditar").addEventListener("click", async () => {
     }
     const opciones = trabajadores.map(t => `<option value="${t.id}">${t.nombre}</option>`).join("");
     contenido.innerHTML = `
-        <h3>Editar Trabajador</h3>
         <select id="selectTrabajador" class="select-box">${opciones}</select>
         <div id="formEditar"></div>
     `;

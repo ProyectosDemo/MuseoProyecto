@@ -78,8 +78,26 @@ func main() {
 	})
 
 	// las paginas nuevas las agregas aqui para servirlas
-	paginas := []string{"index", "login", "exposiciones", "artistas", "obra", "admin", "admin-clientes", "admin-trabajadores",
-		"artista-detalle", "consultas", "cuenta-cliente", "login-trabajador", "registro", "reservas"}
+	paginas := []string{
+		"index",
+		"login",
+		"exposiciones",
+		"artistas",
+		"obra",
+		"admin",
+		"admin-clientes",
+		"admin-trabajadores",
+		"admin-obras",
+		"admin-membresias",
+		"admin-artistas",
+		"admin-generos",
+		"admin-tarjetas",
+		"artista-detalle",
+		"consultas",
+		"cuenta-cliente",
+		"login-trabajador",
+		"registro",
+		"reservas"}
 
 	for _, pagina := range paginas {
 		router.GET("/"+pagina+".html", func(c *gin.Context) {

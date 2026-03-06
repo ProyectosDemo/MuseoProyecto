@@ -7,12 +7,13 @@ import (
 	"log"
 	"main/graph/model"
 )
-
-// TarjetasCliente lista de todas las tarjetas
+// TarjetasCliente lista de todas las tarjetas con el cliente incluido
 func (r *queryResolver) TarjetasCliente(ctx context.Context, limit *int32, offset *int32) ([]*model.TarjetaCliente, error) {
 	rows, err := r.DB.QueryContext(ctx, `
-		SELECT id_tarjeta, id_cliente, numero_tarjeta, tipo 
-		FROM tarjeta_cliente 
+		SELECT t.id_tarjeta, t.id_cliente, t.numero_tarjeta, t.tipo,
+		       c.nombre, c.email, c.telefono, c.login, c.password, c.codigo_seguridad
+		FROM tarjeta_cliente t
+		LEFT JOIN cliente c ON t.id_cliente = c.id_cliente
 		LIMIT ? OFFSET ?`, limit, offset)
 	if err != nil {
 		log.Printf("TarjetasCliente DB error: %v", err)
@@ -23,11 +24,24 @@ func (r *queryResolver) TarjetasCliente(ctx context.Context, limit *int32, offse
 	var tarjetas []*model.TarjetaCliente
 	for rows.Next() {
 		var tarjeta model.TarjetaCliente
-		err := rows.Scan(&tarjeta.IDTarjeta, &tarjeta.IDCliente, &tarjeta.NumeroTarjeta, &tarjeta.Tipo)
+		var cliente model.Cliente
+		err := rows.Scan(
+			&tarjeta.IDTarjeta,
+			&tarjeta.IDCliente,
+			&tarjeta.NumeroTarjeta,
+			&tarjeta.Tipo,
+			&cliente.Nombre,
+			&cliente.Email,
+			&cliente.Telefono,
+			&cliente.Login,
+			&cliente.Password,
+			&cliente.CodigoSeguridad,
+		)
 		if err != nil {
 			log.Printf("TarjetasCliente scan error: %v", err)
 			return nil, err
 		}
+		tarjeta.Cliente = &cliente
 		tarjetas = append(tarjetas, &tarjeta)
 	}
 	if err = rows.Err(); err != nil {
@@ -37,14 +51,29 @@ func (r *queryResolver) TarjetasCliente(ctx context.Context, limit *int32, offse
 	return tarjetas, nil
 }
 
-// FindTarjetaCliente busca una tarjeta por su ID
+// FindTarjetaCliente busca una tarjeta por su ID con cliente
 func (r *queryResolver) FindTarjetaCliente(ctx context.Context, id string) (*model.TarjetaCliente, error) {
 	log.Printf("FindTarjetaCliente called with id: %s", id)
 
 	var tarjeta model.TarjetaCliente
-	query := `SELECT id_tarjeta, id_cliente, numero_tarjeta, tipo FROM tarjeta_cliente WHERE id_tarjeta = ?`
+	var cliente model.Cliente
+	query := `
+		SELECT t.id_tarjeta, t.id_cliente, t.numero_tarjeta, t.tipo,
+		       c.nombre, c.email, c.telefono, c.login, c.password, c.codigo_seguridad
+		FROM tarjeta_cliente t
+		LEFT JOIN cliente c ON t.id_cliente = c.id
+		WHERE t.id_tarjeta = ?`
 	err := r.DB.QueryRowContext(ctx, query, id).Scan(
-		&tarjeta.IDTarjeta, &tarjeta.IDCliente, &tarjeta.NumeroTarjeta, &tarjeta.Tipo,
+		&tarjeta.IDTarjeta,
+		&tarjeta.IDCliente,
+		&tarjeta.NumeroTarjeta,
+		&tarjeta.Tipo,
+		&cliente.Nombre,
+		&cliente.Email,
+		&cliente.Telefono,
+		&cliente.Login,
+		&cliente.Password,
+		&cliente.CodigoSeguridad,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -53,6 +82,7 @@ func (r *queryResolver) FindTarjetaCliente(ctx context.Context, id string) (*mod
 		log.Printf("FindTarjetaCliente DB error: %v", err)
 		return nil, err
 	}
+	tarjeta.Cliente = &cliente
 	return &tarjeta, nil
 }
 

@@ -11,29 +11,35 @@ body {
     flex-direction: column;
 }
 
-/* Header global */
 header {
     background-color: #1f2a38;
     color: white;
-    padding: 25px 8%;
+    padding: 20px 5%; /* Reduje un poco el padding lateral (era 8%) */
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: nowrap; /* Evita que los elementos salten de línea */
 }
 
 header h1 { 
-    font-size: 30px; 
-    letter-spacing: 3px; 
+    font-size: 24px; /* Un poco más pequeño para que quepa todo */
+    letter-spacing: 2px; 
     font-weight: 600; 
+    white-space: nowrap; /* Fuerza a que el texto esté en una sola línea */
+}
+nav {
+    display: flex;
+    align-items: center;
 }
 
 nav a {
     color: white;
     text-decoration: none;
-    margin-left: 30px;
-    font-size: 14px;
+    margin-left: 15px; /* Reducido de 30px a 15px para ganar espacio */
+    font-size: 12px;   /* Reducido ligeramente de 14px */
     text-transform: uppercase;
     letter-spacing: 1px;
+    white-space: nowrap; /* Evita que un enlace largo se parta en dos */
     transition: opacity 0.3s ease;
 }
 

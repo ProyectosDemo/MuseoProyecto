@@ -270,6 +270,8 @@ type Query {
   TarjetasCliente(limit: Int, offset: Int): [TarjetaCliente!]!
   Preguntas(limit: Int, offset: Int): [Preguntas!]!
   Membresias(limit: Int, offset: Int): [Membresia!]!
+  Genero(limit: Int, offset: Int): [Genero!]!
+  FindGenero(id: ID!): [Genero!]!
   findMembresia(id_membresia: ID!): Membresia
   findMembresiasByCliente(id_cliente: ID!): [Membresia!]!
   findMembresiasByTarjeta(id_tarjeta: ID!): [Membresia!]!

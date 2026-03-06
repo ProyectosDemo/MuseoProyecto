@@ -8,6 +8,33 @@ import (
 	"main/graph/model"
 )
 
+
+func (r *queryResolver) Genero(ctx context.Context, limit *int32, offset *int32) ([]*model.Genero, error) {
+
+	rows, err := r.DB.QueryContext(ctx, "SELECT id_genero, nombre FROM genero LIMIT ? OFFSET ?", limit, offset)
+	if err != nil {
+		log.Printf("Géneros DB error: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var generos []*model.Genero
+	for rows.Next() {
+		var genero model.Genero
+		err := rows.Scan(&genero.ID, &genero.Nombre)
+		if err != nil {
+			log.Printf("Géneros scan error: %v", err)
+			return nil, err
+		}
+		generos = append(generos, &genero)
+	}
+	if err = rows.Err(); err != nil {
+		log.Printf("Géneros rows error: %v", err)
+		return nil, err
+	}
+	return generos, nil
+}
+
 // FindGenero is the resolver for the findgenero field.
 func (r *queryResolver) FindGenero(ctx context.Context, id string) ([]*model.Genero, error) {
 	log.Printf("FindGenero llamado con id: %s", id)

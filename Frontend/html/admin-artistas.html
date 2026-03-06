@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gestión de Clientes | Museo Aurora</title>
+    <title>Gestión de Artistas | Museo Aurora</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="/static/css/global.css">
@@ -12,7 +12,7 @@
 <body>
 
 <header>
-    <h1>Gestión de Clientes</h1>
+    <h1>Gestión de Artistas</h1>
     <nav id="navMenu">
         <a href="index.html">Inicio</a>
         <a href="login.html" id="loginButton">Iniciar Sesión</a>
@@ -22,7 +22,7 @@
 <div class="admin-panel">
 
     <aside class="side-menu" id="menuLateral" hidden>
-        <h3>Clientes</h3>
+        <h3>Artistas</h3>
         <ul>
             <li><a href="admin-clientes.html">Clientes</a></li>
             <li><a href="admin-trabajadores.html">Trabajadores</a></li>
@@ -41,13 +41,12 @@
             <div class="action-buttons">
                 <button id="btnCrear">Crear</button>
                 <button id="btnEditar">Editar</button>
-                <button id="btnEliminar">Eliminar</button>
                 <button id="btnObtener">Obtener</button>
             </div>
         </div>
 
         <div class="content-container">
-            <div id="contenidoClientes"></div>
+            <div id="contenidoArtistas"></div>
         </div>
     </div>
 
@@ -62,7 +61,7 @@ const navMenu = document.getElementById("navMenu");
 const loginButton = document.getElementById("loginButton");
 const trabajadorId = localStorage.getItem("trabajadorId");
 const trabajadorNombre = localStorage.getItem("trabajadorNombre");
-const trabajadorAdmin = localStorage.getItem("trabajadorAdmin"); // "true" si es admin
+const trabajadorAdmin = localStorage.getItem("trabajadorAdmin");
 
 if (!trabajadorId) {
     console.log("Debe iniciar sesión como trabajador para usar esta página");
@@ -87,7 +86,7 @@ logoutBtn.addEventListener("click", () => {
 });
 navMenu.appendChild(logoutBtn);
 
-const contenido = document.getElementById("contenidoClientes");
+const contenido = document.getElementById("contenidoArtistas");
 const endpoint = "http://localhost:8080/query";
 
 function limpiar() {
@@ -109,11 +108,10 @@ document.getElementById("btnCrear").addEventListener("click", () => {
     contenido.innerHTML = `
         <form id="formCrear" class="form-container">
             <input type="text" id="nombre" placeholder="Nombre" required>
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="text" id="telefono" placeholder="Teléfono" required>
-            <input type="text" id="login" placeholder="Login" required>
-            <input type="text" id="password" placeholder="Contraseña" required>
-            <input type="text" id="codigoSeguridad" placeholder="Código Seguridad" required>
+            <input type="text" id="fechaNacimiento" placeholder="Fecha de Nacimiento" required>
+            <input type="text" id="nacionalidad" placeholder="Nacionalidad" required>
+            <input type="text" id="biografia" placeholder="Biografía" required>
+            <input type="text" id="foto" placeholder="Foto" required>
             <div class="form-buttons">
                 <button type="button" id="cancelarCrear" class="btn-cancel">Cancelar</button>
                 <button type="submit" class="btn-primary">Guardar</button>
@@ -125,8 +123,8 @@ document.getElementById("btnCrear").addEventListener("click", () => {
         e.preventDefault();
 
         const query = `
-            mutation ($input: NewCliente!) {
-                createCliente(input: $input) {
+            mutation ($input: NewArtista!) {
+                createArtista(input: $input) {
                     id
                     nombre
                 }
@@ -136,11 +134,10 @@ document.getElementById("btnCrear").addEventListener("click", () => {
         const variables = {
             input: {
                 nombre: document.getElementById("nombre").value,
-                email: document.getElementById("email").value,
-                telefono: document.getElementById("telefono").value,
-                login: document.getElementById("login").value,
-                password: document.getElementById("password").value,
-                codigo_seguridad: document.getElementById("codigoSeguridad").value
+                fecha_nacimiento: document.getElementById("fechaNacimiento").value,
+                nacionalidad: document.getElementById("nacionalidad").value,
+                biografia: document.getElementById("biografia").value,
+                foto: document.getElementById("foto").value
             }
         };
 
@@ -149,9 +146,9 @@ document.getElementById("btnCrear").addEventListener("click", () => {
 
         if (data.errors) {
             console.error(data.errors);
-            alert("Error al crear cliente");
+            alert("Error al crear artista");
         } else {
-            alert("Cliente creado correctamente");
+            alert("Artista creado correctamente");
             limpiar();
         }
     });
@@ -163,14 +160,14 @@ document.getElementById("btnObtener").addEventListener("click", async () => {
     limpiar();
 
     const query = `
-        query ObtenerClientes($limit: Int, $offset: Int) {
-            Clientes(limit: $limit, offset: $offset) {
+        query ObtenerArtistas($limit: Int, $offset: Int) {
+            Artistas(limit: $limit, offset: $offset) {
                 id
                 nombre
-                email
-                telefono
-                login
-                codigo_seguridad
+                fecha_nacimiento
+                nacionalidad
+                biografia
+                foto
             }
         }
     `;
@@ -180,19 +177,19 @@ document.getElementById("btnObtener").addEventListener("click", async () => {
     const data = await fetchGraphQL(query, variables);
     console.log(data);
 
-    const clientes = data?.data?.Clientes;
+    const artistas = data?.data?.Artistas;
 
-    if (!clientes || clientes.length === 0) {
-        contenido.innerHTML = "<p>No hay clientes registrados.</p>";
+    if (!artistas || artistas.length === 0) {
+        contenido.innerHTML = "<p>No hay artistas registrados.</p>";
         return;
     }
 
-    let html = '<div class="list-box"><h3>Clientes Registrados</h3><ul>';
-    clientes.forEach(c => {
+    let html = '<div class="list-box"><h3>Artistas Registrados</h3><ul>';
+    artistas.forEach(a => {
         html += `
             <li>
-                ${c.nombre} | Email: ${c.email} | Tel: ${c.telefono} 
-                | Login: ${c.login} | Código: ${c.codigo_seguridad}
+                ${a.nombre} | Fecha de Nacimiento: ${a.fecha_nacimiento} | Nacionalidad: ${a.nacionalidad} 
+                | Biografía: ${a.biografia} | Foto: ${a.foto}
             </li>
         `;
     });
@@ -201,106 +198,46 @@ document.getElementById("btnObtener").addEventListener("click", async () => {
     contenido.innerHTML = html;
 });
 
-document.getElementById("btnEliminar").addEventListener("click", async () => {
-    limpiar();
-
-    const query = `
-        query ($limit: Int, $offset: Int) {
-            Clientes(limit: $limit, offset: $offset) {
-                id
-                nombre
-            }
-        }
-    `;
-    const variables = { limit: 100, offset: 0 };
-    const data = await fetchGraphQL(query, variables);
-    const clientes = data?.data?.Clientes;
-
-    if (!clientes || clientes.length === 0) {
-        contenido.innerHTML = "<p>No hay clientes para eliminar.</p>";
-        return;
-    }
-
-    const opciones = clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join("");
-
-    contenido.innerHTML = `
-        <select id="selectCliente" class="select-box">${opciones}</select>
-        <div class="form-buttons">
-            <button id="cancelarEliminar" class="btn-cancel">Cancelar</button>
-            <button id="confirmarEliminar" class="btn-delete">Eliminar</button>
-        </div>
-    `;
-
-    document.getElementById("confirmarEliminar").addEventListener("click", async () => {
-        const id = document.getElementById("selectCliente").value;
-        if (!id) return alert("Selecciona un cliente para eliminar");
-
-        const mutation = `
-            mutation KillCliente($id: ID!) {
-                killCliente(id: $id)
-            }
-        `;
-        const variables = { id };
-
-        const result = await fetchGraphQL(mutation, variables);
-        if (result.errors) {
-            console.error(result.errors);
-            alert("Error al eliminar cliente");
-        } else if (result.data.killCliente) {
-            alert("Cliente eliminado correctamente");
-            limpiar();
-        } else {
-            alert("No se pudo eliminar el cliente");
-        }
-    });
-
-    document.getElementById("cancelarEliminar").addEventListener("click", limpiar);
-});
-
 document.getElementById("btnEditar").addEventListener("click", async () => {
     limpiar();
-
     const query = `
         query ($limit: Int, $offset: Int) {
-            Clientes(limit: $limit, offset: $offset) {
+            Artistas(limit: $limit, offset: $offset) {
                 id
                 nombre
-                email
-                telefono
-                login
-                password
-                codigo_seguridad
+                fecha_nacimiento
+                nacionalidad
+                biografia
+                foto
             }
         }
     `;
     const variables = { limit: 100, offset: 0 };
     const data = await fetchGraphQL(query, variables);
-    const clientes = data?.data?.Clientes;
+    const artistas = data?.data?.Artistas;
 
-    if (!clientes || clientes.length === 0) {
-        contenido.innerHTML = "<p>No hay clientes para editar.</p>";
+    if (!artistas || artistas.length === 0) {
+        contenido.innerHTML = "<p>No hay artistas para editar.</p>";
         return;
     }
 
-    const opciones = clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join("");
-
+    const opciones = artistas.map(a => `<option value="${a.id}">${a.nombre}</option>`).join("");
     contenido.innerHTML = `
-        <select id="selectCliente" class="select-box">${opciones}</select>
+        <select id="selectArtista" class="select-box">${opciones}</select>
         <form id="updateForm" class="form-container"></form>
     `;
 
     const form = document.getElementById("updateForm");
     form.classList.add("edit-form");
 
-    function renderForm(cliente) {
-        if (!cliente) return;
+    function renderForm(artista) {
+        if (!artista) return;
         form.innerHTML = `
-            <input type="text" id="nombre" value="${cliente.nombre || ''}" required>
-            <input type="email" id="email" value="${cliente.email || ''}" required>
-            <input type="text" id="telefono" value="${cliente.telefono || ''}" required>
-            <input type="text" id="login" value="${cliente.login || ''}" required>
-            <input type="text" id="password" value="${cliente.password || ''}" required>
-            <input type="text" id="codigo_seguridad" value="${cliente.codigo_seguridad || ''}" required>
+            <input type="text" id="nombre" value="${artista.nombre || ''}" required>
+            <input type="text" id="fechaNacimiento" value="${artista.fecha_nacimiento || ''}" required>
+            <input type="text" id="nacionalidad" value="${artista.nacionalidad || ''}" required>
+            <input type="text" id="biografia" value="${artista.biografia || ''}" required>
+            <input type="text" id="foto" value="${artista.foto || ''}" required>
             <div class="form-buttons">
                 <button type="button" id="cancelarEditar" class="btn-cancel">Cancelar</button>
                 <button type="submit" class="btn-primary">Actualizar</button>
@@ -309,39 +246,34 @@ document.getElementById("btnEditar").addEventListener("click", async () => {
 
         document.getElementById("updateForm").addEventListener("submit", async e => {
             e.preventDefault();
-
             const mutation = `
-                mutation updateCliente($input: UpdateCliente!) {
-                    updateCliente(input: $input) {
+                mutation updateArtista($input: UpdateArtista!) {
+                    updateArtista(input: $input) {
                         id
                         nombre
-                        email
-                        telefono
-                        login
-                        password
-                        codigo_seguridad
+                        fecha_nacimiento
+                        nacionalidad
+                        biografia
+                        foto
                     }
                 }
             `;
-
             const variables = {
                 input: {
-                    id: cliente.id,
+                    id: artista.id,
                     nombre: document.getElementById("nombre").value,
-                    email: document.getElementById("email").value,
-                    telefono: document.getElementById("telefono").value,
-                    login: document.getElementById("login").value,
-                    password: document.getElementById("password").value,
-                    codigo_seguridad: document.getElementById("codigo_seguridad").value
+                    fecha_nacimiento: document.getElementById("fechaNacimiento").value,
+                    nacionalidad: document.getElementById("nacionalidad").value,
+                    biografia: document.getElementById("biografia").value,
+                    foto: document.getElementById("foto").value
                 }
             };
-
             const result = await fetchGraphQL(mutation, variables);
             if (result.errors) {
                 console.error(result.errors);
-                alert("Error al actualizar cliente");
+                alert("Error al actualizar artista");
             } else {
-                alert("Cliente actualizado correctamente");
+                alert("Artista actualizado correctamente");
                 limpiar();
             }
         });
@@ -349,11 +281,10 @@ document.getElementById("btnEditar").addEventListener("click", async () => {
         document.getElementById("cancelarEditar").addEventListener("click", limpiar);
     }
 
-    renderForm(clientes[0]);
-
-    document.getElementById("selectCliente").addEventListener("change", e => {
-        const cliente = clientes.find(c => c.id === e.target.value);
-        renderForm(cliente);
+    renderForm(artistas[0]);
+    document.getElementById("selectArtista").addEventListener("change", e => {
+        const artista = artistas.find(a => a.id === e.target.value);
+        renderForm(artista);
     });
 });
 </script>
