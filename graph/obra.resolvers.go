@@ -11,7 +11,7 @@ import (
 // Obras lista todas las obras
 func (r *queryResolver) Obras(ctx context.Context, limit *int32, offset *int32) ([]*model.Obra, error) {
 	rows, err := r.DB.QueryContext(ctx,
-		`SELECT o.id_obra, o.nombre, o.precio_obra, o.fecha_creacion, o.status, o.foto, o.material, o.peso, o.dimensiones,
+		`SELECT o.id_obra, o.nombre, o.precio_obra, o.fecha_creacion, o.status, o.foto,
 		        a.id_artista, a.nombre,
 		        g.id_genero, g.nombre
 		 FROM obra o
@@ -31,7 +31,7 @@ func (r *queryResolver) Obras(ctx context.Context, limit *int32, offset *int32) 
 		var artista model.Artista
 		var genero model.Genero
 
-		err := rows.Scan(&obra.ID, &obra.Nombre, &obra.Precio, &obra.FechaCreacion, &obra.Status, &obra.Foto, &obra.Material, &obra.Peso, &obra.Dimensiones,
+		err := rows.Scan(&obra.ID, &obra.Nombre, &obra.Precio, &obra.FechaCreacion, &obra.Status, &obra.Foto,
 			&artista.ID, &artista.Nombre,
 			&genero.ID, &genero.Nombre)
 		if err != nil {
@@ -60,17 +60,16 @@ func (r *queryResolver) FindObra(ctx context.Context, id string) ([]*model.Obra,
 	var genero model.Genero
 
 	query := `
-	SELECT o.id_obra, o.nombre, o.precio_obra, o.fecha_creacion, o.status, o.foto, o.material, o.peso, o.dimensiones,
+	SELECT o.id_obra, o.nombre, o.precio_obra, o.fecha_creacion, o.status, o.foto,
 	       a.id_artista, a.nombre, a.fecha_nacimiento, a.nacionalidad, a.biografia, a.foto,
 	       g.id_genero, g.nombre
 	FROM obra o
 	JOIN artista a ON o.id_artista = a.id_artista
 	JOIN genero g ON o.id_genero = g.id_genero
-	WHERE o.id_obra = ?
-	`
+	WHERE o.id_obra = ?`
 
 	err := r.DB.QueryRowContext(ctx, query, id).Scan(
-		&obra.ID, &obra.Nombre, &obra.Precio, &obra.FechaCreacion, &obra.Status, &obra.Foto, &obra.Material, &obra.Peso, &obra.Dimensiones,
+		&obra.ID, &obra.Nombre, &obra.Precio, &obra.FechaCreacion, &obra.Status, &obra.Foto,
 		&artista.ID, &artista.Nombre, &artista.FechaNacimiento, &artista.Nacionalidad, &artista.Biografia, &artista.Foto,
 		&genero.ID, &genero.Nombre,
 	)
@@ -100,7 +99,6 @@ func (r *mutationResolver) UpdateObra(ctx context.Context, input model.UpdateObr
 		return nil, fmt.Errorf("el ID de la obra es obligatorio para la actualización")
 	}
 
-	// Validar status si viene
 	var statusValue interface{}
 	if input.Status != nil {
 		statusStr := string(*input.Status)
@@ -119,27 +117,23 @@ func (r *mutationResolver) UpdateObra(ctx context.Context, input model.UpdateObr
 		precio_obra = COALESCE(?, precio_obra),
 		fecha_creacion = COALESCE(?, fecha_creacion),
 		status = COALESCE(?, status),
-		foto = COALESCE(?, foto),
-		material = COALESCE(?, material),
-		peso = COALESCE(?, peso),
-		dimensiones = COALESCE(?, dimensiones)
+		foto = COALESCE(?, foto)
 		WHERE id_obra = ?`
 
 	_, err := r.DB.ExecContext(ctx, query,
 		input.Nombre, input.IDArtista, input.IDGenero, input.Precio, input.FechaCreacion,
-		statusValue, input.Foto, input.Material, input.Peso, input.Dimensiones, input.ID,
+		statusValue, input.Foto, input.ID,
 	)
 	if err != nil {
 		log.Printf("UpdateObra DB error: %v", err)
 		return nil, err
 	}
 
-	// Leer la obra actualizada
 	var obra model.Obra
-	selectQuery := `SELECT id_obra, nombre, id_artista, id_genero, precio_obra, fecha_creacion, status, foto, material, peso, dimensiones FROM obra WHERE id_obra = ?`
+	selectQuery := `SELECT id_obra, nombre, id_artista, id_genero, precio_obra, fecha_creacion, status, foto FROM obra WHERE id_obra = ?`
 	err = r.DB.QueryRowContext(ctx, selectQuery, input.ID).Scan(
 		&obra.ID, &obra.Nombre, &obra.IDArtista, &obra.IDGenero, &obra.Precio, &obra.FechaCreacion,
-		&obra.Status, &obra.Foto, &obra.Material, &obra.Peso, &obra.Dimensiones,
+		&obra.Status, &obra.Foto,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -159,19 +153,18 @@ func (r *mutationResolver) CreateObra(ctx context.Context, input model.NewObra) 
 		return nil, fmt.Errorf("hay campos obligatorios que no pueden estar vacíos")
 	}
 
-	// Validar status
 	statusStr := string(input.Status)
 	if !validStatuses[statusStr] {
 		return nil, fmt.Errorf("status inválido, debe ser DISPONIBLE, RESERVADA o VENDIDA")
 	}
 
 	insertQuery := `INSERT INTO obra 
-		(nombre, id_artista, id_genero, precio_obra, fecha_creacion, status, foto, material, peso, dimensiones) 
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		(nombre, id_artista, id_genero, precio_obra, fecha_creacion, status, foto) 
+		VALUES (?, ?, ?, ?, ?, ?, ?)`
 
 	result, err := r.DB.ExecContext(ctx, insertQuery,
 		input.Nombre, input.IDArtista, input.IDGenero, input.Precio, input.FechaCreacion,
-		statusStr, input.Foto, input.Material, input.Peso, input.Dimensiones,
+		statusStr, input.Foto,
 	)
 	if err != nil {
 		log.Printf("CreateObra DB error: %v", err)
@@ -190,17 +183,13 @@ func (r *mutationResolver) CreateObra(ctx context.Context, input model.NewObra) 
 		IDGenero:      input.IDGenero,
 		Precio:        input.Precio,
 		FechaCreacion: input.FechaCreacion,
-		Status:        input.Status, // sigue usando StatusObra de gqlgen
+		Status:        input.Status,
 		Foto:          input.Foto,
-		Material:      input.Material,
-		Peso:          input.Peso,
-		Dimensiones:   input.Dimensiones,
 	}
 
 	return obra, nil
 }
 
-// KillObra elimina una obra por ID
 func (r *mutationResolver) KillObra(ctx context.Context, id string) (bool, error) {
 	log.Printf("KillObra called with id: %s", id)
 	if id == "" {

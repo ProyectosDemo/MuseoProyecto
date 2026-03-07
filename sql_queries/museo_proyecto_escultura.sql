@@ -16,32 +16,30 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `preguntas`
+-- Table structure for table `escultura`
 --
 
-DROP TABLE IF EXISTS `preguntas`;
+DROP TABLE IF EXISTS `escultura`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `preguntas` (
-  `id_pregunta` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `id_cliente` int NOT NULL,
-  `pregunta` varchar(255) NOT NULL,
-  `respuesta` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`id_pregunta`),
-  UNIQUE KEY `id_pregunta` (`id_pregunta`),
-  KEY `fk_cliente` (`id_cliente`),
-  CONSTRAINT `fk_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `escultura` (
+  `id_obra` int NOT NULL,
+  `peso` int DEFAULT NULL,
+  `dimensiones` varchar(100) DEFAULT NULL,
+  `material` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id_obra`),
+  CONSTRAINT `escultura_ibfk_1` FOREIGN KEY (`id_obra`) REFERENCES `obra` (`id_obra`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `preguntas`
+-- Dumping data for table `escultura`
 --
 
-LOCK TABLES `preguntas` WRITE;
-/*!40000 ALTER TABLE `preguntas` DISABLE KEYS */;
-INSERT INTO `preguntas` VALUES (1,1,'Nombre de tu primera mascota?','Temmie'),(2,1,'Ciudad donde naciste?','guayana'),(3,1,'Primer colegio al que fuiste?','Fe y Alegria'),(4,2,'Nombre de tu primera mascota?','Ari'),(5,2,'Tu comida favorita?','galletas'),(6,2,'Tu película favorita?','barbie'),(7,3,'Nombre de tu primera mascota?','diluc'),(8,3,'Tu comida favorita?','ramen'),(9,3,'Ciudad donde naciste?','tokyo'),(10,4,'Primer colegio al que fuiste?','san pablo'),(11,4,'Nombre de tu primera mascota?','Pinchi'),(12,4,'Nombre de tu mejor amigo de infancia?','Yannil');
-/*!40000 ALTER TABLE `preguntas` ENABLE KEYS */;
+LOCK TABLES `escultura` WRITE;
+/*!40000 ALTER TABLE `escultura` DISABLE KEYS */;
+INSERT INTO `escultura` VALUES (15,3500,'200x80x70','Mármol'),(16,4200,'220x90x75','Bronce'),(17,2800,'180x70x65','Mármol'),(18,5000,'250x100x90','Bronce'),(19,3300,'190x80x70','Mármol'),(20,3900,'210x85x80','Bronce'),(21,4500,'230x95x85','Mármol'),(22,4700,'240x100x90','Bronce');
+/*!40000 ALTER TABLE `escultura` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -53,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-06 21:02:01
+-- Dump completed on 2026-03-06 21:02:00

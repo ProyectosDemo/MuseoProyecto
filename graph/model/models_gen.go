@@ -35,6 +35,14 @@ type Cliente struct {
 	CodigoSeguridad string `json:"codigo_seguridad"`
 }
 
+type Escultura struct {
+	IDObra      string `json:"id_obra"`
+	Obra        *Obra  `json:"obra"`
+	Material    string `json:"material"`
+	Peso        int32  `json:"peso"`
+	Dimensiones string `json:"dimensiones"`
+}
+
 type Genero struct {
 	ID     string `json:"id"`
 	Nombre string `json:"nombre"`
@@ -87,6 +95,13 @@ type NewCliente struct {
 	CodigoSeguridad string `json:"codigo_seguridad"`
 }
 
+type NewEscultura struct {
+	IDObra      string `json:"id_obra"`
+	Material    string `json:"material"`
+	Peso        int32  `json:"peso"`
+	Dimensiones string `json:"dimensiones"`
+}
+
 type NewGenero struct {
 	Nombre string `json:"nombre"`
 }
@@ -105,9 +120,6 @@ type NewObra struct {
 	FechaCreacion string     `json:"fecha_creacion"`
 	Status        StatusObra `json:"status"`
 	Foto          string     `json:"foto"`
-	Material      string     `json:"material"`
-	Peso          int32      `json:"peso"`
-	Dimensiones   string     `json:"dimensiones"`
 }
 
 type NewOrden struct {
@@ -148,9 +160,6 @@ type Obra struct {
 	FechaCreacion string     `json:"fecha_creacion"`
 	Status        StatusObra `json:"status"`
 	Foto          string     `json:"foto"`
-	Material      string     `json:"material"`
-	Peso          int32      `json:"peso"`
-	Dimensiones   string     `json:"dimensiones"`
 }
 
 type Orden struct {
@@ -218,6 +227,13 @@ type UpdateCliente struct {
 	CodigoSeguridad *string `json:"codigo_seguridad,omitempty"`
 }
 
+type UpdateEscultura struct {
+	IDObra      string  `json:"id_obra"`
+	Material    *string `json:"material,omitempty"`
+	Peso        *int32  `json:"peso,omitempty"`
+	Dimensiones *string `json:"dimensiones,omitempty"`
+}
+
 type UpdateGenero struct {
 	ID     string  `json:"id"`
 	Nombre *string `json:"nombre,omitempty"`
@@ -239,9 +255,6 @@ type UpdateObra struct {
 	FechaCreacion *string     `json:"fecha_creacion,omitempty"`
 	Status        *StatusObra `json:"status,omitempty"`
 	Foto          *string     `json:"foto,omitempty"`
-	Material      *string     `json:"material,omitempty"`
-	Peso          *int32      `json:"peso,omitempty"`
-	Dimensiones   *string     `json:"dimensiones,omitempty"`
 }
 
 type UpdateOrden struct {

@@ -55,6 +55,11 @@ type Obra {
   fecha_creacion: String!
   status: StatusObra!
   foto: String!
+}
+
+type Escultura {
+  id_obra: ID!
+  obra: Obra!
   material: String!
   peso: Int!
   dimensiones: String!
@@ -186,9 +191,6 @@ input NewObra {
   fecha_creacion: String!
   status: StatusObra!
   foto: String!
-  material: String!
-  peso: Int!
-  dimensiones: String!
 }
 
 input UpdateObra {
@@ -200,6 +202,17 @@ input UpdateObra {
   fecha_creacion: String
   status: StatusObra
   foto: String
+}
+
+input NewEscultura {
+  id_obra: ID!
+  material: String!
+  peso: Int!
+  dimensiones: String!
+}
+
+input UpdateEscultura {
+  id_obra: ID!
   material: String
   peso: Int
   dimensiones: String
@@ -285,6 +298,8 @@ type Query {
   Membresias(limit: Int, offset: Int): [Membresia!]!
   Genero(limit: Int, offset: Int): [Genero!]!
   ArtistaGenero(limit: Int, offset: Int): [ArtistaGenero!]!
+  Esculturas(limit: Int, offset: Int): [Escultura!]!
+  findEscultura(id_obra: ID!): Escultura
   FindArtistaGeneroByArtista(id_artista: ID!): [ArtistaGenero!]!
   FindArtistaGeneroByGenero(id_genero: ID!): [ArtistaGenero!]!
   FindGenero(id: ID!): [Genero!]!
@@ -345,4 +360,7 @@ type Mutation {
   createArtistaGenero(input: NewArtistaGenero!): ArtistaGenero!
   updateArtistaGenero(input: UpdateArtistaGenero!): ArtistaGenero!
   killArtistaGenero(id_artista: ID!, id_genero: ID!): Boolean!
+
+  createEscultura(input: NewEscultura!): Escultura!
+  updateEscultura(input: UpdateEscultura!): Escultura!
 }

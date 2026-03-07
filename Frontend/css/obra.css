@@ -36,6 +36,7 @@
 .obra-info div { 
     display: flex; 
     justify-content: space-between; 
+    align-items: center;
     background: #f9f9f9;
     padding: 8px 12px; 
     border-radius: 5px; 
@@ -46,8 +47,26 @@
     font-weight: bold; 
     color: #333; 
 }
-.obra-info div span:last-child { 
-    color: #555; 
+
+.obra-info div span:last-child {
+    text-align: right; /* fuerza el texto a la derecha */
+    flex: 1;           /* ocupa el espacio disponible */
+    margin-left: 10px; /* separación del título */
+}
+
+/* Asegura que Material, Peso y Dimensiones estén alineados a la derecha */
+#divMaterial, #divPeso, #divDimensiones {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#divMaterial span:last-child,
+#divPeso span:last-child,
+#divDimensiones span:last-child {
+    text-align: right;
+    flex: 1;
+    margin-left: 10px;
 }
 
 /* Estilo del botón Comprar */

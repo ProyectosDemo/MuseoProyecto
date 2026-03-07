@@ -31,9 +31,6 @@ CREATE TABLE `obra` (
   `fecha_creacion` date DEFAULT NULL,
   `status` enum('DISPONIBLE','RESERVADA','VENDIDA') NOT NULL DEFAULT 'DISPONIBLE',
   `foto` varchar(255) DEFAULT NULL,
-  `peso` int DEFAULT NULL,
-  `dimensiones` varchar(45) DEFAULT NULL,
-  `material` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id_obra`),
   KEY `id_artista` (`id_artista`),
   KEY `id_genero` (`id_genero`),
@@ -48,7 +45,7 @@ CREATE TABLE `obra` (
 
 LOCK TABLES `obra` WRITE;
 /*!40000 ALTER TABLE `obra` DISABLE KEYS */;
-INSERT INTO `obra` VALUES (1,'La muerte de CSP',2,2,2000,'1889-05-31','DISPONIBLE','images/obras/la_muerte_de_csp.png',12,'70x50x5','Óleo sobre lienzo'),(2,'El Indie mas chud',2,2,2000,'1889-06-01','DISPONIBLE','images\\obras\\el_indie_mas_chud.png',10,'65x50x5','Acrílico sobre lienzo'),(5,'Will never see the light of day',2,2,2000,'1889-05-31','DISPONIBLE','images\\obras\\will_never_see_the_light_of_day.png',15,'80x60x5','Óleo sobre lienzo'),(6,'Dreams of a frog',2,2,2000,'1889-05-31','DISPONIBLE','images\\obras\\dreams_of_a_frog.png',8,'50x50x5','Acrílico sobre lienzo'),(15,'Escultura Alfa',4,6,3500,'1890-01-15','DISPONIBLE','images\\obras\\escultura1.jpg',3500,'200x80x70','Mármol'),(16,'Escultura Beta',6,18,4200,'1891-02-20','DISPONIBLE','images\\obras\\escultura2.jpg',4200,'220x90x75','Bronce'),(17,'Escultura Gamma',5,3,2800,'1892-03-10','DISPONIBLE','images\\obras\\escultura3.jpg',2800,'180x70x65','Mármol'),(18,'Escultura Delta',9,9,5000,'1893-04-05','DISPONIBLE','images\\obras\\escultura4.jpg',5000,'250x100x90','Bronce'),(19,'Escultura Épsilon',10,7,3300,'1894-05-12','DISPONIBLE','images\\obras\\escultura5.jpg',3300,'190x80x70','Mármol'),(20,'Escultura Zeta',7,17,3900,'1895-06-18','DISPONIBLE','images\\obras\\escultura6.jpg',3900,'210x85x80','Bronce'),(21,'Escultura Eta',8,15,4500,'1896-07-20','VENDIDA','images\\obras\\escultura7.jpg',4500,'230x95x85','Mármol'),(22,'Escultura Theta',11,14,4700,'1897-08-22','DISPONIBLE','images\\obras\\escultura8.jpg',4700,'240x100x90','Bronce');
+INSERT INTO `obra` VALUES (1,'La muerte de CSP',2,2,2000,'1889-05-31','DISPONIBLE','images/obras/la_muerte_de_csp.png'),(2,'El Indie mas chud',2,2,2000,'1889-06-01','DISPONIBLE','images\\obras\\el_indie_mas_chud.png'),(5,'Will never see the light of day',2,2,2000,'1889-05-31','DISPONIBLE','images\\obras\\will_never_see_the_light_of_day.png'),(6,'Dreams of a frog',2,2,2000,'1889-05-31','DISPONIBLE','images\\obras\\dreams_of_a_frog.png'),(15,'Escultura Alfa',4,6,3500,'1890-01-15','DISPONIBLE','images\\obras\\escultura1.jpg'),(16,'Escultura Beta',6,18,4200,'1891-02-20','DISPONIBLE','images\\obras\\escultura2.jpg'),(17,'Escultura Gamma',5,3,2800,'1892-03-10','DISPONIBLE','images\\obras\\escultura3.jpg'),(18,'Escultura Delta',9,9,5000,'1893-04-05','DISPONIBLE','images\\obras\\escultura4.jpg'),(19,'Escultura Épsilon',10,7,3300,'1894-05-12','DISPONIBLE','images\\obras\\escultura5.jpg'),(20,'Escultura Zeta',7,17,3900,'1895-06-18','DISPONIBLE','images\\obras\\escultura6.jpg'),(21,'Escultura Eta',8,15,4500,'1896-07-20','DISPONIBLE','images\\obras\\escultura7.jpg'),(22,'Escultura Theta',11,14,4700,'1897-08-22','DISPONIBLE','images\\obras\\escultura8.jpg');
 /*!40000 ALTER TABLE `obra` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -61,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-05 16:49:45
+-- Dump completed on 2026-03-06 21:02:01

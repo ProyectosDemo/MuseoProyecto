@@ -62,6 +62,14 @@ type ComplexityRoot struct {
 		Telefono        func(childComplexity int) int
 	}
 
+	Escultura struct {
+		Dimensiones func(childComplexity int) int
+		IDObra      func(childComplexity int) int
+		Material    func(childComplexity int) int
+		Obra        func(childComplexity int) int
+		Peso        func(childComplexity int) int
+	}
+
 	Genero struct {
 		ID     func(childComplexity int) int
 		Nombre func(childComplexity int) int
@@ -93,6 +101,7 @@ type ComplexityRoot struct {
 		CreateArtista        func(childComplexity int, input model.NewArtista) int
 		CreateArtistaGenero  func(childComplexity int, input model.NewArtistaGenero) int
 		CreateCliente        func(childComplexity int, input model.NewCliente) int
+		CreateEscultura      func(childComplexity int, input model.NewEscultura) int
 		CreateGenero         func(childComplexity int, nombre string) int
 		CreateMembresia      func(childComplexity int, input model.NewMembresia) int
 		CreateObra           func(childComplexity int, input model.NewObra) int
@@ -113,6 +122,7 @@ type ComplexityRoot struct {
 		UpdateArtista        func(childComplexity int, input model.UpdateArtista) int
 		UpdateArtistaGenero  func(childComplexity int, input model.UpdateArtistaGenero) int
 		UpdateCliente        func(childComplexity int, input model.UpdateCliente) int
+		UpdateEscultura      func(childComplexity int, input model.UpdateEscultura) int
 		UpdateGenero         func(childComplexity int, input model.UpdateGenero) int
 		UpdateMembresia      func(childComplexity int, input model.UpdateMembresia) int
 		UpdateObra           func(childComplexity int, input model.UpdateObra) int
@@ -124,16 +134,13 @@ type ComplexityRoot struct {
 
 	Obra struct {
 		Artista       func(childComplexity int) int
-		Dimensiones   func(childComplexity int) int
 		FechaCreacion func(childComplexity int) int
 		Foto          func(childComplexity int) int
 		Genero        func(childComplexity int) int
 		ID            func(childComplexity int) int
 		IDArtista     func(childComplexity int) int
 		IDGenero      func(childComplexity int) int
-		Material      func(childComplexity int) int
 		Nombre        func(childComplexity int) int
-		Peso          func(childComplexity int) int
 		Precio        func(childComplexity int) int
 		Status        func(childComplexity int) int
 	}
@@ -162,10 +169,12 @@ type ComplexityRoot struct {
 		ArtistaGenero              func(childComplexity int, limit *int32, offset *int32) int
 		Artistas                   func(childComplexity int, limit *int32, offset *int32) int
 		Clientes                   func(childComplexity int, limit *int32, offset *int32) int
+		Esculturas                 func(childComplexity int, limit *int32, offset *int32) int
 		FindArtista                func(childComplexity int, id string) int
 		FindArtistaGeneroByArtista func(childComplexity int, idArtista string) int
 		FindArtistaGeneroByGenero  func(childComplexity int, idGenero string) int
 		FindCliente                func(childComplexity int, id string) int
+		FindEscultura              func(childComplexity int, idObra string) int
 		FindGenero                 func(childComplexity int, id string) int
 		FindMembresia              func(childComplexity int, idMembresia string) int
 		FindMembresiasByCliente    func(childComplexity int, idCliente string) int
@@ -236,6 +245,8 @@ type MutationResolver interface {
 	CreateArtistaGenero(ctx context.Context, input model.NewArtistaGenero) (*model.ArtistaGenero, error)
 	UpdateArtistaGenero(ctx context.Context, input model.UpdateArtistaGenero) (*model.ArtistaGenero, error)
 	KillArtistaGenero(ctx context.Context, idArtista string, idGenero string) (bool, error)
+	CreateEscultura(ctx context.Context, input model.NewEscultura) (*model.Escultura, error)
+	UpdateEscultura(ctx context.Context, input model.UpdateEscultura) (*model.Escultura, error)
 }
 type QueryResolver interface {
 	Clientes(ctx context.Context, limit *int32, offset *int32) ([]*model.Cliente, error)
@@ -248,6 +259,8 @@ type QueryResolver interface {
 	Membresias(ctx context.Context, limit *int32, offset *int32) ([]*model.Membresia, error)
 	Genero(ctx context.Context, limit *int32, offset *int32) ([]*model.Genero, error)
 	ArtistaGenero(ctx context.Context, limit *int32, offset *int32) ([]*model.ArtistaGenero, error)
+	Esculturas(ctx context.Context, limit *int32, offset *int32) ([]*model.Escultura, error)
+	FindEscultura(ctx context.Context, idObra string) (*model.Escultura, error)
 	FindArtistaGeneroByArtista(ctx context.Context, idArtista string) ([]*model.ArtistaGenero, error)
 	FindArtistaGeneroByGenero(ctx context.Context, idGenero string) ([]*model.ArtistaGenero, error)
 	FindGenero(ctx context.Context, id string) ([]*model.Genero, error)
@@ -386,6 +399,37 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.ComplexityRoot.Cliente.Telefono(childComplexity), true
 
+	case "Escultura.dimensiones":
+		if e.ComplexityRoot.Escultura.Dimensiones == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Escultura.Dimensiones(childComplexity), true
+	case "Escultura.id_obra":
+		if e.ComplexityRoot.Escultura.IDObra == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Escultura.IDObra(childComplexity), true
+	case "Escultura.material":
+		if e.ComplexityRoot.Escultura.Material == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Escultura.Material(childComplexity), true
+	case "Escultura.obra":
+		if e.ComplexityRoot.Escultura.Obra == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Escultura.Obra(childComplexity), true
+	case "Escultura.peso":
+		if e.ComplexityRoot.Escultura.Peso == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Escultura.Peso(childComplexity), true
+
 	case "Genero.id":
 		if e.ComplexityRoot.Genero.ID == nil {
 			break
@@ -513,6 +557,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.CreateCliente(childComplexity, args["input"].(model.NewCliente)), true
+	case "Mutation.createEscultura":
+		if e.ComplexityRoot.Mutation.CreateEscultura == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createEscultura_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.CreateEscultura(childComplexity, args["input"].(model.NewEscultura)), true
 	case "Mutation.createGenero":
 		if e.ComplexityRoot.Mutation.CreateGenero == nil {
 			break
@@ -733,6 +788,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.UpdateCliente(childComplexity, args["input"].(model.UpdateCliente)), true
+	case "Mutation.updateEscultura":
+		if e.ComplexityRoot.Mutation.UpdateEscultura == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateEscultura_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.UpdateEscultura(childComplexity, args["input"].(model.UpdateEscultura)), true
 	case "Mutation.updateGenero":
 		if e.ComplexityRoot.Mutation.UpdateGenero == nil {
 			break
@@ -817,12 +883,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Obra.Artista(childComplexity), true
-	case "Obra.dimensiones":
-		if e.ComplexityRoot.Obra.Dimensiones == nil {
-			break
-		}
-
-		return e.ComplexityRoot.Obra.Dimensiones(childComplexity), true
 	case "Obra.fecha_creacion":
 		if e.ComplexityRoot.Obra.FechaCreacion == nil {
 			break
@@ -859,24 +919,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Obra.IDGenero(childComplexity), true
-	case "Obra.material":
-		if e.ComplexityRoot.Obra.Material == nil {
-			break
-		}
-
-		return e.ComplexityRoot.Obra.Material(childComplexity), true
 	case "Obra.nombre":
 		if e.ComplexityRoot.Obra.Nombre == nil {
 			break
 		}
 
 		return e.ComplexityRoot.Obra.Nombre(childComplexity), true
-	case "Obra.peso":
-		if e.ComplexityRoot.Obra.Peso == nil {
-			break
-		}
-
-		return e.ComplexityRoot.Obra.Peso(childComplexity), true
 	case "Obra.precio":
 		if e.ComplexityRoot.Obra.Precio == nil {
 			break
@@ -1009,6 +1057,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Query.Clientes(childComplexity, args["limit"].(*int32), args["offset"].(*int32)), true
+	case "Query.Esculturas":
+		if e.ComplexityRoot.Query.Esculturas == nil {
+			break
+		}
+
+		args, err := ec.field_Query_Esculturas_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.Esculturas(childComplexity, args["limit"].(*int32), args["offset"].(*int32)), true
 	case "Query.findArtista":
 		if e.ComplexityRoot.Query.FindArtista == nil {
 			break
@@ -1053,6 +1112,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Query.FindCliente(childComplexity, args["id"].(string)), true
+	case "Query.findEscultura":
+		if e.ComplexityRoot.Query.FindEscultura == nil {
+			break
+		}
+
+		args, err := ec.field_Query_findEscultura_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.FindEscultura(childComplexity, args["id_obra"].(string)), true
 	case "Query.FindGenero":
 		if e.ComplexityRoot.Query.FindGenero == nil {
 			break
@@ -1348,6 +1418,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputNewArtista,
 		ec.unmarshalInputNewArtistaGenero,
 		ec.unmarshalInputNewCliente,
+		ec.unmarshalInputNewEscultura,
 		ec.unmarshalInputNewGenero,
 		ec.unmarshalInputNewMembresia,
 		ec.unmarshalInputNewObra,
@@ -1358,6 +1429,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputUpdateArtista,
 		ec.unmarshalInputUpdateArtistaGenero,
 		ec.unmarshalInputUpdateCliente,
+		ec.unmarshalInputUpdateEscultura,
 		ec.unmarshalInputUpdateGenero,
 		ec.unmarshalInputUpdateMembresia,
 		ec.unmarshalInputUpdateObra,
@@ -1485,6 +1557,17 @@ func (ec *executionContext) field_Mutation_createCliente_args(ctx context.Contex
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNNewCliente2mainᚋgraphᚋmodelᚐNewCliente)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createEscultura_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNNewEscultura2mainᚋgraphᚋmodelᚐNewEscultura)
 	if err != nil {
 		return nil, err
 	}
@@ -1717,6 +1800,17 @@ func (ec *executionContext) field_Mutation_updateCliente_args(ctx context.Contex
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_updateEscultura_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateEscultura2mainᚋgraphᚋmodelᚐUpdateEscultura)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateGenero_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -1827,6 +1921,22 @@ func (ec *executionContext) field_Query_Artistas_args(ctx context.Context, rawAr
 }
 
 func (ec *executionContext) field_Query_Clientes_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "limit", ec.unmarshalOInt2ᚖint32)
+	if err != nil {
+		return nil, err
+	}
+	args["limit"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "offset", ec.unmarshalOInt2ᚖint32)
+	if err != nil {
+		return nil, err
+	}
+	args["offset"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_Esculturas_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "limit", ec.unmarshalOInt2ᚖint32)
@@ -2017,6 +2127,17 @@ func (ec *executionContext) field_Query_findCliente_args(ctx context.Context, ra
 		return nil, err
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_findEscultura_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id_obra", ec.unmarshalNID2string)
+	if err != nil {
+		return nil, err
+	}
+	args["id_obra"] = arg0
 	return args, nil
 }
 
@@ -2717,6 +2838,173 @@ func (ec *executionContext) _Cliente_codigo_seguridad(ctx context.Context, field
 func (ec *executionContext) fieldContext_Cliente_codigo_seguridad(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Cliente",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Escultura_id_obra(ctx context.Context, field graphql.CollectedField, obj *model.Escultura) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Escultura_id_obra,
+		func(ctx context.Context) (any, error) {
+			return obj.IDObra, nil
+		},
+		nil,
+		ec.marshalNID2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Escultura_id_obra(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Escultura",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Escultura_obra(ctx context.Context, field graphql.CollectedField, obj *model.Escultura) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Escultura_obra,
+		func(ctx context.Context) (any, error) {
+			return obj.Obra, nil
+		},
+		nil,
+		ec.marshalNObra2ᚖmainᚋgraphᚋmodelᚐObra,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Escultura_obra(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Escultura",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Obra_id(ctx, field)
+			case "nombre":
+				return ec.fieldContext_Obra_nombre(ctx, field)
+			case "id_artista":
+				return ec.fieldContext_Obra_id_artista(ctx, field)
+			case "artista":
+				return ec.fieldContext_Obra_artista(ctx, field)
+			case "id_genero":
+				return ec.fieldContext_Obra_id_genero(ctx, field)
+			case "genero":
+				return ec.fieldContext_Obra_genero(ctx, field)
+			case "precio":
+				return ec.fieldContext_Obra_precio(ctx, field)
+			case "fecha_creacion":
+				return ec.fieldContext_Obra_fecha_creacion(ctx, field)
+			case "status":
+				return ec.fieldContext_Obra_status(ctx, field)
+			case "foto":
+				return ec.fieldContext_Obra_foto(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Obra", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Escultura_material(ctx context.Context, field graphql.CollectedField, obj *model.Escultura) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Escultura_material,
+		func(ctx context.Context) (any, error) {
+			return obj.Material, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Escultura_material(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Escultura",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Escultura_peso(ctx context.Context, field graphql.CollectedField, obj *model.Escultura) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Escultura_peso,
+		func(ctx context.Context) (any, error) {
+			return obj.Peso, nil
+		},
+		nil,
+		ec.marshalNInt2int32,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Escultura_peso(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Escultura",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Escultura_dimensiones(ctx context.Context, field graphql.CollectedField, obj *model.Escultura) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Escultura_dimensiones,
+		func(ctx context.Context) (any, error) {
+			return obj.Dimensiones, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Escultura_dimensiones(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Escultura",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -3823,12 +4111,6 @@ func (ec *executionContext) fieldContext_Mutation_createObra(ctx context.Context
 				return ec.fieldContext_Obra_status(ctx, field)
 			case "foto":
 				return ec.fieldContext_Obra_foto(ctx, field)
-			case "material":
-				return ec.fieldContext_Obra_material(ctx, field)
-			case "peso":
-				return ec.fieldContext_Obra_peso(ctx, field)
-			case "dimensiones":
-				return ec.fieldContext_Obra_dimensiones(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Obra", field.Name)
 		},
@@ -3892,12 +4174,6 @@ func (ec *executionContext) fieldContext_Mutation_updateObra(ctx context.Context
 				return ec.fieldContext_Obra_status(ctx, field)
 			case "foto":
 				return ec.fieldContext_Obra_foto(ctx, field)
-			case "material":
-				return ec.fieldContext_Obra_material(ctx, field)
-			case "peso":
-				return ec.fieldContext_Obra_peso(ctx, field)
-			case "dimensiones":
-				return ec.fieldContext_Obra_dimensiones(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Obra", field.Name)
 		},
@@ -4708,6 +4984,112 @@ func (ec *executionContext) fieldContext_Mutation_killArtistaGenero(ctx context.
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createEscultura(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_createEscultura,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().CreateEscultura(ctx, fc.Args["input"].(model.NewEscultura))
+		},
+		nil,
+		ec.marshalNEscultura2ᚖmainᚋgraphᚋmodelᚐEscultura,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createEscultura(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id_obra":
+				return ec.fieldContext_Escultura_id_obra(ctx, field)
+			case "obra":
+				return ec.fieldContext_Escultura_obra(ctx, field)
+			case "material":
+				return ec.fieldContext_Escultura_material(ctx, field)
+			case "peso":
+				return ec.fieldContext_Escultura_peso(ctx, field)
+			case "dimensiones":
+				return ec.fieldContext_Escultura_dimensiones(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Escultura", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createEscultura_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateEscultura(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_updateEscultura,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().UpdateEscultura(ctx, fc.Args["input"].(model.UpdateEscultura))
+		},
+		nil,
+		ec.marshalNEscultura2ᚖmainᚋgraphᚋmodelᚐEscultura,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateEscultura(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id_obra":
+				return ec.fieldContext_Escultura_id_obra(ctx, field)
+			case "obra":
+				return ec.fieldContext_Escultura_obra(ctx, field)
+			case "material":
+				return ec.fieldContext_Escultura_material(ctx, field)
+			case "peso":
+				return ec.fieldContext_Escultura_peso(ctx, field)
+			case "dimensiones":
+				return ec.fieldContext_Escultura_dimensiones(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Escultura", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateEscultura_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Obra_id(ctx context.Context, field graphql.CollectedField, obj *model.Obra) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -5018,93 +5400,6 @@ func (ec *executionContext) fieldContext_Obra_foto(_ context.Context, field grap
 	return fc, nil
 }
 
-func (ec *executionContext) _Obra_material(ctx context.Context, field graphql.CollectedField, obj *model.Obra) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Obra_material,
-		func(ctx context.Context) (any, error) {
-			return obj.Material, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Obra_material(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Obra",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Obra_peso(ctx context.Context, field graphql.CollectedField, obj *model.Obra) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Obra_peso,
-		func(ctx context.Context) (any, error) {
-			return obj.Peso, nil
-		},
-		nil,
-		ec.marshalNInt2int32,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Obra_peso(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Obra",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Obra_dimensiones(ctx context.Context, field graphql.CollectedField, obj *model.Obra) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Obra_dimensiones,
-		func(ctx context.Context) (any, error) {
-			return obj.Dimensiones, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Obra_dimensiones(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Obra",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Orden_id(ctx context.Context, field graphql.CollectedField, obj *model.Orden) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -5207,12 +5502,6 @@ func (ec *executionContext) fieldContext_Orden_obra(_ context.Context, field gra
 				return ec.fieldContext_Obra_status(ctx, field)
 			case "foto":
 				return ec.fieldContext_Obra_foto(ctx, field)
-			case "material":
-				return ec.fieldContext_Obra_material(ctx, field)
-			case "peso":
-				return ec.fieldContext_Obra_peso(ctx, field)
-			case "dimensiones":
-				return ec.fieldContext_Obra_dimensiones(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Obra", field.Name)
 		},
@@ -5793,12 +6082,6 @@ func (ec *executionContext) fieldContext_Query_Obras(ctx context.Context, field 
 				return ec.fieldContext_Obra_status(ctx, field)
 			case "foto":
 				return ec.fieldContext_Obra_foto(ctx, field)
-			case "material":
-				return ec.fieldContext_Obra_material(ctx, field)
-			case "peso":
-				return ec.fieldContext_Obra_peso(ctx, field)
-			case "dimensiones":
-				return ec.fieldContext_Obra_dimensiones(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Obra", field.Name)
 		},
@@ -6131,6 +6414,112 @@ func (ec *executionContext) fieldContext_Query_ArtistaGenero(ctx context.Context
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_ArtistaGenero_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_Esculturas(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_Esculturas,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().Esculturas(ctx, fc.Args["limit"].(*int32), fc.Args["offset"].(*int32))
+		},
+		nil,
+		ec.marshalNEscultura2ᚕᚖmainᚋgraphᚋmodelᚐEsculturaᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_Esculturas(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id_obra":
+				return ec.fieldContext_Escultura_id_obra(ctx, field)
+			case "obra":
+				return ec.fieldContext_Escultura_obra(ctx, field)
+			case "material":
+				return ec.fieldContext_Escultura_material(ctx, field)
+			case "peso":
+				return ec.fieldContext_Escultura_peso(ctx, field)
+			case "dimensiones":
+				return ec.fieldContext_Escultura_dimensiones(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Escultura", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_Esculturas_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_findEscultura(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_findEscultura,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().FindEscultura(ctx, fc.Args["id_obra"].(string))
+		},
+		nil,
+		ec.marshalOEscultura2ᚖmainᚋgraphᚋmodelᚐEscultura,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_findEscultura(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id_obra":
+				return ec.fieldContext_Escultura_id_obra(ctx, field)
+			case "obra":
+				return ec.fieldContext_Escultura_obra(ctx, field)
+			case "material":
+				return ec.fieldContext_Escultura_material(ctx, field)
+			case "peso":
+				return ec.fieldContext_Escultura_peso(ctx, field)
+			case "dimensiones":
+				return ec.fieldContext_Escultura_dimensiones(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Escultura", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_findEscultura_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -6765,12 +7154,6 @@ func (ec *executionContext) fieldContext_Query_findObra(ctx context.Context, fie
 				return ec.fieldContext_Obra_status(ctx, field)
 			case "foto":
 				return ec.fieldContext_Obra_foto(ctx, field)
-			case "material":
-				return ec.fieldContext_Obra_material(ctx, field)
-			case "peso":
-				return ec.fieldContext_Obra_peso(ctx, field)
-			case "dimensiones":
-				return ec.fieldContext_Obra_dimensiones(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Obra", field.Name)
 		},
@@ -6950,12 +7333,6 @@ func (ec *executionContext) fieldContext_Query_getObra(ctx context.Context, fiel
 				return ec.fieldContext_Obra_status(ctx, field)
 			case "foto":
 				return ec.fieldContext_Obra_foto(ctx, field)
-			case "material":
-				return ec.fieldContext_Obra_material(ctx, field)
-			case "peso":
-				return ec.fieldContext_Obra_peso(ctx, field)
-			case "dimensiones":
-				return ec.fieldContext_Obra_dimensiones(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Obra", field.Name)
 		},
@@ -9082,6 +9459,53 @@ func (ec *executionContext) unmarshalInputNewCliente(ctx context.Context, obj an
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputNewEscultura(ctx context.Context, obj any) (model.NewEscultura, error) {
+	var it model.NewEscultura
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id_obra", "material", "peso", "dimensiones"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id_obra":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id_obra"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDObra = data
+		case "material":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("material"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Material = data
+		case "peso":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("peso"))
+			data, err := ec.unmarshalNInt2int32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Peso = data
+		case "dimensiones":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dimensiones"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Dimensiones = data
+		}
+	}
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewGenero(ctx context.Context, obj any) (model.NewGenero, error) {
 	var it model.NewGenero
 	asMap := map[string]any{}
@@ -9155,7 +9579,7 @@ func (ec *executionContext) unmarshalInputNewObra(ctx context.Context, obj any) 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"nombre", "id_artista", "id_genero", "precio", "fecha_creacion", "status", "foto", "material", "peso", "dimensiones"}
+	fieldsInOrder := [...]string{"nombre", "id_artista", "id_genero", "precio", "fecha_creacion", "status", "foto"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -9211,27 +9635,6 @@ func (ec *executionContext) unmarshalInputNewObra(ctx context.Context, obj any) 
 				return it, err
 			}
 			it.Foto = data
-		case "material":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("material"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Material = data
-		case "peso":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("peso"))
-			data, err := ec.unmarshalNInt2int32(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Peso = data
-		case "dimensiones":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dimensiones"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Dimensiones = data
 		}
 	}
 	return it, nil
@@ -9594,6 +9997,53 @@ func (ec *executionContext) unmarshalInputUpdateCliente(ctx context.Context, obj
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateEscultura(ctx context.Context, obj any) (model.UpdateEscultura, error) {
+	var it model.UpdateEscultura
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id_obra", "material", "peso", "dimensiones"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id_obra":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id_obra"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDObra = data
+		case "material":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("material"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Material = data
+		case "peso":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("peso"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Peso = data
+		case "dimensiones":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dimensiones"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Dimensiones = data
+		}
+	}
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateGenero(ctx context.Context, obj any) (model.UpdateGenero, error) {
 	var it model.UpdateGenero
 	asMap := map[string]any{}
@@ -9681,7 +10131,7 @@ func (ec *executionContext) unmarshalInputUpdateObra(ctx context.Context, obj an
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "nombre", "id_artista", "id_genero", "precio", "fecha_creacion", "status", "foto", "material", "peso", "dimensiones"}
+	fieldsInOrder := [...]string{"id", "nombre", "id_artista", "id_genero", "precio", "fecha_creacion", "status", "foto"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -9744,27 +10194,6 @@ func (ec *executionContext) unmarshalInputUpdateObra(ctx context.Context, obj an
 				return it, err
 			}
 			it.Foto = data
-		case "material":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("material"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Material = data
-		case "peso":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("peso"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Peso = data
-		case "dimensiones":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dimensiones"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Dimensiones = data
 		}
 	}
 	return it, nil
@@ -10148,6 +10577,65 @@ func (ec *executionContext) _Cliente(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "codigo_seguridad":
 			out.Values[i] = ec._Cliente_codigo_seguridad(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var esculturaImplementors = []string{"Escultura"}
+
+func (ec *executionContext) _Escultura(ctx context.Context, sel ast.SelectionSet, obj *model.Escultura) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, esculturaImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Escultura")
+		case "id_obra":
+			out.Values[i] = ec._Escultura_id_obra(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "obra":
+			out.Values[i] = ec._Escultura_obra(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "material":
+			out.Values[i] = ec._Escultura_material(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "peso":
+			out.Values[i] = ec._Escultura_peso(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "dimensiones":
+			out.Values[i] = ec._Escultura_dimensiones(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -10599,6 +11087,20 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createEscultura":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createEscultura(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateEscultura":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateEscultura(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10680,21 +11182,6 @@ func (ec *executionContext) _Obra(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "foto":
 			out.Values[i] = ec._Obra_foto(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "material":
-			out.Values[i] = ec._Obra_material(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "peso":
-			out.Values[i] = ec._Obra_peso(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "dimensiones":
-			out.Values[i] = ec._Obra_dimensiones(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -11089,6 +11576,47 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "Esculturas":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_Esculturas(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "findEscultura":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_findEscultura(ctx, field)
 				return res
 			}
 
@@ -12047,6 +12575,36 @@ func (ec *executionContext) marshalNCliente2ᚖmainᚋgraphᚋmodelᚐCliente(ct
 	return ec._Cliente(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNEscultura2mainᚋgraphᚋmodelᚐEscultura(ctx context.Context, sel ast.SelectionSet, v model.Escultura) graphql.Marshaler {
+	return ec._Escultura(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNEscultura2ᚕᚖmainᚋgraphᚋmodelᚐEsculturaᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Escultura) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNEscultura2ᚖmainᚋgraphᚋmodelᚐEscultura(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNEscultura2ᚖmainᚋgraphᚋmodelᚐEscultura(ctx context.Context, sel ast.SelectionSet, v *model.Escultura) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Escultura(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNGenero2mainᚋgraphᚋmodelᚐGenero(ctx context.Context, sel ast.SelectionSet, v model.Genero) graphql.Marshaler {
 	return ec._Genero(ctx, sel, &v)
 }
@@ -12179,6 +12737,11 @@ func (ec *executionContext) unmarshalNNewArtistaGenero2mainᚋgraphᚋmodelᚐNe
 
 func (ec *executionContext) unmarshalNNewCliente2mainᚋgraphᚋmodelᚐNewCliente(ctx context.Context, v any) (model.NewCliente, error) {
 	res, err := ec.unmarshalInputNewCliente(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNNewEscultura2mainᚋgraphᚋmodelᚐNewEscultura(ctx context.Context, v any) (model.NewEscultura, error) {
+	res, err := ec.unmarshalInputNewEscultura(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -12413,6 +12976,11 @@ func (ec *executionContext) unmarshalNUpdateCliente2mainᚋgraphᚋmodelᚐUpdat
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNUpdateEscultura2mainᚋgraphᚋmodelᚐUpdateEscultura(ctx context.Context, v any) (model.UpdateEscultura, error) {
+	res, err := ec.unmarshalInputUpdateEscultura(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNUpdateGenero2mainᚋgraphᚋmodelᚐUpdateGenero(ctx context.Context, v any) (model.UpdateGenero, error) {
 	res, err := ec.unmarshalInputUpdateGenero(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -12617,6 +13185,13 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	_ = ctx
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOEscultura2ᚖmainᚋgraphᚋmodelᚐEscultura(ctx context.Context, sel ast.SelectionSet, v *model.Escultura) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Escultura(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOID2ᚖstring(ctx context.Context, v any) (*string, error) {
