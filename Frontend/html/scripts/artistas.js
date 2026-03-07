@@ -40,7 +40,7 @@ async function cargarArtistas() {
                 card.classList.add("artista-card");
 
                 card.innerHTML = `
-                        <img src="static/html/${artista.foto}" alt="${artista.nombre}">
+                        <img src="${artista.foto}" alt="${artista.nombre}">
                         <div class="artista-info">
                             <h2>${artista.nombre}</h2>
                             <p><strong>Fecha de nacimiento:</strong> ${artista.fecha_nacimiento}</p>

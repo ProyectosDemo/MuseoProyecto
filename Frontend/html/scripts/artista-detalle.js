@@ -45,7 +45,7 @@ async function cargarDetalleArtista() {
                 let imagen;
                 if (artista.foto) {
                     imagen = artista.foto
-                    document.getElementById("artistaFoto").src = "static/html/" + imagen;
+                    document.getElementById("artistaFoto").src = imagen;
                 }
             });
 
@@ -82,8 +82,8 @@ async function cargarDetalleArtista() {
                     const div = document.createElement("div");
                     div.className = "obra-card";
                     div.innerHTML = `
-                <a href="static/html/obra.html?id=${o.id}">
-                    <img src="static/html/${o.foto}" alt="${o.nombre}">
+                <a href="obra.html?id=${o.id}">
+                    <img src="${o.foto}" alt="${o.nombre}">
                     <h4>${o.nombre}</h4>
                 </a>
             `;

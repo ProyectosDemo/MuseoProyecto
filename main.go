@@ -77,38 +77,39 @@ func main() {
 		c.File("./Frontend/html/index.html")
 	})
 
-	// las paginas nuevas las agregas aqui para servirlas
-	paginas := []string{
-		"index",
-		"login",
-		"exposiciones",
-		"artistas",
-		"obra",
-		"admin",
-		"crud",
-		"admin-clientes",
-		"admin-trabajadores",
-		"admin-obras",
-		"admin-membresias",
-		"admin-artistas",
-		"admin-generos",
-		"admin-artista_genero",
-		"admin-tarjetas",
-		"admin-preguntas",
-		"artista-detalle",
-		"consultas",
-		"cuenta-cliente",
-		"login-trabajador",
-		"registro",
-		"reservas"}
+	/*
+		// las paginas nuevas las agregas aqui para servirlas
+		paginas := []string{
+			"index",
+			"login",
+			"exposiciones",
+			"artistas",
+			"obra",
+			"admin",
+			"crud",
+			"admin-clientes",
+			"admin-trabajadores",
+			"admin-obras",
+			"admin-membresias",
+			"admin-artistas",
+			"admin-generos",
+			"admin-artista_genero",
+			"admin-tarjetas",
+			"admin-preguntas",
+			"artista-detalle",
+			"consultas",
+			"cuenta-cliente",
+			"login-trabajador",
+			"registro",
+			"reservas"}
 
-	for _, pagina := range paginas {
-		router.GET("/"+pagina+".html", func(c *gin.Context) {
-			c.File("./Frontend/html/" + pagina + ".html")
-		})
-	}
+		for _, pagina := range paginas {
+			router.GET("/"+pagina+".html", func(c *gin.Context) {
+				c.File("./Frontend/html/" + pagina + ".html")
+			})
+		}
 
-	router.Static("/static", "./Frontend")
+		router.Static("/static", "./Frontend") */
 
 	router.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")

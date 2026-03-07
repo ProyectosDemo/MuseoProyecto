@@ -42,7 +42,7 @@ async function cargarObras() {
             artCard.innerHTML = `
                 <div class="art-info">
                     <a href="obra.html?id=${ob.id}">
-                        <img src="/static/html/${ob.foto}" alt="${ob.nombre}">
+                        <img src="${ob.foto}" alt="${ob.nombre}">
                         <h4>${ob.nombre}</h4>
                     </a>
                     <p>${ob.artista ? ob.artista.nombre : ""}</p>
