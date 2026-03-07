@@ -1,0 +1,238 @@
+document.addEventListener('DOMContentLoaded', cargar);
+
+const navMenu = document.getElementById("navMenu");
+const loginButton = document.getElementById("loginButton");
+const trabajadorId = localStorage.getItem("trabajadorId");
+const trabajadorNombre = localStorage.getItem("trabajadorNombre");
+const trabajadorAdmin = localStorage.getItem("trabajadorAdmin");
+
+async function cargar() {
+
+    if (!trabajadorId) {
+        console.log("Debe iniciar sesión como trabajador para usar esta página");
+        location.href = "login.html";
+    }
+
+    if (trabajadorAdmin === "true") {
+        document.getElementById("menuLateral").hidden = false;
+    }
+
+    loginButton.textContent = `Bienvenido, ${trabajadorNombre || "Trabajador"}`;
+    loginButton.href = "#";
+
+    const logoutBtn = document.createElement("a");
+    logoutBtn.href = "#";
+    logoutBtn.textContent = "Cerrar Sesión";
+    logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("trabajadorNombre");
+        localStorage.removeItem("trabajadorId");
+        localStorage.removeItem("trabajadorAdmin");
+        location.reload();
+    });
+    navMenu.appendChild(logoutBtn);
+
+    const contenido = document.getElementById("contenidoArtistas");
+    const endpoint = "http://localhost:8080/query";
+
+    function limpiar() {
+        contenido.innerHTML = "";
+    }
+
+    async function fetchGraphQL(query, variables = {}) {
+        const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query, variables })
+        });
+        return await res.json();
+    }
+
+    document.getElementById("btnCrear").addEventListener("click", () => {
+        limpiar();
+
+        contenido.innerHTML = `
+            <form id="formCrear" class="form-container">
+                <input type="text" id="nombre" placeholder="Nombre" required>
+                <input type="text" id="fechaNacimiento" placeholder="Fecha de Nacimiento" required>
+                <input type="text" id="nacionalidad" placeholder="Nacionalidad" required>
+                <input type="text" id="biografia" placeholder="Biografía" required>
+                <input type="text" id="foto" placeholder="Foto" required>
+                <div class="form-buttons">
+                    <button type="button" id="cancelarCrear" class="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </div>
+            </form>
+        `;
+
+        document.getElementById("formCrear").addEventListener("submit", async e => {
+            e.preventDefault();
+
+            const query = `
+                mutation ($input: NewArtista!) {
+                    createArtista(input: $input) {
+                        id
+                        nombre
+                    }
+                }
+            `;
+
+            const variables = {
+                input: {
+                    nombre: document.getElementById("nombre").value,
+                    fecha_nacimiento: document.getElementById("fechaNacimiento").value,
+                    nacionalidad: document.getElementById("nacionalidad").value,
+                    biografia: document.getElementById("biografia").value,
+                    foto: document.getElementById("foto").value
+                }
+            };
+
+            const data = await fetchGraphQL(query, variables);
+            console.log(data);
+
+            if (data.errors) {
+                console.error(data.errors);
+                alert("Error al crear artista");
+            } else {
+                alert("Artista creado correctamente");
+                limpiar();
+            }
+        });
+
+        document.getElementById("cancelarCrear").addEventListener("click", limpiar);
+    });
+    document.getElementById("btnObtener").addEventListener("click", async () => {
+        limpiar();
+
+        const query = `
+            query ObtenerArtistas($limit: Int, $offset: Int) {
+                Artistas(limit: $limit, offset: $offset) {
+                    id
+                    nombre
+                    fecha_nacimiento
+                    nacionalidad
+                    biografia
+                    foto
+                }
+            }
+        `;
+
+        const variables = { limit: 100, offset: 0 };
+
+        const data = await fetchGraphQL(query, variables);
+        console.log(data);
+
+        const artistas = data?.data?.Artistas;
+
+        if (!artistas || artistas.length === 0) {
+            contenido.innerHTML = "<p>No hay artistas registrados.</p>";
+            return;
+        }
+
+        // Generar HTML con tarjetas neutras y rejilla de 3 columnas
+        let html = '<div class="grid-container"><h3>Artistas Registrados</h3>';
+
+        artistas.forEach(a => {
+            html += `<div class="grid-item">
+                        <h4>${a.nombre}</h4>
+                        <p><strong>Fecha de Nacimiento:</strong> ${a.fecha_nacimiento}</p>
+                        <p><strong>Nacionalidad:</strong> ${a.nacionalidad}</p>
+                        <p><strong>Biografía:</strong> ${a.biografia}</p>`;
+        
+            html += `</div>`;
+        });
+
+        html += '</div>';
+
+        contenido.innerHTML = html;
+    });
+
+    document.getElementById("btnEditar").addEventListener("click", async () => {
+        limpiar();
+        const query = `
+            query ($limit: Int, $offset: Int) {
+                Artistas(limit: $limit, offset: $offset) {
+                    id
+                    nombre
+                    fecha_nacimiento
+                    nacionalidad
+                    biografia
+                    foto
+                }
+            }
+        `;
+        const variables = { limit: 100, offset: 0 };
+        const data = await fetchGraphQL(query, variables);
+        const artistas = data?.data?.Artistas;
+
+        if (!artistas || artistas.length === 0) {
+            contenido.innerHTML = "<p>No hay artistas para editar.</p>";
+            return;
+        }
+
+        const opciones = artistas.map(a => `<option value="${a.id}">${a.nombre}</option>`).join("");
+        contenido.innerHTML = `
+            <select id="selectArtista" class="select-box">${opciones}</select>
+            <form id="updateForm" class="form-container"></form>
+        `;
+
+        const form = document.getElementById("updateForm");
+        form.classList.add("edit-form");
+
+        function renderForm(artista) {
+            if (!artista) return;
+            form.innerHTML = `
+                <input type="text" id="nombre" value="${artista.nombre || ''}" required>
+                <input type="text" id="fechaNacimiento" value="${artista.fecha_nacimiento || ''}" required>
+                <input type="text" id="nacionalidad" value="${artista.nacionalidad || ''}" required>
+                <input type="text" id="biografia" value="${artista.biografia || ''}" required>
+                <input type="text" id="foto" value="${artista.foto || ''}" required>
+                <div class="form-buttons">
+                    <button type="button" id="cancelarEditar" class="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-primary">Actualizar</button>
+                </div>
+            `;
+
+            document.getElementById("updateForm").addEventListener("submit", async e => {
+                e.preventDefault();
+                const mutation = `
+                    mutation updateArtista($input: UpdateArtista!) {
+                        updateArtista(input: $input) {
+                            id
+                            nombre
+                            fecha_nacimiento
+                            nacionalidad
+                            biografia
+                            foto
+                        }
+                    }
+                `;
+                const variables = {
+                    input: {
+                        id: artista.id,
+                        nombre: document.getElementById("nombre").value,
+                        fecha_nacimiento: document.getElementById("fechaNacimiento").value,
+                        nacionalidad: document.getElementById("nacionalidad").value,
+                        biografia: document.getElementById("biografia").value,
+                        foto: document.getElementById("foto").value
+                    }
+                };
+                const result = await fetchGraphQL(mutation, variables);
+                if (result.errors) {
+                    console.error(result.errors);
+                    alert("Error al actualizar artista");
+                } else {
+                    alert("Artista actualizado correctamente");
+                    limpiar();
+                }
+            });
+
+            document.getElementById("cancelarEditar").addEventListener("click", limpiar);
+        }
+
+        renderForm(artistas[0]);
+        document.getElementById("selectArtista").addEventListener("change", e => {
+            const artista = artistas.find(a => a.id === e.target.value);
+            renderForm(artista);
+        });
+    });
+}

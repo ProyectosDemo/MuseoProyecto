@@ -14,18 +14,18 @@ body {
 header {
     background-color: #1f2a38;
     color: white;
-    padding: 20px 5%; /* Reduje un poco el padding lateral (era 8%) */
+    padding: 20px 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: nowrap; /* Evita que los elementos salten de línea */
+    flex-wrap: nowrap;
 }
 
 header h1 { 
-    font-size: 24px; /* Un poco más pequeño para que quepa todo */
+    font-size: 24px;
     letter-spacing: 2px; 
     font-weight: 600; 
-    white-space: nowrap; /* Fuerza a que el texto esté en una sola línea */
+    white-space: nowrap;
 }
 nav {
     display: flex;
@@ -35,11 +35,11 @@ nav {
 nav a {
     color: white;
     text-decoration: none;
-    margin-left: 15px; /* Reducido de 30px a 15px para ganar espacio */
-    font-size: 12px;   /* Reducido ligeramente de 14px */
+    margin-left: 15px;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 1px;
-    white-space: nowrap; /* Evita que un enlace largo se parta en dos */
+    white-space: nowrap;
     transition: opacity 0.3s ease;
 }
 
@@ -63,3 +63,5 @@ footer {
 @media (max-width: 768px) {
     body { font-size: 14px; }
 }
+
+

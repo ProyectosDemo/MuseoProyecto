@@ -11,16 +11,26 @@
 
     <section class="section">
         <h2>Todas las Obras</h2>
-        <div class="gallery" id="gallery">
+
+        <div class="filters">
+            <select id="filtroArtista">
+                <option value="">Todos los artistas</option>
+            </select>
+
+            <select id="filtroGenero">
+                <option value="">Todos los géneros</option>
+            </select>
         </div>
+
+        <div class="gallery" id="gallery"></div>
     </section>
 
     <footer>
         © 2026 Museo Aurora | Todos los derechos reservados
     </footer>
 
-    <script src="scripts/menu_superior.js" defer></script> <!-- primero los scripts de menu, ya despues puedes cargar los especificos de la pagina-->
-    <script src="scripts/exposiciones.js" defer></script> <!-- carga primero el DOM luego el script -->
+    <script src="../js/menu_superior.js" defer></script> <!-- primero los scripts de menu, ya despues puedes cargar los especificos de la pagina-->
+    <script src="../js/exposiciones.js" defer></script> <!-- carga primero el DOM luego el script -->
 
 </body>
 </html>

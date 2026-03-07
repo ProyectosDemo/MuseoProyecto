@@ -38,7 +38,7 @@ CREATE TABLE `escultura` (
 
 LOCK TABLES `escultura` WRITE;
 /*!40000 ALTER TABLE `escultura` DISABLE KEYS */;
-INSERT INTO `escultura` VALUES (15,3500,'200x80x70','Mármol'),(16,4200,'220x90x75','Bronce'),(17,2800,'180x70x65','Mármol'),(18,5000,'250x100x90','Bronce'),(19,3300,'190x80x70','Mármol'),(20,3900,'210x85x80','Bronce'),(21,4500,'230x95x85','Mármol'),(22,4700,'240x100x90','Bronce');
+INSERT INTO `escultura` VALUES (16,4200,'220x90x75','Bronce'),(17,2800,'180x70x65','Mármol'),(18,5000,'250x100x90','Bronce'),(19,3300,'190x80x70','Mármol'),(20,3900,'210x85x80','Bronce'),(21,4500,'230x95x85','Mármol'),(22,4700,'240x100x90','Bronce');
 /*!40000 ALTER TABLE `escultura` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-06 21:02:00
+-- Dump completed on 2026-03-07 13:08:04

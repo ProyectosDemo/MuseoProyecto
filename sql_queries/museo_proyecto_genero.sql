@@ -35,7 +35,7 @@ CREATE TABLE `genero` (
 
 LOCK TABLES `genero` WRITE;
 /*!40000 ALTER TABLE `genero` DISABLE KEYS */;
-INSERT INTO `genero` VALUES (2,'abstracto calamardo'),(3,'Pintura'),(4,'Escultura'),(5,'Dibujo'),(6,'Grabado'),(7,'Fotografía'),(8,'Arte Digital'),(9,'Instalación'),(10,'Performance'),(11,'Arte Conceptual'),(12,'Arte Abstracto'),(13,'Impresionismo'),(14,'Cubismo'),(15,'Surrealismo'),(16,'Realismo'),(17,'Pop Art'),(18,'Expresionismo');
+INSERT INTO `genero` VALUES (3,'Pintura'),(4,'Escultura'),(5,'Dibujo'),(7,'Fotografía'),(8,'Arte Digital'),(11,'Arte Conceptual'),(12,'Arte Abstracto'),(14,'Cubismo'),(15,'Surrealismo'),(16,'Realismo');
 /*!40000 ALTER TABLE `genero` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -48,4 +48,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-06 21:02:01
+-- Dump completed on 2026-03-07 13:08:05

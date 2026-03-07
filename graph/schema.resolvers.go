@@ -35,10 +35,7 @@ func (r *queryResolver) FindArtistaGeneroByArtista(ctx context.Context, idArtist
 	panic("unimplemented")
 }
 
-// FindArtistaGeneroByGenero implements [QueryResolver].
-func (r *queryResolver) FindArtistaGeneroByGenero(ctx context.Context, idGenero string) ([]*model.ArtistaGenero, error) {
-	panic("unimplemented")
-}
+
 
 // FindMembresiasByCliente implements [QueryResolver].
 func (r *queryResolver) FindMembresiasByCliente(ctx context.Context, idCliente string) ([]*model.Membresia, error) {

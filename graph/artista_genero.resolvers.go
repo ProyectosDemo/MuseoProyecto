@@ -90,3 +90,53 @@ func (r *mutationResolver) KillArtistaGenero(ctx context.Context, idArtista stri
 	}
 	return true, nil
 }
+
+func (r *queryResolver) FindArtistaGeneroByGenero(ctx context.Context, id_genero string) ([]*model.ArtistaGenero, error) {
+	rows, err := r.DB.QueryContext(ctx, `
+		SELECT ag.id_artista, ag.id_genero,
+		       a.id_artista, a.nombre, a.fecha_nacimiento, a.nacionalidad, a.biografia, a.foto,
+		       g.nombre
+		FROM artista_genero ag
+		LEFT JOIN artista a ON ag.id_artista = a.id_artista
+		LEFT JOIN genero g ON ag.id_genero = g.id_genero
+		WHERE ag.id_genero = ?`, id_genero)
+	if err != nil {
+		log.Printf("FindArtistaGeneroByGenero DB error: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var rels []*model.ArtistaGenero
+	for rows.Next() {
+		var ag model.ArtistaGenero
+		var artista model.Artista
+		var genero model.Genero
+
+		err := rows.Scan(
+			&ag.IDArtista,
+			&ag.IDGenero,
+			&artista.ID,
+			&artista.Nombre,
+			&artista.FechaNacimiento,
+			&artista.Nacionalidad,
+			&artista.Biografia,
+			&artista.Foto,
+			&genero.Nombre,
+		)
+		if err != nil {
+			log.Printf("FindArtistaGeneroByGenero scan error: %v", err)
+			return nil, err
+		}
+
+		ag.Artista = &artista
+		ag.Genero = &genero
+		rels = append(rels, &ag)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Printf("FindArtistaGeneroByGenero rows error: %v", err)
+		return nil, err
+	}
+
+	return rels, nil
+}

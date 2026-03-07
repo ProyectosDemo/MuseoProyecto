@@ -1,7 +1,7 @@
 .hero {
     height: 80vh;
     background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
-                url('https://images.unsplash.com/photo-1549880338-65ddcdfd017b') center/cover no-repeat;
+                url('../html/images/photo-1549880338-65ddcdfd017b.jpg') center/cover no-repeat;
     display: flex;
     align-items: center;
     justify-content: center;

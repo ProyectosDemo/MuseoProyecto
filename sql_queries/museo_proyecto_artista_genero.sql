@@ -38,7 +38,7 @@ CREATE TABLE `artista_genero` (
 
 LOCK TABLES `artista_genero` WRITE;
 /*!40000 ALTER TABLE `artista_genero` DISABLE KEYS */;
-INSERT INTO `artista_genero` VALUES (2,2),(11,2),(2,3),(11,3),(2,4),(12,4),(4,5),(12,5),(4,6),(13,6),(5,7),(13,7),(5,8),(6,9),(6,10),(7,11),(7,12),(8,13),(8,14),(9,15),(9,16),(10,17),(10,18);
+INSERT INTO `artista_genero` VALUES (7,3),(8,3),(5,4),(6,4),(7,4),(8,4),(9,4),(10,4),(11,4),(13,4),(4,5),(5,7),(10,7),(2,8),(5,11),(9,11),(9,12),(13,12),(10,14),(13,14),(8,15),(10,15),(6,16),(7,16);
 /*!40000 ALTER TABLE `artista_genero` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-06 21:02:02
+-- Dump completed on 2026-03-07 13:08:05

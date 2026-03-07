@@ -11,7 +11,7 @@ async function cargarObra() {
                 findObra(id: $id_obra) {
                     id
                     nombre
-                    artista { nombre }
+                    artista { id nombre }
                     genero { nombre }
                     precio
                     fecha_creacion
@@ -41,7 +41,7 @@ async function cargarObra() {
 
         document.getElementById("obraFoto").src = obra.foto;
         document.getElementById("obraNombre").textContent = obra.nombre;
-        document.getElementById("obraArtista").textContent = obra.artista?.nombre || "";
+        document.getElementById("obraArtista").innerHTML = obra.artista ? `<a class="link-link" href="artista-detalle.html?id=${obra.artista?.id}">${obra.artista?.nombre}</a>` : "";
         document.getElementById("obraGenero").textContent = obra.genero?.nombre || "";
         document.getElementById("obraPrecio").textContent = "$" + obra.precio;
         document.getElementById("obraFecha").textContent = obra.fecha_creacion;
