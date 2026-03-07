@@ -39,7 +39,7 @@ async function cargarObra() {
 
         if (!obra) return;
 
-        document.getElementById("obraFoto").src = obra.foto;
+        document.getElementById("obraFoto").src = "static/html/"+obra.foto;
         document.getElementById("obraNombre").textContent = obra.nombre;
         document.getElementById("obraArtista").textContent = obra.artista?.nombre || "";
         document.getElementById("obraGenero").textContent = obra.genero?.nombre || "";
