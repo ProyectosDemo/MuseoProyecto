@@ -159,3 +159,21 @@ func (r *queryResolver) LoginCliente(ctx context.Context, login string, password
         Nombre:  nombrePtr,
     }, nil
 }
+// KillCliente is the resolver for the killCliente field.
+func (r *mutationResolver) KillCliente(ctx context.Context, id string) (bool, error) {
+    // log de la llamada para depuración
+    log.Printf("KillCliente called with id: %s", id)
+    
+    if id == "" {
+        return false, fmt.Errorf("el ID del cliente es obligatorio para eliminar")
+    }
+
+    // ejecución de la consulta de borrado
+    _, err := r.DB.ExecContext(ctx, "DELETE FROM cliente WHERE id_cliente = ?", id)
+    if err != nil {
+        log.Printf("KillCliente DB error: %v", err)
+        return false, err
+    }
+
+    return true, nil
+}

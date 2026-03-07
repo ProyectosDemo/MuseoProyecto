@@ -38,7 +38,7 @@ function actualizarSelects() {
 async function manejarRegistro() {
     actualizarSelects();
 
-    electsPreguntas.forEach(select => select.addEventListener("change", actualizarSelects));
+    selectsPreguntas.forEach(select => select.addEventListener("change", actualizarSelects));
 
     const form = document.getElementById("registroForm");
 
