@@ -67,78 +67,84 @@ async function cargarObra() {
 
         const clienteId = localStorage.getItem("clienteId");
         if (obra.status === "DISPONIBLE" && clienteId) {
-            const btnComprar = document.createElement("button");
-            btnComprar.id = "btnComprar";
-            btnComprar.textContent = "Comprar";
+            // Solo crear el botón si no existe
+            if (!document.getElementById("btnComprar")) {
+                const btnComprar = document.createElement("button");
+                btnComprar.id = "btnComprar";
+                btnComprar.textContent = "Comprar";
 
-            btnComprar.addEventListener("click", () => {
-                const formDiv = document.createElement("div");
-                formDiv.id = "formCodigoSeguridad";
-                formDiv.innerHTML = `
-                    <input type="password" id="codigoSeguridad" placeholder="Código de seguridad">
-                    <button id="btnConfirmar">Confirmar</button>
-                `;
-                document.querySelector(".foto-boton").appendChild(formDiv);
-
-                formDiv.querySelector("#btnConfirmar").addEventListener("click", async () => {
-                    const codigoIngresado = formDiv.querySelector("#codigoSeguridad").value;
-                    if (!codigoIngresado) { alert("Debe ingresar el código de seguridad."); return; }
-
-                    try {
-                        const queryCliente = `
-                            query FindCliente($id: ID!) { findCliente(id: $id) { id codigo_seguridad } }
+                btnComprar.addEventListener("click", () => {
+                    // Solo crear el formulario si no existe
+                    if (!document.getElementById("formCodigoSeguridad")) {
+                        const formDiv = document.createElement("div");
+                        formDiv.id = "formCodigoSeguridad";
+                        formDiv.innerHTML = `
+                            <input type="password" id="codigoSeguridad" placeholder="Código de seguridad">
+                            <button id="btnConfirmar">Confirmar</button>
                         `;
-                        const resCliente = await fetch("http://localhost:8080/query", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ query: queryCliente, variables: { id: clienteId } })
-                        });
-                        const dataCliente = await resCliente.json();
-                        const cliente = dataCliente?.data?.findCliente?.[0];
+                        document.querySelector(".foto-boton").appendChild(formDiv);
 
-                        if (!cliente) throw new Error("Cliente no encontrado");
-                        if (cliente.codigo_seguridad !== codigoIngresado) {
-                            alert("Código de seguridad incorrecto.");
-                            throw new Error("Código incorrecto");
-                        }
+                        formDiv.querySelector("#btnConfirmar").addEventListener("click", async () => {
+                            const codigoIngresado = formDiv.querySelector("#codigoSeguridad").value;
+                            if (!codigoIngresado) { alert("Debe ingresar el código de seguridad."); return; }
 
-                        const mutationUpdateObra = `
-                            mutation UpdateObra($id: ID!, $status: StatusObra!) {
-                                updateObra(input: { id: $id, status: $status }) { id status }
+                            try {
+                                const queryCliente = `
+                                    query FindCliente($id: ID!) { findCliente(id: $id) { id codigo_seguridad } }
+                                `;
+                                const resCliente = await fetch("http://localhost:8080/query", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ query: queryCliente, variables: { id: clienteId } })
+                                });
+                                const dataCliente = await resCliente.json();
+                                const cliente = dataCliente?.data?.findCliente?.[0];
+
+                                if (!cliente) throw new Error("Cliente no encontrado");
+                                if (cliente.codigo_seguridad !== codigoIngresado) {
+                                    alert("Código de seguridad incorrecto.");
+                                    throw new Error("Código incorrecto");
+                                }
+
+                                const mutationUpdateObra = `
+                                    mutation UpdateObra($id: ID!, $status: StatusObra!) {
+                                        updateObra(input: { id: $id, status: $status }) { id status }
+                                    }
+                                `;
+                                await fetch("http://localhost:8080/query", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ query: mutationUpdateObra, variables: { id: obra.id, status: "RESERVADA" } })
+                                });
+
+                                const mutationCreateOrden = `
+                                    mutation CreateOrden($input: NewOrden!) {
+                                        createOrden(input: $input) { id status }
+                                    }
+                                `;
+                                const fechaActual = new Date().toISOString();
+                                await fetch("http://localhost:8080/query", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        query: mutationCreateOrden,
+                                        variables: { input: { id_obra: obra.id, id_cliente: clienteId, id_trabajador: null, fecha: fechaActual, status: "PENDIENTE" } }
+                                    })
+                                });
+
+                                alert("Obra reservada y orden creada exitosamente!");
+                                document.getElementById("obraEstatus").textContent = "RESERVADA";
+                                formDiv.remove();
+                                btnComprar.remove();
+                            } catch (err) {
+                                console.error(err);
                             }
-                        `;
-                        await fetch("http://localhost:8080/query", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ query: mutationUpdateObra, variables: { id: obra.id, status: "RESERVADA" } })
                         });
-
-                        const mutationCreateOrden = `
-                            mutation CreateOrden($input: NewOrden!) {
-                                createOrden(input: $input) { id status }
-                            }
-                        `;
-                        const fechaActual = new Date().toISOString();
-                        await fetch("http://localhost:8080/query", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                query: mutationCreateOrden,
-                                variables: { input: { id_obra: obra.id, id_cliente: clienteId, id_trabajador: null, fecha: fechaActual, status: "PENDIENTE" } }
-                            })
-                        });
-
-                        alert("Obra reservada y orden creada exitosamente!");
-                        document.getElementById("obraEstatus").textContent = "RESERVADA";
-                        formDiv.remove();
-                        btnComprar.remove();
-                    } catch (err) {
-                        console.error(err);
                     }
                 });
-            });
 
-            document.querySelector(".foto-boton").appendChild(btnComprar);
+                document.querySelector(".foto-boton").appendChild(btnComprar);
+            }
         }
 
     } catch (err) {

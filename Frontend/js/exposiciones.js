@@ -16,6 +16,7 @@ async function cargarTodasObras() {
                 nombre
                 foto
                 precio
+                status
                 artista {
                     id
                     nombre
@@ -126,10 +127,12 @@ function filtrarObras() {
         obrasFiltradas = obrasFiltradas.filter(o => String(o.genero.id) === String(idGenero));
 
     if (ordenPrecio === "asc") {
+        obrasFiltradas = obrasFiltradas.filter(o => o.status === "DISPONIBLE");
         obrasFiltradas.sort((a, b) => (a.precio || 0) - (b.precio || 0));
     }
 
     if (ordenPrecio === "desc") {
+        obrasFiltradas = obrasFiltradas.filter(o => o.status === "DISPONIBLE");
         obrasFiltradas.sort((a, b) => (b.precio || 0) - (a.precio || 0));
     }
 
