@@ -15,6 +15,7 @@ async function cargarTodasObras() {
                 id
                 nombre
                 foto
+                precio
                 artista {
                     id
                     nombre
@@ -65,6 +66,7 @@ function mostrarObras(obras) {
                 </a>
                 <p>${ob.artista ? ob.artista.nombre : ""}</p>
                 <p>${ob.genero ? ob.genero.nombre : ""}</p>
+                <p>${ob.precio ? "$" + ob.precio : ""}</p>
             </div>
         `;
         gallery.appendChild(artCard);
@@ -87,6 +89,7 @@ async function cargarFiltros() {
 
     const artistaSelect = document.getElementById("filtroArtista");
     const generoSelect = document.getElementById("filtroGenero");
+    const precioSelect = document.getElementById("filtroPrecio");
 
     if (artistaSelect) {
         artistaSelect.innerHTML = '<option value="">Todos los artistas</option>';
@@ -103,17 +106,32 @@ async function cargarFiltros() {
         });
         generoSelect.addEventListener('change', filtrarObras);
     }
+
+    if (precioSelect) {
+        precioSelect.addEventListener('change', filtrarObras);
+    }
 }
 
-// Filtrar obras por artista y/o género
 function filtrarObras() {
     const idArtista = document.getElementById("filtroArtista")?.value;
     const idGenero = document.getElementById("filtroGenero")?.value;
+    const ordenPrecio = document.getElementById("filtroPrecio")?.value;
 
     let obrasFiltradas = [...todasObras];
 
-    if (idArtista) obrasFiltradas = obrasFiltradas.filter(o => String(o.artista.id) === String(idArtista));
-    if (idGenero) obrasFiltradas = obrasFiltradas.filter(o => String(o.genero.id) === String(idGenero));
+    if (idArtista)
+        obrasFiltradas = obrasFiltradas.filter(o => String(o.artista.id) === String(idArtista));
+
+    if (idGenero)
+        obrasFiltradas = obrasFiltradas.filter(o => String(o.genero.id) === String(idGenero));
+
+    if (ordenPrecio === "asc") {
+        obrasFiltradas.sort((a, b) => (a.precio || 0) - (b.precio || 0));
+    }
+
+    if (ordenPrecio === "desc") {
+        obrasFiltradas.sort((a, b) => (b.precio || 0) - (a.precio || 0));
+    }
 
     mostrarObras(obrasFiltradas);
 }
