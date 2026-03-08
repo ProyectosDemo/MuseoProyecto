@@ -75,6 +75,7 @@ type Orden {
   trabajador: Trabajador!
   fecha: String!
   status: StatusOrden!
+  direccion: String
 }
 
 type TarjetaCliente {
@@ -224,6 +225,7 @@ input NewOrden {
   id_trabajador: ID
   fecha: String!
   status: StatusOrden!
+  direccion: String
 }
 
 input UpdateOrden {
@@ -233,6 +235,7 @@ input UpdateOrden {
   id_trabajador: ID
   fecha: String
   status: StatusOrden
+  direccion: String
 }
 
 input NewTarjetaCliente {

@@ -1,18 +1,22 @@
 section {
-    padding: 20px;
+    padding: 30px;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
 }
 
 table {
-    width: 50%;
+    width: 80%;
     border-collapse: collapse;
-    background-color: white;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    margin: 0 auto;  /* centramos la tabla */
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 th, td {
-    padding: 10px;
-    border: 1px solid #ddd;
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
     text-align: left;
 }
 
@@ -26,23 +30,37 @@ td {
 th {
     background-color: #004080;
     color: white;
+    font-size: 14px;
 }
 
 tr:nth-child(even) {
     background-color: #f2f2f2;
 }
 
+tr.concretada {
+    background-color: #d9f2d9;
+}
+
 button {
-    padding: 5px 10px;
+    padding: 6px 12px;
     background-color: #008000;
     color: white;
     border: none;
-    border-radius: 3px;
+    border-radius: 5px;
     cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.2s;
 }
 
 button:hover {
     background-color: #006600;
+}
+
+.direccionText {
+    margin-top: 5px;
+    font-size: 13px;
+    color: #333;
+    font-style: italic;
 }
 
 #orden-fecha,
@@ -54,4 +72,11 @@ button:hover {
     padding: 4px 8px;
     font-size: 13px;
     text-align: center;
+}
+
+select.statusSelect {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 13px;
 }

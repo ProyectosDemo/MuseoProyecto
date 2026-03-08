@@ -147,6 +147,7 @@ type ComplexityRoot struct {
 
 	Orden struct {
 		Cliente      func(childComplexity int) int
+		Direccion    func(childComplexity int) int
 		Fecha        func(childComplexity int) int
 		ID           func(childComplexity int) int
 		IDCliente    func(childComplexity int) int
@@ -944,6 +945,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Orden.Cliente(childComplexity), true
+	case "Orden.direccion":
+		if e.ComplexityRoot.Orden.Direccion == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Orden.Direccion(childComplexity), true
 	case "Orden.fecha":
 		if e.ComplexityRoot.Orden.Fecha == nil {
 			break
@@ -4276,6 +4283,8 @@ func (ec *executionContext) fieldContext_Mutation_createOrden(ctx context.Contex
 				return ec.fieldContext_Orden_fecha(ctx, field)
 			case "status":
 				return ec.fieldContext_Orden_status(ctx, field)
+			case "direccion":
+				return ec.fieldContext_Orden_direccion(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Orden", field.Name)
 		},
@@ -4337,6 +4346,8 @@ func (ec *executionContext) fieldContext_Mutation_updateOrden(ctx context.Contex
 				return ec.fieldContext_Orden_fecha(ctx, field)
 			case "status":
 				return ec.fieldContext_Orden_status(ctx, field)
+			case "direccion":
+				return ec.fieldContext_Orden_direccion(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Orden", field.Name)
 		},
@@ -5711,6 +5722,35 @@ func (ec *executionContext) fieldContext_Orden_status(_ context.Context, field g
 	return fc, nil
 }
 
+func (ec *executionContext) _Orden_direccion(ctx context.Context, field graphql.CollectedField, obj *model.Orden) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Orden_direccion,
+		func(ctx context.Context) (any, error) {
+			return obj.Direccion, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Orden_direccion(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Orden",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Preguntas_id(ctx context.Context, field graphql.CollectedField, obj *model.Preguntas) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -6143,6 +6183,8 @@ func (ec *executionContext) fieldContext_Query_Ordenes(ctx context.Context, fiel
 				return ec.fieldContext_Orden_fecha(ctx, field)
 			case "status":
 				return ec.fieldContext_Orden_status(ctx, field)
+			case "direccion":
+				return ec.fieldContext_Orden_direccion(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Orden", field.Name)
 		},
@@ -7215,6 +7257,8 @@ func (ec *executionContext) fieldContext_Query_findOrden(ctx context.Context, fi
 				return ec.fieldContext_Orden_fecha(ctx, field)
 			case "status":
 				return ec.fieldContext_Orden_status(ctx, field)
+			case "direccion":
+				return ec.fieldContext_Orden_direccion(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Orden", field.Name)
 		},
@@ -9647,7 +9691,7 @@ func (ec *executionContext) unmarshalInputNewOrden(ctx context.Context, obj any)
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id_obra", "id_cliente", "id_trabajador", "fecha", "status"}
+	fieldsInOrder := [...]string{"id_obra", "id_cliente", "id_trabajador", "fecha", "status", "direccion"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -9689,6 +9733,13 @@ func (ec *executionContext) unmarshalInputNewOrden(ctx context.Context, obj any)
 				return it, err
 			}
 			it.Status = data
+		case "direccion":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direccion"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Direccion = data
 		}
 	}
 	return it, nil
@@ -10206,7 +10257,7 @@ func (ec *executionContext) unmarshalInputUpdateOrden(ctx context.Context, obj a
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "id_obra", "id_cliente", "id_trabajador", "fecha", "status"}
+	fieldsInOrder := [...]string{"id", "id_obra", "id_cliente", "id_trabajador", "fecha", "status", "direccion"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -10255,6 +10306,13 @@ func (ec *executionContext) unmarshalInputUpdateOrden(ctx context.Context, obj a
 				return it, err
 			}
 			it.Status = data
+		case "direccion":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direccion"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Direccion = data
 		}
 	}
 	return it, nil
@@ -11264,6 +11322,8 @@ func (ec *executionContext) _Orden(ctx context.Context, sel ast.SelectionSet, ob
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "direccion":
+			out.Values[i] = ec._Orden_direccion(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

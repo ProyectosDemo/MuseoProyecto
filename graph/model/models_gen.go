@@ -128,6 +128,7 @@ type NewOrden struct {
 	IDTrabajador *string     `json:"id_trabajador,omitempty"`
 	Fecha        string      `json:"fecha"`
 	Status       StatusOrden `json:"status"`
+	Direccion    *string     `json:"direccion,omitempty"`
 }
 
 type NewPreguntas struct {
@@ -172,6 +173,7 @@ type Orden struct {
 	Trabajador   *Trabajador `json:"trabajador"`
 	Fecha        string      `json:"fecha"`
 	Status       StatusOrden `json:"status"`
+	Direccion    *string     `json:"direccion,omitempty"`
 }
 
 type Preguntas struct {
@@ -264,6 +266,7 @@ type UpdateOrden struct {
 	IDTrabajador *string      `json:"id_trabajador,omitempty"`
 	Fecha        *string      `json:"fecha,omitempty"`
 	Status       *StatusOrden `json:"status,omitempty"`
+	Direccion    *string      `json:"direccion,omitempty"`
 }
 
 type UpdatePreguntas struct {
