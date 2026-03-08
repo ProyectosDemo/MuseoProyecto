@@ -77,7 +77,7 @@ function header() {
 function crearHeader() {
     const header = document.createElement('header');
     header.innerHTML = `
-        <h1>Museo Aurora</h1>
+        <h1>Museo de Arte Contemporáneo</h1>
         <nav id="navMenu">
             <a href="index.html">Inicio</a>
             <a href="exposiciones.html">Exposiciones</a>
