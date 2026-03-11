@@ -16,25 +16,6 @@ import (
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
-func PrintFuncionesDisponibles(schemaAst *ast.Schema) {
-
-	// Loguear las operaciones encontradas en el schema para depuración
-	var mutationNames []string
-	if m := schemaAst.Types["Mutation"]; m != nil {
-		for _, f := range m.Fields {
-			mutationNames = append(mutationNames, f.Name)
-		}
-	}
-	var queryNames []string
-	if q := schemaAst.Types["Query"]; q != nil {
-		for _, f := range q.Fields {
-			queryNames = append(queryNames, f.Name)
-		}
-	}
-	log.Printf("Schema Mutation fields: %v", mutationNames)
-	log.Printf("Schema Query fields: %v", queryNames)
-}
-
 func main() {
 	// inicializar BD
 	mysql.ConectarBD()
@@ -51,7 +32,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error al parsear schema.graphqls: %v", err)
 	}
-	PrintFuncionesDisponibles(schemaAst)
+
 	// crear servidor GraphQL usando el schema parseado
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{DB: mysql.GetBD()}, Schema: schemaAst}))
 
@@ -70,12 +51,6 @@ func main() {
 	if err := router.SetTrustedProxies(nil); err != nil {
 		log.Fatalf("Error al configurar proxies: %v", err)
 	}
-
-	// Home de la web
-	router.GET("/", func(c *gin.Context) {
-		//playground.Handler("GraphQL playground", "/query").ServeHTTP(c.Writer, c.Request)
-		c.File("./Frontend/html/index.html")
-	})
 
 	/*
 		// las paginas nuevas las agregas aqui para servirlas
@@ -107,9 +82,15 @@ func main() {
 			router.GET("/"+pagina+".html", func(c *gin.Context) {
 				c.File("./Frontend/html/" + pagina + ".html")
 			})
-		}
+		}*/
 
-		router.Static("/static", "./Frontend") */
+	router.Static("/Frontend", "./Frontend")
+
+	// Home de la web
+	router.GET("/", func(c *gin.Context) {
+		//playground.Handler("GraphQL playground", "/query").ServeHTTP(c.Writer, c.Request)
+		c.File("./Frontend/html/index.html")
+	})
 
 	router.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")

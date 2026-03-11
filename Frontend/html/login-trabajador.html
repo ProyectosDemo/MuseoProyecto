@@ -19,18 +19,17 @@
             <h2>Iniciar Sesión Trabajador</h2>
 
             <form id="loginTrabajadorForm" autocomplete="off">
-                <input type="text" style="display:none">
 
                 <div class="input-group">
                     <label for="login_fake">Usuario</label>
-                    <input type="text" id="login_fake" name="login_fake"required
-                   autocomplete="off">
+                    <input type="text" id="login_fake" name="login_fake" autocomplete="off">
+                    <div id="errorLogin" class="field-error"></div>
                 </div>
 
                 <div class="input-group">
                     <label for="password_fake">Contraseña</label>
-                    <input type="password" id="password_fake" name="password_fake"required
-                   autocomplete="off">
+                    <input type="password" id="password_fake" name="password_fake" autocomplete="off">
+                    <div id="errorPassword" class="field-error"></div>
                 </div>
 
                 <button type="submit" class="btn-primary">Entrar</button>

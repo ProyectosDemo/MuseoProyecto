@@ -60,14 +60,12 @@ function header() {
         logoutBtn.href = "#";
         logoutBtn.textContent = "Cerrar Sesión";
         logoutBtn.addEventListener("click", () => {
-            if (userType === "cliente") {
-                localStorage.removeItem("clienteNombre");
-                localStorage.removeItem("clienteId");
-            } else {
-                localStorage.removeItem("trabajadorNombre");
-                localStorage.removeItem("trabajadorId");
-                localStorage.removeItem("trabajadorAdmin");
-            }
+            localStorage.removeItem("clienteNombre");
+            localStorage.removeItem("clienteId");
+            localStorage.removeItem("trabajadorNombre");
+            localStorage.removeItem("trabajadorId");
+            localStorage.removeItem("trabajadorAdmin");
+
             location.reload();
         });
         navMenu.appendChild(logoutBtn);
@@ -79,10 +77,10 @@ function crearHeader() {
     header.innerHTML = `
         <h1>Museo de Arte Contemporáneo</h1>
         <nav id="navMenu">
-            <a href="index.html">Inicio</a>
-            <a href="exposiciones.html">Exposiciones</a>
-            <a href="artistas.html">Artistas</a>
-            <a href="login.html" id="loginButton">Iniciar Sesión</a>
+            <a href="./index.html">Inicio</a>
+            <a href="./exposiciones.html">Exposiciones</a>
+            <a href="./artistas.html">Artistas</a>
+            <a href="./login.html" id="loginButton">Iniciar Sesión</a>
         </nav>
     `;
     return header;
