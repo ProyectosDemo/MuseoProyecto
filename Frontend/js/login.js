@@ -3,14 +3,52 @@
 // Llamar a la función para manejar el login al cargar la página
  document.addEventListener('DOMContentLoaded', manejarLogin);
 
-async function manejarLogin() {
+function manejarLogin() {
+
     const form = document.getElementById("loginForm");
+    const loginInput = document.getElementById("login");
+    const passwordInput = document.getElementById("password");
+    const errorLogin = document.getElementById("errorLogin");
+    const errorPassword = document.getElementById("errorPassword");
 
     form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+        e.preventDefault(); // evita que recargue la pagina al enviar el formulario
 
-        const login = document.getElementById("login").value.trim();
-        const password = document.getElementById("password").value.trim();
+        // limpia errores de antes
+        errorLogin.textContent = "";
+        errorPassword.textContent = "";
+        // saca los valores de los campos
+        const login = loginInput.value.trim();
+        const password = passwordInput.value.trim();
+        // flag de errores
+        let errores = false;
+
+        if (login === "") {
+            if (errorLogin) {
+                errorLogin.textContent = "Debes llenar el campo usuario.";
+            }
+            loginInput.classList.add("input-error");
+            errores = true;
+        }
+
+        if (password === "") {
+            if (errorPassword) {
+                errorPassword.textContent = "Debes llenar el campo contraseña.";
+            }
+            passwordInput.classList.add("input-error");
+            errores = true;
+        }
+
+        // si no ingreso datos no hacemos la consulta
+        if (errores) {
+            // Enfocar el primer campo con error
+            if (login === "") {
+                loginInput.focus();
+            } else if (password === "") {
+                passwordInput.focus();
+            }
+            return;
+        }
 
         const query = `
         query {
@@ -36,7 +74,10 @@ async function manejarLogin() {
                 localStorage.setItem("clienteId", data.data.loginCliente.id);
                 window.location.href = "index.html";
             } else {
-                alert("Usuario o contraseña incorrectos");
+                // Error de credenciales
+                if (errorPassword) {
+                    errorPassword.textContent = "Usuario o contraseña incorrectos.";
+                }
             }
         } catch (err) {
             console.error(err);
