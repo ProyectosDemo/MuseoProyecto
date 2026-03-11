@@ -1,7 +1,4 @@
-// codigo de obras de arte
 
-
-// Llamar a la función para cargar las obras al cargar la página
 document.addEventListener('DOMContentLoaded', cargarObras);
 
 async function cargarObras() {
@@ -40,14 +37,14 @@ async function cargarObras() {
             artCard.className = "art-card";
 
             artCard.innerHTML = `
-             <div class="art-info">
-                <a href="obra.html?id=${ob.id}">
-                    <img src="${ob.foto}" alt="${ob.nombre}">
-                    <h4>${ob.nombre}</h4>
-                </a>
-            <p>${ob.artista ? ob.artista.nombre : ""}</p>
-    </div>
-`;
+                <div class="art-info">
+                    <a href="obra.html?id=${ob.id}">
+                        <img src="${ob.foto}" alt="${ob.nombre}">
+                        <h4>${ob.nombre}</h4>
+                    </a>
+                <p>${ob.artista ? ob.artista.nombre : ""}</p>
+                </div>
+            `;
             gallery.appendChild(artCard);
         });
 
