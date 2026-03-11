@@ -44,7 +44,7 @@ async function cargarObra() {
         document.getElementById("obraArtista").innerHTML = obra.artista ? `<a class="link-link" href="artista-detalle.html?id=${obra.artista?.id}">${obra.artista?.nombre}</a>` : "";
         document.getElementById("obraGenero").textContent = obra.genero?.nombre || "";
         document.getElementById("obraPrecio").textContent = "$" + obra.precio;
-        document.getElementById("obraFecha").textContent = obra.fecha_creacion;
+       document.getElementById("obraFecha").textContent = obra.fecha_creacion.substring(0, 10);
         document.getElementById("obraEstatus").textContent = obra.status;
 
         const divMaterial = document.getElementById("divMaterial");
@@ -122,13 +122,14 @@ async function cargarObra() {
                                         createOrden(input: $input) { id status }
                                     }
                                 `;
-                                const fechaActual = new Date().toISOString();
+                                const fechaActual = new Date();
+                                const fechaCompleta = fechaActual.toISOString(); // "YYYY-MM-DDTHH:MM:SS.sssZ"
                                 await fetch("http://localhost:8080/query", {
                                     method: "POST",
                                     headers: { "Content-Type": "application/json" },
                                     body: JSON.stringify({
                                         query: mutationCreateOrden,
-                                        variables: { input: { id_obra: obra.id, id_cliente: clienteId, id_trabajador: null, fecha: fechaActual, status: "PENDIENTE" } }
+                                        variables: { input: { id_obra: obra.id, id_cliente: clienteId, id_trabajador: null, fecha: fechaCompleta, status: "PENDIENTE" } }
                                     })
                                 });
 

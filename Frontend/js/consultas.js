@@ -70,7 +70,7 @@ async function cargarOrdenesConcretadas() {
                 <p><strong>ID Orden:</strong> ${orden.id}</p>
                 <p><strong>Obra:</strong> ${obra?.nombre || "N/D"}</p>
                 <p><strong>Cliente:</strong> ${cliente?.nombre || "N/D"}</p>
-                <p><strong>Fecha:</strong> ${orden.fecha}</p>
+                <p><strong>Fecha:</strong> ${orden.fecha.split('T')[0]}</p>
                 <p><strong>Precio:</strong> $${obra?.precio || 0}</p>
                 <button class="facturaBtn">Generar Factura</button>
             `;
@@ -108,7 +108,7 @@ function generarFacturaEnCard(orden, obra, cliente, card) {
         <p><strong>IVA (21%):</strong> $${iva.toFixed(2)}</p>
         <p><strong>Total:</strong> $${total.toFixed(2)}</p>
         <p><strong>Ganancia Museo:</strong> $${gananciaMuseo.toFixed(2)}</p>
-        <p><strong>Fecha:</strong> ${orden.fecha}</p>
+        <p><strong>Fecha:</strong> ${new Date(orden.fecha).toISOString().split('T')[0]}</p>
     `;
 }
 
@@ -141,7 +141,7 @@ async function cargarResumenMembresias(fechaInicio, fechaFin) {
     table.innerHTML = "<tr><th>Cliente</th><th>Fecha de Membresía</th></tr>";
     filtradas.forEach(m => {
         const row = document.createElement("tr");
-        row.innerHTML = `<td>${m.cliente.nombre}</td><td>${new Date(m.fecha).toLocaleDateString()}</td>`;
+        row.innerHTML = `<td>${m.cliente.nombre}</td><td>${new Date(m.fecha).toISOString().split('T')[0]}</td>`;
         table.appendChild(row);
     });
     container.appendChild(table);
@@ -264,7 +264,7 @@ async function cargarResumenFacturas(fechaInicio, fechaFin) {
         const row = document.createElement("tr");
         row.innerHTML = `<td>${f.orden.id}</td><td>${f.obra.nombre}</td><td>${f.cliente?.nombre || "N/D"}</td>
                          <td>$${precio.toFixed(2)}</td><td>$${iva.toFixed(2)}</td><td>$${total.toFixed(2)}</td>
-                         <td>$${gananciaMuseo.toFixed(2)}</td><td>${new Date(f.orden.fecha).toLocaleDateString()}</td>`;
+                         <td>$${gananciaMuseo.toFixed(2)}</td><td>${new Date(f.orden.fecha).toISOString().split('T')[0]}</td>`;
         table.appendChild(row);
     });
 

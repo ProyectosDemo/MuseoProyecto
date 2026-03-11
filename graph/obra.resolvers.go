@@ -99,6 +99,7 @@ func (r *mutationResolver) UpdateObra(ctx context.Context, input model.UpdateObr
 		return nil, fmt.Errorf("el ID de la obra es obligatorio para la actualización")
 	}
 
+	// validar status
 	var statusValue interface{}
 	if input.Status != nil {
 		statusStr := string(*input.Status)
@@ -108,6 +109,14 @@ func (r *mutationResolver) UpdateObra(ctx context.Context, input model.UpdateObr
 		statusValue = statusStr
 	} else {
 		statusValue = nil
+	}
+
+	// manejar fecha correctamente
+	var fechaValue interface{}
+	if input.FechaCreacion != nil && *input.FechaCreacion != "" {
+		fechaValue = *input.FechaCreacion
+	} else {
+		fechaValue = nil
 	}
 
 	query := `UPDATE obra SET 
@@ -121,8 +130,14 @@ func (r *mutationResolver) UpdateObra(ctx context.Context, input model.UpdateObr
 		WHERE id_obra = ?`
 
 	_, err := r.DB.ExecContext(ctx, query,
-		input.Nombre, input.IDArtista, input.IDGenero, input.Precio, input.FechaCreacion,
-		statusValue, input.Foto, input.ID,
+		input.Nombre,
+		input.IDArtista,
+		input.IDGenero,
+		input.Precio,
+		fechaValue,
+		statusValue,
+		input.Foto,
+		input.ID,
 	)
 	if err != nil {
 		log.Printf("UpdateObra DB error: %v", err)
@@ -130,10 +145,21 @@ func (r *mutationResolver) UpdateObra(ctx context.Context, input model.UpdateObr
 	}
 
 	var obra model.Obra
-	selectQuery := `SELECT id_obra, nombre, id_artista, id_genero, precio_obra, fecha_creacion, status, foto FROM obra WHERE id_obra = ?`
+
+	selectQuery := `
+	SELECT id_obra, nombre, id_artista, id_genero, precio_obra, fecha_creacion, status, foto
+	FROM obra
+	WHERE id_obra = ?`
+
 	err = r.DB.QueryRowContext(ctx, selectQuery, input.ID).Scan(
-		&obra.ID, &obra.Nombre, &obra.IDArtista, &obra.IDGenero, &obra.Precio, &obra.FechaCreacion,
-		&obra.Status, &obra.Foto,
+		&obra.ID,
+		&obra.Nombre,
+		&obra.IDArtista,
+		&obra.IDGenero,
+		&obra.Precio,
+		&obra.FechaCreacion,
+		&obra.Status,
+		&obra.Foto,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {

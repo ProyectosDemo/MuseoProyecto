@@ -91,7 +91,7 @@ async function cargarReservas() {
                 <td>${orden.id_obra}</td>
                 <td>${orden.id_cliente}</td>
                 <td>${telefono}</td>
-                <td>${orden.fecha}</td>
+                <td>${orden.fecha.substring(0, 10)}</td>
                 <td>${orden.status}</td>
                 <td>${accionHtml}${direccionHtml}</td>
             `;
