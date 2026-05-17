@@ -1,0 +1,55 @@
+{
+  "$jsonSchema": {
+    "title": "artista",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "objectId"
+      },
+      "idArtista": {
+        "bsonType": "int"
+      },
+      "nombre": {
+        "bsonType": "string"
+      },
+      "fechaNacimiento": {
+        "bsonType": [
+          "string",
+          "null"
+        ]
+      },
+      "nacionalidad": {
+        "bsonType": [
+          "string",
+          "null"
+        ]
+      },
+      "biografia": {
+        "bsonType": [
+          "string",
+          "null"
+        ]
+      },
+      "foto": {
+        "bsonType": [
+          "string",
+          "null"
+        ]
+      },
+      "artistaGeneros": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "properties": {
+            "idArtista": {
+              "bsonType": "int"
+            },
+            "idGenero": {
+              "bsonType": "int"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -18,27 +18,6 @@ func ConectarBD() {
 	middleware.PanicButton(err)
 }
 
-// <p>Autor: ${ob.artista.nombre}</p>
-
 func GetBD() *sql.DB {
 	return base_datos
 }
-
-func Insertar(db *sql.DB, query string, args ...any) int64 {
-	result, err := db.Exec(query, args...)
-	middleware.PanicButton(err)
-
-	id, err := result.LastInsertId()
-	middleware.PanicButton(err)
-
-	return id
-}
-
-func Leer(db *sql.DB, query string, args ...any) *sql.Rows {
-	rows, err := db.Query(query, args...)
-	middleware.PanicButton(err)
-
-	return rows
-}
-
-//TO DO: Update and Delete functions

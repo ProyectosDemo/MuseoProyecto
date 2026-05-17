@@ -4,6 +4,7 @@ import (
 	"log"
 	"main/graph"
 	"main/mysql"
+	"main/mongodb"
 	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -23,7 +24,8 @@ func main() {
 		log.Fatalf("Error al conectar a la base de datos: %v", err)
 	}
 
-	// Cargar y parsear esquema GraphQL desde archivo para asegurar que incluya createCliente
+	mongodb.ConectarMongo()
+
 	schemaBytes, err := os.ReadFile("graph/schema.graphqls")
 	if err != nil {
 		log.Fatalf("No se pudo leer schema.graphqls: %v", err)
@@ -32,11 +34,15 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error al parsear schema.graphqls: %v", err)
 	}
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{
+		Resolvers: &graph.Resolver{
+			DB:      mysql.GetBD(),      // MySQL
+			MongoDB: mongodb.GetMongoDB(), // MongoDB
+		},
+		Schema: schemaAst,
+	}))
 
-	// crear servidor GraphQL usando el schema parseado
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{DB: mysql.GetBD()}, Schema: schemaAst}))
-
-	// Registrar transportes HTTP que aceptarás (POST, GET, OPTIONS)
+	// Registrar transportes HTTP
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
@@ -53,36 +59,36 @@ func main() {
 	}
 
 	/*
-		// las paginas nuevas las agregas aqui para servirlas
-		paginas := []string{
-			"index",
-			"login",
-			"exposiciones",
-			"artistas",
-			"obra",
-			"admin",
-			"crud",
-			"admin-clientes",
-			"admin-trabajadores",
-			"admin-obras",
-			"admin-membresias",
-			"admin-artistas",
-			"admin-generos",
-			"admin-artista_genero",
-			"admin-tarjetas",
-			"admin-preguntas",
-			"artista-detalle",
-			"consultas",
-			"cuenta-cliente",
-			"login-trabajador",
-			"registro",
-			"reservas"}
+	   // las paginas nuevas las agregas aqui para servirlas
+	   paginas := []string{
+	       "index",
+	       "login",
+	       "exposiciones",
+	       "artistas",
+	       "obra",
+	       "admin",
+	       "crud",
+	       "admin-clientes",
+	       "admin-trabajadores",
+	       "admin-obras",
+	       "admin-membresias",
+	       "admin-artistas",
+	       "admin-generos",
+	       "admin-artista_genero",
+	       "admin-tarjetas",
+	       "admin-preguntas",
+	       "artista-detalle",
+	       "consultas",
+	       "cuenta-cliente",
+	       "login-trabajador",
+	       "registro",
+	       "reservas"}
 
-		for _, pagina := range paginas {
-			router.GET("/"+pagina+".html", func(c *gin.Context) {
-				c.File("./Frontend/html/" + pagina + ".html")
-			})
-		}*/
+	   for _, pagina := range paginas {
+	       router.GET("/"+pagina+".html", func(c *gin.Context) {
+	           c.File("./Frontend/html/" + pagina + ".html")
+	       })
+	   }*/
 
 	router.Static("/Frontend", "./Frontend")
 

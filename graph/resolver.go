@@ -1,6 +1,10 @@
 package graph
 
-import "database/sql"
+import (
+	"database/sql"
+
+	"go.mongodb.org/mongo-driver/mongo" // NUEVO: Importamos el driver de MongoDB
+)
 
 // This file will not be regenerated automatically.
 //
@@ -8,5 +12,6 @@ import "database/sql"
 // here.
 
 type Resolver struct {
-	DB *sql.DB
+	DB      *sql.DB         // Tu conexión de MySQL
+	MongoDB *mongo.Database // NUEVO: Inyectamos la conexión a MongoDB Atlas
 }

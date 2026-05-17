@@ -1,0 +1,10 @@
+[{"id_genero":3, "nombre":"Pintura"},
+ {"id_genero":4, "nombre":"Escultura"},
+ {"id_genero":5, "nombre":"Dibujo"},
+ {"id_genero":7, "nombre":"Fotograf\u00eda"},
+ {"id_genero":8, "nombre":"Arte Digital"},
+ {"id_genero":11, "nombre":"Arte Conceptual"},
+ {"id_genero":12, "nombre":"Arte Abstracto"},
+ {"id_genero":14, "nombre":"Cubismo"},
+ {"id_genero":15, "nombre":"Surrealismo"},
+ {"id_genero":16, "nombre":"Realismo"}]
