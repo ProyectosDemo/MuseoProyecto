@@ -58,38 +58,6 @@ func main() {
 		log.Fatalf("Error al configurar proxies: %v", err)
 	}
 
-	/*
-	   // las paginas nuevas las agregas aqui para servirlas
-	   paginas := []string{
-	       "index",
-	       "login",
-	       "exposiciones",
-	       "artistas",
-	       "obra",
-	       "admin",
-	       "crud",
-	       "admin-clientes",
-	       "admin-trabajadores",
-	       "admin-obras",
-	       "admin-membresias",
-	       "admin-artistas",
-	       "admin-generos",
-	       "admin-artista_genero",
-	       "admin-tarjetas",
-	       "admin-preguntas",
-	       "artista-detalle",
-	       "consultas",
-	       "cuenta-cliente",
-	       "login-trabajador",
-	       "registro",
-	       "reservas"}
-
-	   for _, pagina := range paginas {
-	       router.GET("/"+pagina+".html", func(c *gin.Context) {
-	           c.File("./Frontend/html/" + pagina + ".html")
-	       })
-	   }*/
-
 	router.Static("/Frontend", "./Frontend")
 
 	// Home de la web
