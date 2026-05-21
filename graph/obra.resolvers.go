@@ -190,19 +190,10 @@ func enviarAGraphql(ctx context.Context, limit *int32, offset *int32, pipeline m
 
 	return obras, nil
 }
-
 func (r *queryResolver) ObrasPorPrecio(ctx context.Context, limit *int32, offset *int32) ([]*model.Obra, error) {
 	// pipeline para ordenar por precio
 	pipeline := mongo.Pipeline{
 		bson.D{{Key: "$sort", Value: bson.D{{Key: "precio_obra", Value: 1}}}},
-		bson.D{{Key: "$project", Value: bson.D{
-			{Key: "_id", Value: 1},
-			{Key: "nombre", Value: 1},
-			{Key: "precio_obra", Value: 1},
-			{Key: "artista.nombre", Value: 1},
-			{Key: "genero.nombre", Value: 1},
-			{Key: "foto", Value: 1},
-		}}},
 	}
 
 	obras, err := enviarAGraphql(ctx, limit, offset, pipeline)
@@ -217,14 +208,6 @@ func (r *queryResolver) ObrasPorPrecioDesc(ctx context.Context, limit *int32, of
 	// pipeline para ordenar por precio
 	pipeline := mongo.Pipeline{
 		bson.D{{Key: "$sort", Value: bson.D{{Key: "precio_obra", Value: -1}}}},
-		bson.D{{Key: "$project", Value: bson.D{
-			{Key: "_id", Value: 1},
-			{Key: "nombre", Value: 1},
-			{Key: "precio_obra", Value: 1},
-			{Key: "artista.nombre", Value: 1},
-			{Key: "genero.nombre", Value: 1},
-			{Key: "foto", Value: 1},
-		}}},
 	}
 
 	obras, err := enviarAGraphql(ctx, limit, offset, pipeline)
@@ -239,14 +222,6 @@ func (r *queryResolver) ObrasPorGenero(ctx context.Context, idGenero *int32, lim
 	// pipeline para filtrar por genero
 	pipeline := mongo.Pipeline{
 		bson.D{{Key: "$match", Value: bson.D{{Key: "genero._id", Value: idGenero}}}},
-		bson.D{{Key: "$project", Value: bson.D{
-			{Key: "_id", Value: 1},
-			{Key: "nombre", Value: 1},
-			{Key: "precio_obra", Value: 1},
-			{Key: "artista.nombre", Value: 1},
-			{Key: "genero.nombre", Value: 1},
-			{Key: "foto", Value: 1},
-		}}},
 	}
 
 	obras, err := enviarAGraphql(ctx, limit, offset, pipeline)
@@ -261,14 +236,6 @@ func (r *queryResolver) ObrasPorDisponibilidad(ctx context.Context, limit *int32
 	// pipeline para filtrar por status
 	pipeline := mongo.Pipeline{
 		bson.D{{Key: "$match", Value: bson.D{{Key: "status", Value: "DISPONIBLE"}}}},
-		bson.D{{Key: "$project", Value: bson.D{
-			{Key: "_id", Value: 1},
-			{Key: "nombre", Value: 1},
-			{Key: "precio_obra", Value: 1},
-			{Key: "artista.nombre", Value: 1},
-			{Key: "genero.nombre", Value: 1},
-			{Key: "foto", Value: 1},
-		}}},
 	}	
 
 	obras, err := enviarAGraphql(ctx, limit, offset, pipeline)

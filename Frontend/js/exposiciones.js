@@ -1,44 +1,18 @@
 document.addEventListener('DOMContentLoaded', manejarExposiciones);
 
 async function manejarExposiciones() {
-    await cargarTodasObras();
+    const catalogoInicial = await obtenerCatalogoCompleto();
+    mostrarObras(catalogoInicial);
     await cargarFiltros();
 }
 
-let todasObras = [];
 
-// Cargar todas las obras
-async function cargarTodasObras() {
-    const query = `
-        query {
-            Obras(limit: 100, offset: 0) {
-                id
-                nombre
-                foto
-                precio
-                status
-                artista {
-                    id
-                    nombre
-                }
-                genero {
-                    id
-                    nombre
-                }
-            }
-        }
-    `;
-
+async function obtenerCatalogoCompleto() {
+    const query = `{ Obras(limit: 100, offset: 0) { id nombre foto precio status artista { id nombre } genero { id nombre } } }`;
     try {
-        const res = await fetch("http://localhost:8080/query", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query })
-        });
-
+        const res = await fetch("http://localhost:8080/query", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }) });
         const data = await res.json();
-        todasObras = data.data.Obras || [];
-        mostrarObras(todasObras);
+        return data.data.Obras || [];
     } catch (err) {
         console.error(err);
         document.getElementById("gallery").innerHTML = "<p>Error cargando obras</p>";
@@ -46,132 +20,140 @@ async function cargarTodasObras() {
 }
 
 async function cargarObrasPorPrecioAsc()  {
-    const query = `{ ObrasPorPrecio(limit:100, offset:0) { id nombre precio foto artista { nombre } genero { nombre } } }`;
-
+    const query = `{ ObrasPorPrecio(limit:100, offset:0) { id nombre precio foto artista { id nombre } genero { id nombre } } }`;
     try {
-        const res = await fetch("http://localhost:8080/query", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query })
-        });
-
+        const res = await fetch("http://localhost:8080/query", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }) });
         const data = await res.json();
-        todasObras = data.data.ObrasPorPrecio || [];
+        return data.data.ObrasPorPrecio || [];
     } catch (err) {
         console.error(err);
         document.getElementById("gallery").innerHTML = "<p>Error cargando obras</p>";
     }
-
-    return todasObras;
 }
 
 async function cargarObrasPorPrecioDesc() {
-    const query = `{ ObrasPorPrecioDesc(limit:100, offset:0) { id nombre precio foto artista { nombre } genero { nombre } } }`;
-
+    const query = `{ ObrasPorPrecioDesc(limit:100, offset:0) { id nombre precio foto artista { id nombre } genero { id nombre } } }`;
     try {
-        const res = await fetch("http://localhost:8080/query", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query })
-        });
-
+        const res = await fetch("http://localhost:8080/query", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }) });
         const data = await res.json();
-        todasObras = data.data.ObrasPorPrecioDesc || [];
+        return data.data.ObrasPorPrecioDesc || [];
     } catch (err) {
         console.error(err);
         document.getElementById("gallery").innerHTML = "<p>Error cargando obras</p>";
     }
-
-    return todasObras;
 }
 
 async function cargarObrasPorGenero(idGenero) {
-    console.log("cargando genero");
+    console.log("cargando genero"); // original
     
-    const query = `{ ObrasPorGenero(idGenero: ${idGenero}, limit:100, offset:0) { id nombre precio foto artista { nombre } genero { nombre } } }`;
-
+    const query = `{ ObrasPorGenero(idGenero: ${idGenero}, limit:100, offset:0) { id nombre precio foto artista { id nombre } genero { id nombre } } }`;
     try {
-        const res = await fetch("http://localhost:8080/query", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query })
-        });
-
+        const res = await fetch("http://localhost:8080/query", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }) });
         const data = await res.json();
-        todasObras = data.data.ObrasPorGenero || [];
-        mostrarObras(todasObras);
+        return data.data.ObrasPorGenero || [];
     } catch (err) {
         console.error(err);
         document.getElementById("gallery").innerHTML = "<p>Error cargando obras</p>";
     }
-
-    return todasObras;
 }
+
+async function cargarObrasPorDisponibilidad() {
+    const query = `{ ObrasPorDisponibilidad(limit:100, offset:0) { id nombre precio foto status artista { id nombre } genero { id nombre } } }`;
+    try {
+        const res = await fetch("http://localhost:8080/query", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }) });
+        const data = await res.json();
+        return data.data.ObrasPorDisponibilidad || [];
+    } catch (err) {
+        console.error(err);
+        return [];
+    }
+}
+
 
 // Cargar filtros de artista y género
 async function cargarFiltros() {
-    const artistasQuery = `
-        query { Artistas(limit:100, offset:0) { id nombre } }
-    `;
-    const generosQuery = `
-        query { Genero(limit:100, offset:0) { id nombre } }
-    `;
+    const artistasQuery = `query { Artistas(limit:100, offset:0) { id nombre } }`;
+    const generosQuery = `query { Genero(limit:100, offset:0) { id nombre } }`;
 
-    const [artistasRes, generosRes] = await Promise.all([
-        fetch("http://localhost:8080/query", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({query: artistasQuery}) }).then(r => r.json()),
-        fetch("http://localhost:8080/query", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({query: generosQuery}) }).then(r => r.json())
-    ]);
+    try {
+        const [artistasRes, generosRes] = await Promise.all([
+            fetch("http://localhost:8080/query", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({query: artistasQuery}) }).then(r => r.json()),
+            fetch("http://localhost:8080/query", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({query: generosQuery}) }).then(r => r.json())
+        ]);
 
-    const artistaSelect = document.getElementById("filtroArtista");
-    const generoSelect = document.getElementById("filtroGenero");
-    const precioSelect = document.getElementById("filtroPrecio");
+        const artistaSelect = document.getElementById("filtroArtista");
+        const generoSelect = document.getElementById("filtroGenero");
+        const precioSelect = document.getElementById("filtroPrecio");
+        const disponibilidadSelect = document.getElementById("filtroDisponibilidad");
 
-    if (artistaSelect) {
-        artistaSelect.innerHTML = '<option value="">Todos los artistas</option>';
-        (artistasRes.data.Artistas || []).forEach(a => {
-            artistaSelect.innerHTML += `<option value="${a.id}">${a.nombre}</option>`;
-        });
-        artistaSelect.addEventListener('change', filtrarObras);
-    }
+        if (artistaSelect) {
+            artistaSelect.innerHTML = '<option value="">Todos los artistas</option>';
+            (artistasRes.data.Artistas || []).forEach(a => { artistaSelect.innerHTML += `<option value="${a.id}">${a.nombre}</option>`; });
+            artistaSelect.addEventListener('change', filtrarObras);
+        }
 
-    if (generoSelect) {
-        generoSelect.innerHTML = '<option value="">Todos los géneros</option>';
-        (generosRes.data.Genero || []).forEach(g => {
-            generoSelect.innerHTML += `<option value="${g.id}">${g.nombre}</option>`;
-        });
-        generoSelect.addEventListener('change', filtrarObras);
-    }
+        if (generoSelect) {
+            generoSelect.innerHTML = '<option value="">Todos los géneros</option>';
+            (generosRes.data.Genero || []).forEach(g => { generoSelect.innerHTML += `<option value="${g.id}">${g.nombre}</option>`; });
+            generoSelect.addEventListener('change', filtrarObras);
+        }
 
-    if (precioSelect) {
-        precioSelect.addEventListener('change', filtrarObras);
+        if (precioSelect) {
+            precioSelect.addEventListener('change', filtrarObras);
+        }
+        if (disponibilidadSelect) {
+            disponibilidadSelect.addEventListener('change', filtrarObras);
+        }
+    } catch (error) {
+        console.error(error);
     }
 }
 
-function filtrarObras() {
+async function filtrarObras(){
     const idArtista = document.getElementById("filtroArtista")?.value;
     const idGenero = document.getElementById("filtroGenero")?.value;
     const ordenPrecio = document.getElementById("filtroPrecio")?.value;
+    const disponibilidad = document.getElementById("filtroDisponibilidad")?.value;
 
-    let obrasFiltradas = [...todasObras];
+    let obrasAMostrar = [];
 
-    if (idArtista) {
-        obrasFiltradas = obrasFiltradas.filter(o => String(o.artista.id) === String(idArtista));
-        mostrarObras(obrasFiltradas);
-    }
-
+    // le damos chance a que respire con await
     if (idGenero) {
-        cargarObrasPorGenero(idGenero);
+        obrasAMostrar = await cargarObrasPorGenero(idGenero);
+    } else if (disponibilidad === "disponible") {
+        obrasAMostrar = await cargarObrasPorDisponibilidad();
+    } else {
+        obrasAMostrar = await obtenerCatalogoCompleto();
     }
 
+    // Filtro secundario local para "No disponibles"
+    if (disponibilidad === "no_disponible") {
+        obrasAMostrar = obrasAMostrar.filter(o => o.status !== "DISPONIBLE");
+    }
+
+    // aplicamos el ordenamiento
     if (ordenPrecio === "asc") {
-        cargarObrasPorPrecioAsc();
+        obrasAMostrar.sort((a, b) => (a.precio || 0) - (b.precio || 0));
+    } else if (ordenPrecio === "desc") {
+        obrasAMostrar.sort((a, b) => (b.precio || 0) - (a.precio || 0));
     }
 
-    if (ordenPrecio === "desc") {
-       cargarObrasPorPrecioDesc();
+    // lo ordenamos localmente
+    if ((idGenero || disponibilidad === "disponible") && ordenPrecio) {
+        if (ordenPrecio === "asc") {
+            obrasAMostrar.sort((a, b) => (a.precio || 0) - (b.precio || 0));
+        } else if (ordenPrecio === "desc") {
+            obrasAMostrar.sort((a, b) => (b.precio || 0) - (a.precio || 0));
+        }
     }
 
-    mostrarObras(obrasFiltradas);
+    // ahora si tenemos la id del artista
+    if (idArtista) {
+        obrasAMostrar = obrasAMostrar.filter(o => o.artista && String(o.artista.id) === String(idArtista));
+    }
+
+    // llamado final para mostrar las obras
+    mostrarObras(obrasAMostrar);
 }
 
 // Mostrar las obras en el DOM
