@@ -2,137 +2,160 @@ package graph
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"main/graph/model"
+	"main/graph/models_mongodb"
+	"main/mongodb"
+	"strconv"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// Esculturas lista todas las esculturas
+// Helper clave para no repetir codigo, mapea la estructura de base de datos directamente al modelo de GraphQL
+func toGraphQLEscultura(me *models_mongodb.EsculturaMongo, mo *models_mongodb.ObraMongo) *model.Escultura {
+	return &model.Escultura{
+		IDObra:      fmt.Sprintf("%d", me.ID), // Su _id es el ID de la obra
+		Material:    me.Material,
+		Peso:        me.Peso,
+		Dimensiones: me.Dimensiones,
+		Obra: &model.Obra{
+			ID:            fmt.Sprintf("%d", mo.ID),
+			Nombre:        mo.Nombre,
+			IDArtista:     fmt.Sprintf("%d", mo.IDArtista),
+			IDGenero:      fmt.Sprintf("%d", mo.IDGenero),
+			Precio:        mo.PrecioObra,
+			FechaCreacion: mo.FechaCreacion,
+			Status:        model.StatusObra(mo.Status),
+			Foto:          mo.Foto,
+			Artista: &model.Artista{
+				ID:              fmt.Sprintf("%d", mo.Artista.ID),
+				Nombre:          mo.Artista.Nombre,
+				FechaNacimiento: mo.Artista.FechaNacimiento,
+				Nacionalidad:    mo.Artista.Nacionalidad,
+				Biografia:       mo.Artista.Biografia,
+				Foto:            mo.Artista.Foto,
+			},
+			Genero: &model.Genero{
+				ID:     fmt.Sprintf("%d", mo.Genero.ID),
+				Nombre: mo.Genero.Nombre,
+			},
+		},
+	}
+}
+
+// Esculturas lista todas las esculturas cruzando los datos con obra ULTIMATE HUMONGOSAURIO
 func (r *queryResolver) Esculturas(ctx context.Context, limit *int32, offset *int32) ([]*model.Escultura, error) {
-	rows, err := r.DB.QueryContext(ctx,
-		`SELECT e.id_obra, e.material, e.peso, e.dimensiones,
-		        o.nombre, o.precio_obra, o.fecha_creacion, o.status, o.foto,
-		        a.id_artista, a.nombre,
-		        g.id_genero, g.nombre
-		 FROM escultura e
-		 JOIN obra o ON e.id_obra = o.id_obra
-		 JOIN artista a ON o.id_artista = a.id_artista
-		 JOIN genero g ON o.id_genero = g.id_genero
-		 LIMIT ? OFFSET ?`,
-		limit, offset)
+	findOptions := options.Find()
+	if offset != nil { findOptions.SetSkip(int64(*offset)) }
+	if limit != nil {  findOptions.SetLimit(int64(*limit)) }
+
+	db := mongodb.GetMongoDB()
+	cursor, err := db.Collection("escultura").Find(ctx, bson.D{}, findOptions)
 	if err != nil {
 		log.Printf("Esculturas DB error: %v", err)
 		return nil, err
 	}
-	defer rows.Close()
+	defer cursor.Close(ctx)
 
-	var esculturas []*model.Escultura
-	for rows.Next() {
-		var esc model.Escultura
-		var obra model.Obra
-		var artista model.Artista
-		var genero model.Genero
-
-		err := rows.Scan(&esc.IDObra, &esc.Material, &esc.Peso, &esc.Dimensiones,
-			&obra.Nombre, &obra.Precio, &obra.FechaCreacion, &obra.Status, &obra.Foto,
-			&artista.ID, &artista.Nombre,
-			&genero.ID, &genero.Nombre)
-		if err != nil {
-			log.Printf("Escultura scan error: %v", err)
-			return nil, err
-		}
-
-		obra.ID = esc.IDObra
-		obra.Artista = &artista
-		obra.Genero = &genero
-
-		esc.Obra = &obra
-
-		esculturas = append(esculturas, &esc)
+	var resultadosEsculturas []models_mongodb.EsculturaMongo
+	if err := cursor.All(ctx, &resultadosEsculturas); err != nil {
+		return nil, err
 	}
 
-	if err = rows.Err(); err != nil {
-		log.Printf("Esculturas rows error: %v", err)
-		return nil, err
+	var esculturas []*model.Escultura
+	for _, me := range resultadosEsculturas {
+		// Por cada escultura, buscamos recursivamente su obra correspondientE
+		var mo models_mongodb.ObraMongo
+		err := db.Collection("obra_ultimate").FindOne(ctx, bson.M{"_id": me.ID}).Decode(&mo)
+		if err != nil {
+			// para evitar romper saltamos en caso de no encontrar
+			log.Printf("Advertencia: No se encontro la obra para la escultura con ID %d", me.ID)
+			continue
+		}
+		esculturas = append(esculturas, toGraphQLEscultura(&me, &mo))
 	}
 
 	return esculturas, nil
 }
 
-// FindEscultura busca una escultura por id_obra
+// FindEscultura busca una escultura
 func (r *queryResolver) FindEscultura(ctx context.Context, id string) (*model.Escultura, error) {
-	var esc model.Escultura
-	var obra model.Obra
-	var artista model.Artista
-	var genero model.Genero
-
-	query := `
-	SELECT e.id_obra, e.material, e.peso, e.dimensiones,
-	       o.nombre, o.precio_obra, o.fecha_creacion, o.status, o.foto,
-	       a.id_artista, a.nombre,
-	       g.id_genero, g.nombre
-	FROM escultura e
-	JOIN obra o ON e.id_obra = o.id_obra
-	JOIN artista a ON o.id_artista = a.id_artista
-	JOIN genero g ON o.id_genero = g.id_genero
-	WHERE e.id_obra = ?`
-
-	err := r.DB.QueryRowContext(ctx, query, id).Scan(
-		&esc.IDObra, &esc.Material, &esc.Peso, &esc.Dimensiones,
-		&obra.Nombre, &obra.Precio, &obra.FechaCreacion, &obra.Status, &obra.Foto,
-		&artista.ID, &artista.Nombre,
-		&genero.ID, &genero.Nombre,
-	)
+	idNumerico, err := strconv.Atoi(id)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		return nil, fmt.Errorf("el ID debe ser valido")
+	}
+
+	db := mongodb.GetMongoDB()
+
+	// Buscar los datos de la escultura
+	var me models_mongodb.EsculturaMongo
+	err = db.Collection("escultura").FindOne(ctx, bson.M{"_id": int32(idNumerico)}).Decode(&me)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
 			return nil, fmt.Errorf("escultura no encontrada")
 		}
 		return nil, err
 	}
 
-	obra.ID = esc.IDObra
-	obra.Artista = &artista
-	obra.Genero = &genero
-	esc.Obra = &obra
+	// Buscar los datos cruzados de la obra
+	var mo models_mongodb.ObraMongo
+	err = db.Collection("obra_ultimate").FindOne(ctx, bson.M{"_id": int32(idNumerico)}).Decode(&mo)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("se encontro la escultura pero los datos de su obra no existen en obra_ultimate")
+		}
+		return nil, err
+	}
 
-	return &esc, nil
+	return toGraphQLEscultura(&me, &mo), nil
 }
 
-// CreateEscultura crea una escultura asociada a una obra existente
+// CreateEscultura inserta una nueva escultura vinculada al ID de la obra
 func (r *mutationResolver) CreateEscultura(ctx context.Context, input model.NewEscultura) (*model.Escultura, error) {
 	if input.IDObra == "" {
 		return nil, fmt.Errorf("el id_obra es obligatorio")
 	}
 	if input.Material == "" || input.Peso <= 0 || input.Dimensiones == "" {
-		return nil, fmt.Errorf("material, peso y dimensiones son obligatorios y peso debe ser > 0")
+		return nil, fmt.Errorf("material, peso y dimensiones son obligatorios; peso debe ser > 0")
 	}
 
-	// Verificar que la obra exista
-	var exists int
-	err := r.DB.QueryRowContext(ctx, "SELECT COUNT(1) FROM obra WHERE id_obra = ?", input.IDObra).Scan(&exists)
+	idNumerico, err := strconv.Atoi(input.IDObra)
 	if err != nil {
+		return nil, fmt.Errorf("ID de obra invalido")
+	}
+
+	db := mongodb.GetMongoDB()
+
+	// Validar que la obra exista
+	var mo models_mongodb.ObraMongo
+	err = db.Collection("obra_ultimate").FindOne(ctx, bson.M{"_id": int32(idNumerico)}).Decode(&mo)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("no se puede crear la escultura porque no existe la obra con id %s en obra_ultimate", input.IDObra)
+		}
 		return nil, err
 	}
-	if exists == 0 {
-		return nil, fmt.Errorf("no existe la obra con id %s", input.IDObra)
+
+	nuevaEsculturaDoc := models_mongodb.EsculturaMongo{
+		ID:          int32(idNumerico), // Su _id coincide con la obra
+		Material:    input.Material,
+		Peso:        input.Peso,
+		Dimensiones: input.Dimensiones,
 	}
 
-	insertQuery := `INSERT INTO escultura (id_obra, material, peso, dimensiones) VALUES (?, ?, ?, ?)`
-	_, err = r.DB.ExecContext(ctx, insertQuery, input.IDObra, input.Material, input.Peso, input.Dimensiones)
+	_, err = db.Collection("escultura").InsertOne(ctx, nuevaEsculturaDoc)
 	if err != nil {
 		log.Printf("CreateEscultura DB error: %v", err)
 		return nil, err
 	}
 
-	return &model.Escultura{
-		IDObra:     input.IDObra,
-		Material:   input.Material,
-		Peso:       input.Peso,
-		Dimensiones: input.Dimensiones,
-	}, nil
+	return toGraphQLEscultura(&nuevaEsculturaDoc, &mo), nil
 }
 
+// UpdateEscultura actualiza las propiedades
 func (r *mutationResolver) UpdateEscultura(ctx context.Context, input model.UpdateEscultura) (*model.Escultura, error) {
 	log.Printf("UpdateEscultura llamado con input: %+v", input)
 
@@ -140,53 +163,41 @@ func (r *mutationResolver) UpdateEscultura(ctx context.Context, input model.Upda
 		return nil, fmt.Errorf("el ID de la obra es obligatorio para la actualización")
 	}
 
-	query := `UPDATE escultura SET 
-		material = COALESCE(?, material),
-		peso = COALESCE(?, peso),
-		dimensiones = COALESCE(?, dimensiones)
-		WHERE id_obra = ?`
-
-	_, err := r.DB.ExecContext(ctx, query, input.Material, input.Peso, input.Dimensiones, input.IDObra)
+	idNumerico, err := strconv.Atoi(input.IDObra)
 	if err != nil {
-		log.Printf("UpdateEscultura DB error: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("ID inválido")
 	}
 
-	// Leer la escultura actualizada
-	var esc model.Escultura
-	var obra model.Obra
-	var artista model.Artista
-	var genero model.Genero
+	updateFields := bson.M{}
+	if input.Material != nil {      updateFields["material"] = *input.Material }
+	if input.Peso != nil {          updateFields["peso"] = *input.Peso }
+	if input.Dimensiones != nil {  updateFields["dimensiones"] = *input.Dimensiones }
 
-	selectQuery := `
-	SELECT e.id_obra, e.material, e.peso, e.dimensiones,
-	       o.nombre, o.precio_obra, o.fecha_creacion, o.status, o.foto,
-	       a.id_artista, a.nombre,
-	       g.id_genero, g.nombre
-	FROM escultura e
-	JOIN obra o ON e.id_obra = o.id_obra
-	JOIN artista a ON o.id_artista = a.id_artista
-	JOIN genero g ON o.id_genero = g.id_genero
-	WHERE e.id_obra = ?`
+	db := mongodb.GetMongoDB()
+	collEscultura := db.Collection("escultura")
 
-	err = r.DB.QueryRowContext(ctx, selectQuery, input.IDObra).Scan(
-		&esc.IDObra, &esc.Material, &esc.Peso, &esc.Dimensiones,
-		&obra.Nombre, &obra.Precio, &obra.FechaCreacion, &obra.Status, &obra.Foto,
-		&artista.ID, &artista.Nombre,
-		&genero.ID, &genero.Nombre,
-	)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("escultura no encontrada")
+	if len(updateFields) > 0 {
+		_, err = collEscultura.UpdateOne(ctx, bson.M{"_id": int32(idNumerico)}, bson.M{"$set": updateFields})
+		if err != nil {
+			log.Printf("UpdateEscultura DB error: %v", err)
+			return nil, err
 		}
-		log.Printf("Error al leer escultura actualizada: %v", err)
+	}
+
+	// Recuperar los datos actualizados de la escultura
+	var me models_mongodb.EsculturaMongo
+	err = collEscultura.FindOne(ctx, bson.M{"_id": int32(idNumerico)}).Decode(&me)
+	if err != nil {
+		if err == mongo.ErrNoDocuments { return nil, fmt.Errorf("escultura no encontrada") }
 		return nil, err
 	}
 
-	obra.ID = esc.IDObra
-	obra.Artista = &artista
-	obra.Genero = &genero
-	esc.Obra = &obra
+	// Recuperar los datos estables de la obra para construir la respuesta completa de GraphQL
+	var mo models_mongodb.ObraMongo
+	err = db.Collection("obra_ultimate").FindOne(ctx, bson.M{"_id": int32(idNumerico)}).Decode(&mo)
+	if err != nil {
+		return nil, fmt.Errorf("error al recuperar los datos de la obra vinculada: %v", err)
+	}
 
-	return &esc, nil
+	return toGraphQLEscultura(&me, &mo), nil
 }
