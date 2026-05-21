@@ -29,3 +29,11 @@ type GeneroMongo struct {
 	ID     int32  `bson:"_id"`
 	Nombre string `bson:"nombre"`
 }
+
+// ya sabes
+type EsculturaMongo struct {
+	ID          int32   `bson:"_id"`
+	Peso        int32 `bson:"peso"`
+	Dimensiones string  `bson:"dimensiones"`
+	Material    string  `bson:"material"`
+}

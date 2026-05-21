@@ -59,22 +59,26 @@ document.getElementById("btnCrear").addEventListener("click", () => {
     `;
     document.getElementById("formCrear").addEventListener("submit", async e => {
         e.preventDefault();
+        
+        // CORRECCION: Declaramos la variable de la mutacion y la pasamos correctamente
         const query = `
-            mutation ($nombre: String!) {
+            mutation CrearNuevoGenero($nombre: String!) {
                 createGenero(nombre: $nombre) {
-                    id_genero
+                    id
                     nombre
                 }
             }
         `;
+        
         const variables = { nombre: document.getElementById("nombre").value };
         const data = await fetchGraphQL(query, variables);
         console.log(data);
+        
         if (data.errors) {
             console.error(data.errors);
-            alert("Error al crear género");
+            alert("Error al crear genero: " + data.errors[0].message);
         } else {
-            alert("Género creado correctamente");
+            alert("Genero creado correctamente");
             limpiar();
         }
     });
