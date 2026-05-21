@@ -199,6 +199,8 @@ func (r *queryResolver) ObrasPorPrecio(ctx context.Context, limit *int32, offset
 			{Key: "_id", Value: 1},
 			{Key: "nombre", Value: 1},
 			{Key: "precio_obra", Value: 1},
+			{Key: "artista.nombre", Value: 1},
+			{Key: "genero.nombre", Value: 1},
 			{Key: "foto", Value: 1},
 		}}},
 	}
@@ -219,6 +221,8 @@ func (r *queryResolver) ObrasPorPrecioDesc(ctx context.Context, limit *int32, of
 			{Key: "_id", Value: 1},
 			{Key: "nombre", Value: 1},
 			{Key: "precio_obra", Value: 1},
+			{Key: "artista.nombre", Value: 1},
+			{Key: "genero.nombre", Value: 1},
 			{Key: "foto", Value: 1},
 		}}},
 	}
@@ -231,14 +235,16 @@ func (r *queryResolver) ObrasPorPrecioDesc(ctx context.Context, limit *int32, of
 	return obras, nil
 }
 
-func (r *queryResolver) ObrasPorGenero(ctx context.Context, idGenero string, limit *int32, offset *int32) ([]*model.Obra, error) {
+func (r *queryResolver) ObrasPorGenero(ctx context.Context, idGenero *int32, limit *int32, offset *int32) ([]*model.Obra, error) {
 	// pipeline para filtrar por genero
 	pipeline := mongo.Pipeline{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "id_genero", Value: idGenero}}}},
+		bson.D{{Key: "$match", Value: bson.D{{Key: "genero._id", Value: idGenero}}}},
 		bson.D{{Key: "$project", Value: bson.D{
 			{Key: "_id", Value: 1},
 			{Key: "nombre", Value: 1},
 			{Key: "precio_obra", Value: 1},
+			{Key: "artista.nombre", Value: 1},
+			{Key: "genero.nombre", Value: 1},
 			{Key: "foto", Value: 1},
 		}}},
 	}
@@ -259,6 +265,8 @@ func (r *queryResolver) ObrasPorDisponibilidad(ctx context.Context, limit *int32
 			{Key: "_id", Value: 1},
 			{Key: "nombre", Value: 1},
 			{Key: "precio_obra", Value: 1},
+			{Key: "artista.nombre", Value: 1},
+			{Key: "genero.nombre", Value: 1},
 			{Key: "foto", Value: 1},
 		}}},
 	}	

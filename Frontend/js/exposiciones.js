@@ -45,33 +45,67 @@ async function cargarTodasObras() {
     }
 }
 
-// Mostrar las obras en el DOM
-function mostrarObras(obras) {
-    const gallery = document.getElementById("gallery");
-    gallery.innerHTML = "";
+async function cargarObrasPorPrecioAsc()  {
+    const query = `{ ObrasPorPrecio(limit:100, offset:0) { id nombre precio foto artista { nombre } genero { nombre } } }`;
 
-    if (!obras || obras.length === 0) {
-        gallery.innerHTML = "<p>No hay obras disponibles</p>";
-        return;
+    try {
+        const res = await fetch("http://localhost:8080/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query })
+        });
+
+        const data = await res.json();
+        todasObras = data.data.ObrasPorPrecio || [];
+    } catch (err) {
+        console.error(err);
+        document.getElementById("gallery").innerHTML = "<p>Error cargando obras</p>";
     }
 
-    obras.forEach(ob => {
-        const artCard = document.createElement("div");
-        artCard.className = "art-card";
+    return todasObras;
+}
 
-        artCard.innerHTML = `
-            <div class="art-info">
-                <a href="obra.html?id=${ob.id}">
-                    <img src="${ob.foto}" alt="${ob.nombre}">
-                    <h4>${ob.nombre}</h4>
-                </a>
-                <p>${ob.artista ? ob.artista.nombre : ""}</p>
-                <p>${ob.genero ? ob.genero.nombre : ""}</p>
-                <p>${ob.precio ? "$" + ob.precio : ""}</p>
-            </div>
-        `;
-        gallery.appendChild(artCard);
-    });
+async function cargarObrasPorPrecioDesc() {
+    const query = `{ ObrasPorPrecioDesc(limit:100, offset:0) { id nombre precio foto artista { nombre } genero { nombre } } }`;
+
+    try {
+        const res = await fetch("http://localhost:8080/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query })
+        });
+
+        const data = await res.json();
+        todasObras = data.data.ObrasPorPrecioDesc || [];
+    } catch (err) {
+        console.error(err);
+        document.getElementById("gallery").innerHTML = "<p>Error cargando obras</p>";
+    }
+
+    return todasObras;
+}
+
+async function cargarObrasPorGenero(idGenero) {
+    console.log("cargando genero");
+    
+    const query = `{ ObrasPorGenero(idGenero: ${idGenero}, limit:100, offset:0) { id nombre precio foto artista { nombre } genero { nombre } } }`;
+
+    try {
+        const res = await fetch("http://localhost:8080/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query })
+        });
+
+        const data = await res.json();
+        todasObras = data.data.ObrasPorGenero || [];
+        mostrarObras(todasObras);
+    } catch (err) {
+        console.error(err);
+        document.getElementById("gallery").innerHTML = "<p>Error cargando obras</p>";
+    }
+
+    return todasObras;
 }
 
 // Cargar filtros de artista y género
@@ -120,21 +154,51 @@ function filtrarObras() {
 
     let obrasFiltradas = [...todasObras];
 
-    if (idArtista)
+    if (idArtista) {
         obrasFiltradas = obrasFiltradas.filter(o => String(o.artista.id) === String(idArtista));
+        mostrarObras(obrasFiltradas);
+    }
 
-    if (idGenero)
-        obrasFiltradas = obrasFiltradas.filter(o => String(o.genero.id) === String(idGenero));
+    if (idGenero) {
+        cargarObrasPorGenero(idGenero);
+    }
 
     if (ordenPrecio === "asc") {
-        obrasFiltradas = obrasFiltradas.filter(o => o.status === "DISPONIBLE");
-        obrasFiltradas.sort((a, b) => (a.precio || 0) - (b.precio || 0));
+        cargarObrasPorPrecioAsc();
     }
 
     if (ordenPrecio === "desc") {
-        obrasFiltradas = obrasFiltradas.filter(o => o.status === "DISPONIBLE");
-        obrasFiltradas.sort((a, b) => (b.precio || 0) - (a.precio || 0));
+       cargarObrasPorPrecioDesc();
     }
 
     mostrarObras(obrasFiltradas);
+}
+
+// Mostrar las obras en el DOM
+function mostrarObras(obras) {
+    const gallery = document.getElementById("gallery");
+    gallery.innerHTML = "";
+
+    if (!obras || obras.length === 0) {
+        gallery.innerHTML = "<p>No hay obras disponibles</p>";
+        return;
+    }
+
+    obras.forEach(ob => {
+        const artCard = document.createElement("div");
+        artCard.className = "art-card";
+
+        artCard.innerHTML = `
+            <div class="art-info">
+                <a href="obra.html?id=${ob.id}">
+                    <img src="${ob.foto}" alt="${ob.nombre}">
+                    <h4>${ob.nombre}</h4>
+                </a>
+                <p>${ob.artista ? ob.artista.nombre : ""}</p>
+                <p>${ob.genero ? ob.genero.nombre : ""}</p>
+                <p>${ob.precio ? "$" + ob.precio : ""}</p>
+            </div>
+        `;
+        gallery.appendChild(artCard);
+    });
 }

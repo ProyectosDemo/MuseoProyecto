@@ -297,7 +297,7 @@ type Query {
   Obras(limit: Int, offset: Int): [Obra!]!
   ObrasPorPrecio(limit: Int, offset: Int): [Obra!]!
   ObrasPorPrecioDesc(limit: Int, offset: Int): [Obra!]!
-  ObrasPorGenero(idGenero: String!, limit: Int, offset: Int): [Obra!]!
+  ObrasPorGenero(idGenero: Int, limit: Int, offset: Int): [Obra!]!
   ObrasPorDisponibilidad(limit: Int, offset: Int): [Obra!]!
   Ordenes(limit: Int, offset: Int): [Orden!]!
   TarjetasCliente(limit: Int, offset: Int): [TarjetaCliente!]!

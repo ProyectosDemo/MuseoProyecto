@@ -193,7 +193,7 @@ type ComplexityRoot struct {
 		Membresias                 func(childComplexity int, limit *int32, offset *int32) int
 		Obras                      func(childComplexity int, limit *int32, offset *int32) int
 		ObrasPorDisponibilidad     func(childComplexity int, limit *int32, offset *int32) int
-		ObrasPorGenero             func(childComplexity int, idGenero string, limit *int32, offset *int32) int
+		ObrasPorGenero             func(childComplexity int, idGenero *int32, limit *int32, offset *int32) int
 		ObrasPorPrecio             func(childComplexity int, limit *int32, offset *int32) int
 		ObrasPorPrecioDesc         func(childComplexity int, limit *int32, offset *int32) int
 		Ordenes                    func(childComplexity int, limit *int32, offset *int32) int
@@ -260,7 +260,7 @@ type QueryResolver interface {
 	Obras(ctx context.Context, limit *int32, offset *int32) ([]*model.Obra, error)
 	ObrasPorPrecio(ctx context.Context, limit *int32, offset *int32) ([]*model.Obra, error)
 	ObrasPorPrecioDesc(ctx context.Context, limit *int32, offset *int32) ([]*model.Obra, error)
-	ObrasPorGenero(ctx context.Context, idGenero string, limit *int32, offset *int32) ([]*model.Obra, error)
+	ObrasPorGenero(ctx context.Context, idGenero *int32, limit *int32, offset *int32) ([]*model.Obra, error)
 	ObrasPorDisponibilidad(ctx context.Context, limit *int32, offset *int32) ([]*model.Obra, error)
 	Ordenes(ctx context.Context, limit *int32, offset *int32) ([]*model.Orden, error)
 	TarjetasCliente(ctx context.Context, limit *int32, offset *int32) ([]*model.TarjetaCliente, error)
@@ -1336,7 +1336,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.ComplexityRoot.Query.ObrasPorGenero(childComplexity, args["idGenero"].(string), args["limit"].(*int32), args["offset"].(*int32)), true
+		return e.ComplexityRoot.Query.ObrasPorGenero(childComplexity, args["idGenero"].(*int32), args["limit"].(*int32), args["offset"].(*int32)), true
 	case "Query.ObrasPorPrecio":
 		if e.ComplexityRoot.Query.ObrasPorPrecio == nil {
 			break
@@ -2095,7 +2095,7 @@ func (ec *executionContext) field_Query_ObrasPorDisponibilidad_args(ctx context.
 func (ec *executionContext) field_Query_ObrasPorGenero_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "idGenero", ec.unmarshalNString2string)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "idGenero", ec.unmarshalOInt2ᚖint32)
 	if err != nil {
 		return nil, err
 	}
@@ -6395,7 +6395,7 @@ func (ec *executionContext) _Query_ObrasPorGenero(ctx context.Context, field gra
 		ec.fieldContext_Query_ObrasPorGenero,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.Resolvers.Query().ObrasPorGenero(ctx, fc.Args["idGenero"].(string), fc.Args["limit"].(*int32), fc.Args["offset"].(*int32))
+			return ec.Resolvers.Query().ObrasPorGenero(ctx, fc.Args["idGenero"].(*int32), fc.Args["limit"].(*int32), fc.Args["offset"].(*int32))
 		},
 		nil,
 		ec.marshalNObra2ᚕᚖmainᚋgraphᚋmodelᚐObraᚄ,
