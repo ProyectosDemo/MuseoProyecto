@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Membresías | Museo de Arte Contemporáneo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/menu-lateral.css">
+</head>
+<body>
+
+<header>
+    <h1>Gestión de Membresías</h1>
+    <nav id="navMenu">
+        <a href="index.html">Inicio</a>
+        <a href="login.html" id="loginButton">Iniciar Sesión</a>
+    </nav>
+</header>
+
+<div class="admin-panel">
+
+    <aside class="side-menu" id="menuLateral" hidden>
+        <h3>Membresías</h3>
+        <ul>
+            <li><a href="admin-clientes.html">Clientes</a></li>
+            <li><a href="admin-trabajadores.html">Trabajadores</a></li>
+            <li><a href="admin-obras.html">Obras</a></li>
+            <li><a href="admin-artistas.html">Artistas</a></li>
+            <li><a href="admin-generos.html">Géneros</a></li>
+            <li><a href="admin-artista_genero.html">Artista-Genero</a></li>
+            <li><a href="admin-membresias.html">Membresías</a></li>
+            <li><a href="admin-tarjetas.html">Tarjetas</a></li>
+            <li><a href="admin-preguntas.html">Preguntas</a></li>
+            <li><a href="admin.html">Panel de Control</a></li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <div class="action-buttons-container">
+            <div class="action-buttons">
+                <button id="btnObtener">Obtener</button>
+            </div>
+        </div>
+
+        <div class="content-container">
+            <div id="contenidoMembresias"></div>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    © 2026 Museo de Arte Contemporáneo | Todos los derechos reservados
+</footer>
+
+<script src="../js/admin-membresias.js" defer></script>
+
+</body>
+</html>

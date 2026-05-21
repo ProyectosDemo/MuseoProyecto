@@ -1,0 +1,92 @@
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 20px;
+    flex: 1;
+}
+
+.login-box {
+    background: #fff;
+    padding: 50px;
+    margin-top: 15px; 
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+}
+
+
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 600;
+    font-size: 24px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #333;
+}
+
+.input-group input {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #111;
+}
+
+.login-box input[type="text"],
+.login-box input[type="password"] {
+    width: 100%;
+    max-width: 300px;
+    box-sizing: border-box;
+}
+
+.hidden-input {
+    position: absolute;
+    top: -1000px;
+    left: -1000px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.btn-primary:hover {
+    background: #333;
+}
+
+/* Mensajes de error específicos por campo en el login */
+.field-error {
+    color: #c62828;        /* rojo */
+    font-size: 0.85rem;
+    margin-top: 4px;
+    min-height: 1em;
+}

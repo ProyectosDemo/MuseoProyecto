@@ -27,8 +27,8 @@ CREATE TABLE `artista_genero` (
   `id_genero` int NOT NULL,
   PRIMARY KEY (`id_artista`,`id_genero`),
   KEY `id_genero` (`id_genero`),
-  CONSTRAINT `artista_genero_ibfk_1` FOREIGN KEY (`id_artista`) REFERENCES `artista` (`id_artista`),
-  CONSTRAINT `artista_genero_ibfk_2` FOREIGN KEY (`id_genero`) REFERENCES `genero` (`id_genero`)
+  CONSTRAINT `artista_genero_ibfk_1` FOREIGN KEY (`id_artista`) REFERENCES `artista` (`id_artista`) ON DELETE CASCADE,
+  CONSTRAINT `artista_genero_ibfk_2` FOREIGN KEY (`id_genero`) REFERENCES `genero` (`id_genero`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -38,6 +38,7 @@ CREATE TABLE `artista_genero` (
 
 LOCK TABLES `artista_genero` WRITE;
 /*!40000 ALTER TABLE `artista_genero` DISABLE KEYS */;
+INSERT INTO `artista_genero` VALUES (7,3),(8,3),(5,4),(6,4),(7,4),(8,4),(9,4),(10,4),(11,4),(13,4),(4,5),(5,7),(10,7),(2,8),(5,11),(9,11),(9,12),(13,12),(10,14),(13,14),(8,15),(10,15),(6,16),(7,16);
 /*!40000 ALTER TABLE `artista_genero` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-28 15:52:37
+-- Dump completed on 2026-03-07 23:42:23

@@ -1,0 +1,29 @@
+
+.adminLayout{
+display:flex;
+min-height:calc(100vh - 90px);
+}
+
+
+
+
+.contenidoAdmin{
+flex:1;
+padding:60px 8%;
+}
+
+.contenidoAdmin h2{
+margin-bottom:20px;
+color:#1f2a38;
+}
+
+
+
+
+@media (max-width:768px){
+
+.adminLayout{
+flex-direction:column;
+}
+
+}

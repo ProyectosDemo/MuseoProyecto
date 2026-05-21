@@ -1,0 +1,264 @@
+// logica de la pagina de administracion de trabajadores
+
+// Llamar a la función para cargar el detalle del artista al cargar la página
+document.addEventListener('DOMContentLoaded', cargar);
+
+const navMenu = document.getElementById("navMenu");
+const loginButton = document.getElementById("loginButton");
+const trabajadorId = localStorage.getItem("trabajadorId");
+const trabajadorNombre = localStorage.getItem("trabajadorNombre");
+const trabajadorAdmin = localStorage.getItem("trabajadorAdmin");
+const contenido = document.getElementById("contenidoClientes");
+const endpoint = "http://localhost:8080/query";
+const logoutBtn = document.createElement("a");
+
+function cargar() {
+
+    if (!trabajadorId) {
+        console.log("Debe iniciar sesión como trabajador para usar esta página");
+        location.href = "login.html";
+    }
+
+    if (trabajadorAdmin === "true") {
+        document.getElementById("menuLateral").hidden = false;
+    }
+
+    loginButton.textContent = `Bienvenido, ${trabajadorNombre || "Trabajador"}`;
+    loginButton.href = "#";
+    logoutBtn.href = "#";
+    logoutBtn.textContent = "Cerrar Sesión";
+    logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("trabajadorNombre");
+        localStorage.removeItem("trabajadorId");
+        localStorage.removeItem("trabajadorAdmin");
+        location.reload();
+    });
+    navMenu.appendChild(logoutBtn);
+
+    // --- CREAR ---
+    document.getElementById("btnCrear").addEventListener("click", () => {
+        limpiar();
+        contenido.innerHTML = `
+            <form id="formCrear" class="form-container">
+                <input type="text" id="nombre" placeholder="Nombre" required>
+                <input type="text" id="login" placeholder="Login" required>
+                <input type="text" id="password" placeholder="Contraseña" required>
+                <label><input type="checkbox" id="admin"> Admin</label>
+                <div class="form-buttons">
+                    <button type="button" id="cancelarCrear" class="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </div>
+            </form>
+        `;
+        document.getElementById("formCrear").addEventListener("submit", async e => {
+            e.preventDefault();
+            const query = `
+                mutation ($input: NewTrabajador!) {
+                    createTrabajador(input: $input) { id nombre }
+                }
+            `;
+            const variables = {
+                input: {
+                    nombre: document.getElementById("nombre").value,
+                    login: document.getElementById("login").value,
+                    password: document.getElementById("password").value,
+                    admin: document.getElementById("admin").checked
+                }
+            };
+            const data = await fetchGraphQL(query, variables);
+            if (data.errors) {
+                console.error(data.errors);
+                alert("Error al crear trabajador");
+            } else {
+                alert("Trabajador creado correctamente");
+                limpiar();
+            }
+        });
+        document.getElementById("cancelarCrear").addEventListener("click", limpiar);
+    });
+
+    // --- OBTENER ---
+    document.getElementById("btnObtener").addEventListener("click", async () => {
+        limpiar();
+
+        const query = `
+            query ObtenerTrabajadores($limit: Int, $offset: Int) {
+                Trabajadores(limit: $limit, offset: $offset) { 
+                    id
+                    nombre
+                    login
+                    admin 
+                }
+            }
+        `;
+
+        const variables = { limit: 100, offset: 0 };
+        const data = await fetchGraphQL(query, variables);
+        const trabajadores = data?.data?.Trabajadores;
+
+        if (!trabajadores || trabajadores.length === 0) {
+            contenido.innerHTML = "<p>No hay trabajadores registrados.</p>";
+            return;
+        }
+
+        // Generar HTML con tarjetas neutras en rejilla
+        let html = '<div class="grid-container"><h3>Trabajadores Registrados</h3>';
+
+        trabajadores.forEach(t => {
+            html += `<div class="grid-item">
+                        <h4>${t.nombre}</h4>
+                        <p><strong>Login:</strong> ${t.login}</p>
+                        <p><strong>Admin:</strong> ${t.admin}</p>
+                     </div>`;
+        });
+
+        html += '</div>';
+        contenido.innerHTML = html;
+    });
+
+    // --- ELIMINAR ---
+    document.getElementById("btnEliminar").addEventListener("click", async () => {
+        limpiar();
+        const query = `query ($limit: Int, $offset: Int) {
+            Trabajadores(limit: $limit, offset: $offset) { id nombre }
+        }`;
+        const variables = { limit: 100, offset: 0 };
+        const data = await fetchGraphQL(query, variables);
+        const trabajadores = data?.data?.Trabajadores;
+        if (!trabajadores || trabajadores.length === 0) {
+            contenido.innerHTML = "<p>No hay trabajadores para eliminar.</p>";
+            return;
+        }
+        const opciones = trabajadores.map(t => `<option value="${t.id}">${t.nombre}</option>`).join("");
+        contenido.innerHTML = `
+            <select id="selectCliente" class="select-box">${opciones}</select>
+            <div class="form-buttons">
+                <button id="cancelarEliminar" class="btn-cancel">Cancelar</button>
+                <button id="confirmarEliminar" class="btn-delete">Eliminar</button>
+            </div>
+        `;
+        document.getElementById("confirmarEliminar").addEventListener("click", async () => {
+            const id = document.getElementById("selectCliente").value;
+            if (!id) return alert("Selecciona un trabajador para eliminar");
+            const mutation = `mutation KillTrabajador($id: ID!) { killTrabajador(id: $id) }`;
+            const variables = { id };
+            const result = await fetchGraphQL(mutation, variables);
+            if (result.errors) {
+                console.error(result.errors);
+                alert("Error al eliminar trabajador");
+            } else if (result.data.killTrabajador) {
+                alert("Trabajador eliminado correctamente");
+                limpiar();
+            } else {
+                alert("No se pudo eliminar el trabajador");
+            }
+        });
+        document.getElementById("cancelarEliminar").addEventListener("click", limpiar);
+    });
+
+    // --- EDITAR ---
+    document.getElementById("btnEditar").addEventListener("click", async () => {
+        limpiar();
+        const query = `
+            query ($limit: Int, $offset: Int) {
+                Trabajadores(limit: $limit, offset: $offset) {
+                    id
+                    nombre
+                    login
+                    password
+                    admin
+                }
+            }
+        `;
+        const variables = { limit: 100, offset: 0 };
+        const data = await fetchGraphQL(query, variables);
+        if (!data || data.errors) {
+            console.error(data?.errors);
+            contenido.innerHTML = "<p>Error al cargar trabajadores.</p>";
+            return;
+        }
+        const trabajadores = data.data.Trabajadores;
+        if (!trabajadores || trabajadores.length === 0) {
+            contenido.innerHTML = "<p>No hay trabajadores para editar.</p>";
+            return;
+        }
+        const opciones = trabajadores.map(t => `<option value="${t.id}">${t.nombre}</option>`).join("");
+        contenido.innerHTML = `
+            <select id="selectTrabajador" class="select-box">${opciones}</select>
+            <div id="formEditar"></div>
+        `;
+        const formDiv = document.getElementById("formEditar");
+
+        function renderForm(trabajador) {
+            if (!trabajador) return;
+            formDiv.innerHTML = `
+                <form id="updateForm" class="form-container">
+                    <input type="text" id="nombre" value="${trabajador.nombre || ''}" required>
+                    <input type="text" id="login" value="${trabajador.login || ''}" required>
+                    <input type="text" id="password" value="${trabajador.password || ''}" required>
+                    <label>Admin:
+                        <select id="admin">
+                            <option value="true" ${trabajador.admin ? "selected" : ""}>Sí</option>
+                            <option value="false" ${!trabajador.admin ? "selected" : ""}>No</option>
+                        </select>
+                    </label>
+                    <div class="form-buttons">
+                        <button type="button" id="cancelarEditar" class="btn-cancel">Cancelar</button>
+                        <button type="submit" class="btn-primary">Actualizar</button>
+                    </div>
+                </form>
+            `;
+            document.getElementById("updateForm").addEventListener("submit", async e => {
+                e.preventDefault();
+                const mutation = `
+                    mutation updateTrabajador($input: UpdateTrabajador!) {
+                        updateTrabajador(input: $input) {
+                            id
+                            nombre
+                            login
+                            password
+                            admin
+                        }
+                    }
+                `;
+                const variables = {
+                    input: {
+                        id: trabajador.id,
+                        nombre: document.getElementById("nombre").value,
+                        login: document.getElementById("login").value,
+                        password: document.getElementById("password").value,
+                        admin: document.getElementById("admin").value === "true"
+                    }
+                };
+                const result = await fetchGraphQL(mutation, variables);
+                if (result.errors) {
+                    console.error(result.errors);
+                    alert("Error al actualizar trabajador");
+                } else {
+                    alert("Trabajador actualizado correctamente");
+                    limpiar();
+                    document.getElementById("btnEditar").click();
+                }
+            });
+            document.getElementById("cancelarEditar").addEventListener("click", limpiar);
+        }
+
+        renderForm(trabajadores[0]);
+
+        document.getElementById("selectTrabajador").addEventListener("change", e => {
+            const trabajador = trabajadores.find(t => t.id == e.target.value);
+            renderForm(trabajador);
+        });
+    });
+}
+
+function limpiar() { contenido.innerHTML = ""; }
+
+async function fetchGraphQL(query, variables = {}) {
+    const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, variables })
+    });
+    return await res.json();
+}

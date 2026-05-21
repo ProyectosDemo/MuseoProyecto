@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reservas | Museo de Arte Contemporáneo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/reservas.css">
+    <link rel="stylesheet" href="../css/menu-lateral.css">
+</head>
+<body>
+
+    <header>
+        <h1>Museo de Arte Contemporáneo - Reservas</h1>
+        <nav id="navMenu">
+            <a href="index.html">Inicio</a>
+            <a href="login.html" id="loginButton">Iniciar Sesión</a>
+        </nav>
+    </header>
+
+    <div class="admin-panel">
+
+        <aside class="side-menu" id="menuLateral" hidden>
+            <h3>Reservas</h3>
+            <ul>
+                <li><a href="admin.html">Panel de Control</a></li>
+                <li><a href="consultas.html">Consultas y Reportes</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+
+            <section>
+                <table id="tablaReservas">
+                    <thead>
+                        <tr>
+                            <th>ID Obra</th>
+                            <th>ID Cliente</th>
+                            <th>Teléfono</th>
+                            <th>Fecha</th>
+                            <th>Status</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </section>
+
+        </main>
+
+    </div>
+
+    <footer>
+        © 2026 Museo de Arte Contemporáneo | Todos los derechos reservados
+    </footer>
+
+    <script src="../js/reservas.js" defer></script>
+
+</body>
+</html>

@@ -2,140 +2,30 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Museo Aurora</title>
+    <title>Museo de Arte Contemporáneo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/style.css">
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/hero.css">
+    <link rel="stylesheet" href="../css/gallery.css">
 </head>
 <body>
+    <!-- ya no es necesario poner un header, el menu lo genera si no existe -->
 
-<header>
-    <h1>Museo Aurora</h1>
-    <nav id="navMenu">
-        <a href="#">Inicio</a>
-        <a href="#">Exposiciones</a>
-        <a href="#">Artistas</a>
-        <a href="login.html" id="loginButton">Iniciar Sesión</a>
-    </nav>
-</header>
+    <section class="hero">
+        <h2>Donde el Arte Cobra Vida</h2>
+    </section>
 
-<section class="hero">
-    <h2>Donde el Arte Cobra Vida</h2>
-</section>
+    <section class="section">
+        <h3>Obras Destacadas</h3>
+        <div class="gallery" id="gallery"></div>
+    </section>
 
-<section class="section">
-    <h3>Obras Destacadas</h3>
-    <div class="gallery" id="gallery">
-    </div>
-</section>
+    <footer>
+       © 2026 Museo de Arte Contemporáneo | Todos los derechos reservados
+    </footer>
 
-<footer>
-    © 2026 Museo Aurora | Todos los derechos reservados
-</footer>
-
-<script>
-const navMenu = document.getElementById("navMenu");
-const loginButton = document.getElementById("loginButton");
-
-// Manejo de sesión
-const nombreCliente = localStorage.getItem("clienteNombre");
-const nombreTrabajador = localStorage.getItem("trabajadorNombre");
-const esAdmin = localStorage.getItem("trabajadorAdmin") === "true";
-
-let userType = "";
-
-if (nombreCliente) {
-    loginButton.textContent = `Bienvenido, ${nombreCliente}`;
-    loginButton.href = "#";
-    userType = "cliente";
-} else if (nombreTrabajador) {
-    loginButton.textContent = `Bienvenido, ${nombreTrabajador}`;
-    loginButton.href = "#";
-    userType = esAdmin ? "admin" : "trabajador";
-}
-
-if (userType) {
-    const logoutBtn = document.createElement("a");
-    logoutBtn.href = "#";
-    logoutBtn.textContent = "Cerrar Sesión";
-    logoutBtn.style.marginLeft = "10px";
-    logoutBtn.addEventListener("click", () => {
-        if (userType === "cliente") {
-            localStorage.removeItem("clienteNombre");
-            localStorage.removeItem("clienteId");
-        } else {
-            localStorage.removeItem("trabajadorNombre");
-            localStorage.removeItem("trabajadorId");
-            localStorage.removeItem("trabajadorAdmin");
-        }
-        location.reload();
-    });
-    navMenu.appendChild(logoutBtn);
-
-    if (esAdmin) {
-        const adminBtn = document.createElement("a");
-        adminBtn.href = "admin.html";
-        adminBtn.textContent = "Administración";
-        adminBtn.style.marginLeft = "10px";
-        navMenu.appendChild(adminBtn);
-    }
-}
-
-// Cargar obras desde GraphQL
-async function cargarObras() {
-    const query = `
-        query {
-            Obras(limit:4, offset:0) {
-                id
-                nombre
-                foto
-                artista {
-                    nombre
-                }
-            }
-        }
-    `;
-
-    try {
-        const res = await fetch("http://localhost:8080/query", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query })
-        });
-
-        const data = await res.json();
-        const gallery = document.getElementById("gallery");
-        gallery.innerHTML = "";
-
-        const obras = data.data.Obras;
-        if (!obras || obras.length === 0) {
-            gallery.innerHTML = "<p>No hay obras disponibles</p>";
-            return;
-        }
-
-        obras.forEach(ob => {
-            const artCard = document.createElement("div");
-            artCard.className = "art-card";
-
-            artCard.innerHTML = `
-                <div class="art-info">
-                    <a href="obra.html?id=${ob.id}">
-                        <img src="${ob.foto}" alt="${ob.nombre}">
-                        <h4>${ob.nombre}</h4>
-                    </a>
-                    <p>${ob.artista ? ob.artista.nombre : ""}</p>
-                </div>
-            `;
-            gallery.appendChild(artCard);
-        });
-
-    } catch (err) {
-        console.error(err);
-        document.getElementById("gallery").innerHTML = "<p>Error cargando obras</p>";
-    }
-}
-
-cargarObras();
-</script>
-
+    <script src="../js/menu_superior.js" defer></script> <!-- primero los scripts de menu, ya despues puedes cargar los especificos de la pagina-->
+    <script src="../js/index.js" defer></script> <!-- carga primero el DOM luego el script -->
 </body>
 </html>

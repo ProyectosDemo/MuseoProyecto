@@ -1,0 +1,117 @@
+
+.login-container {
+    width: 90%;
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 25px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.registro-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.registro-box {
+    flex: 1 1 280px;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.registro-box h3 {
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #1f2a38;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.registro-box .input-group {
+    margin-bottom: 15px;
+}
+
+.registro-box label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.registro-box input,
+.registro-box select {
+    width: 100%;
+    max-width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #fff;
+    transition: border-color 0.3s;
+}
+
+.registro-box input:focus,
+.registro-box select:focus {
+    outline: none;
+    border-color: #1f2a38;
+    box-shadow: 0 0 5px rgba(31, 42, 56, 0.2);
+}
+
+button.btn-primary {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #1f2a38;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: background 0.3s, opacity 0.3s;
+}
+
+button.btn-primary:hover {
+    opacity: 0.9;
+}
+
+p {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+p a.btn-secondary {
+    display: inline-block;
+    margin-left: 5px;
+    padding: 4px 10px;
+    background: #1f2a38;
+    color: white;
+    border-radius: 4px;
+    font-size: 13px;
+    text-decoration: none;
+    transition: opacity 0.3s;
+}
+
+p a.btn-secondary:hover {
+    opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+    .registro-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    button.btn-primary {
+        width: 100%;
+    }
+
+    p a.btn-secondary {
+        margin-left: 0;
+        display: block;
+        text-align: center;
+        margin-top: 10px;
+    }
+}

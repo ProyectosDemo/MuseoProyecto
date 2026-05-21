@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Artista | Museo de Arte Contemporáneo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/artista-detalle.css">
+</head>
+<body>
+
+    <section class="artista-detalle-container">
+        <div class="artista-info">
+            <!-- Imagen del artista -->
+            <img id="artistaFoto" class="artista-foto" alt="Foto del artista">
+
+            <h2 id="artistaNombre"></h2>
+            <p><strong>Fecha de nacimiento:</strong> <span id="artistaFecha"></span></p>
+            <p><strong>Nacionalidad:</strong> <span id="artistaNacionalidad"></span></p>
+            <p id="artistaBio"></p>
+        </div>
+
+        <div class="artista-obras-wrapper">
+            <h3>Obras de este artista</h3>
+            <div class="obras-container" id="obrasContainer"></div>
+        </div>
+    </section>
+
+    <footer>
+       © 2026 Museo de Arte Contemporáneo | Todos los derechos reservados
+    </footer>
+
+    <script src="../js/menu_superior.js" defer></script>
+    <script src="../js/artista-detalle.js" defer></script>
+</body>
+</html>

@@ -30,7 +30,7 @@ CREATE TABLE `artista` (
   `biografia` text,
   `foto` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id_artista`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,7 +39,7 @@ CREATE TABLE `artista` (
 
 LOCK TABLES `artista` WRITE;
 /*!40000 ALTER TABLE `artista` DISABLE KEYS */;
-INSERT INTO `artista` VALUES (2,'jOSE','1990-05-19','Argentina','Artista apasionado por la música y la pintura.','https://example.com/foto.jpg');
+INSERT INTO `artista` VALUES (2,'Pr Quote','1990-05-19','Chile','75% Serotonin 20% Dinner Time 5% Pure Hate','images\\artistas\\pr_quote.png'),(4,'Yesenia','2002-02-01','Venezuela','3cm de alto y enojada','images\\artistas\\yesenia.png'),(5,'Yisus','2002-02-01','Venezuela','Giga chad the kawai','images\\artistas\\yisus.png'),(6,'Claude Monet','1840-11-14','Francesa','Pintor francés, fundador del impresionismo, conocido por sus paisajes y el uso de la luz.','images\\artistas\\claude.jpg'),(7,'Pablo Picasso','1881-10-25','Española','Pintor y escultor español, cofundador del cubismo y uno de los artistas más influyentes del siglo XX.','images\\artistas\\picaso.jpg'),(8,'Hatsune Miku','1907-07-06','Japonesa','La mas grande vocaloid','images\\artistas\\miku.png'),(9,'Auguste Rodin','1840-11-12','Francesa','Escultor francés, considerado el padre de la escultura moderna, famoso por \"El Pensador\".','images\\artistas\\auguste.jpg'),(10,'Andy Warhol','1928-08-06','Estadounidense','Artista estadounidense, líder del pop art, conocido por sus retratos de la cultura popular y medios de comunicación.','images\\artistas\\andy.png'),(11,'Niño Interrogación','1452-04-15','Italiana','Polímata italiano del Renacimiento, famoso por pinturas como \"La Gioconda\" y \"La Última Cena\".','images\\artistas\\niño.jpg'),(13,'Georgia O’Keeffe','1887-11-15','Estadounidense','Pintora estadounidense, conocida como la “madre del modernismo americano”, famosa por sus flores y paisajes del desierto.','images\\artistas\\georgia.jpg');
 /*!40000 ALTER TABLE `artista` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-28 15:52:37
+-- Dump completed on 2026-03-07 23:42:23

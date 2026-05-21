@@ -1,0 +1,127 @@
+.admin-panel {
+    display: flex;
+    gap: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9f9f9;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.panel {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.panel:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.panel h2 {
+    margin-top: 0;
+    color: #1f2a38;
+}
+
+.orden-factura-wrapper {
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+
+.orden-card {
+    background: #f5f7fa;
+    padding: 15px 20px;
+    border-radius: 10px;
+    border-left: 4px solid #1f2a38;
+    width: 280px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.orden-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.factura-card {
+    background: #fff8e1;
+    padding: 15px 20px;
+    border-radius: 10px;
+    border-left: 4px solid #ffb74d;
+    width: 360px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.factura-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Botones */
+button {
+    background: #1f2a38;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+button:hover {
+    background: #2e3b4e;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+table th, table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #1f2a38;
+    color: #fff;
+    font-weight: 600;
+}
+
+table tr:hover {
+    background-color: #f1f3f6;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .admin-panel {
+        flex-direction: column;
+    }
+
+    .orden-factura-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .orden-card, .factura-card {
+        width: 100%;
+    }
+}

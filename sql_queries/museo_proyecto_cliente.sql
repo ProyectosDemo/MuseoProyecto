@@ -42,7 +42,7 @@ CREATE TABLE `cliente` (
 
 LOCK TABLES `cliente` WRITE;
 /*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-INSERT INTO `cliente` VALUES (3,'godzilla','godzilla@example.com','555-1234','123456789','John','ABC123'),(4,'prqoute','pr@gmail.com','123456789','prqoute','tetsu','123456789'),(5,'Yisus','jose@gmail.com','12345','joseSalsa','ensalada','123456');
+INSERT INTO `cliente` VALUES (1,'Santiago Romero','santiago@gmail.com','0424-424-0424','santiagopzt','santi123','tqkKLnJZ'),(2,'Nadia Paola','nadiaRo@gmail.com','0424-424-0424','nadiaPao','nadia123','H2UTP1OW'),(3,'Nark','whale@gmail.com','0424-424-0424','NarkWhale','whaling','YyUf4w9P'),(4,'Nina Rojas','ninaRo@gmail.com','0424-424-0424','ninaValle','nina123','HU4aVgBT');
 /*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -55,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-28 15:52:37
+-- Dump completed on 2026-03-07 23:42:23

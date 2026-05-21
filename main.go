@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"main/graph"
+	"main/mongodb"
 	"main/mysql"
 	"os"
 
@@ -17,25 +18,6 @@ import (
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
-func PrintFuncionesDisponibles(schemaAst *ast.Schema) {
-
-	// Loguear las operaciones encontradas en el schema para depuración
-	var mutationNames []string
-	if m := schemaAst.Types["Mutation"]; m != nil {
-		for _, f := range m.Fields {
-			mutationNames = append(mutationNames, f.Name)
-		}
-	}
-	var queryNames []string
-	if q := schemaAst.Types["Query"]; q != nil {
-		for _, f := range q.Fields {
-			queryNames = append(queryNames, f.Name)
-		}
-	}
-	log.Printf("Schema Mutation fields: %v", mutationNames)
-	log.Printf("Schema Query fields: %v", queryNames)
-}
-
 func main() {
 	// inicializar BD
 	mysql.ConectarBD()
@@ -43,7 +25,8 @@ func main() {
 		log.Fatalf("Error al conectar a la base de datos: %v", err)
 	}
 
-	// Cargar y parsear esquema GraphQL desde archivo para asegurar que incluya createCliente
+	mongodb.ConectarMongo()
+
 	schemaBytes, err := os.ReadFile("graph/schema.graphqls")
 	if err != nil {
 		log.Fatalf("No se pudo leer schema.graphqls: %v", err)
@@ -52,16 +35,20 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error al parsear schema.graphqls: %v", err)
 	}
-	PrintFuncionesDisponibles(schemaAst)
-	// crear servidor GraphQL usando el schema parseado
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{DB: mysql.GetBD()}, Schema: schemaAst}))
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{
+		Resolvers: &graph.Resolver{
+			DB:      mysql.GetBD(),        // MySQL
+			MongoDB: mongodb.GetMongoDB(), // MongoDB
+		},
+		Schema: schemaAst,
+	}))
 
-	// Registrar transportes HTTP que aceptarás (POST, GET, OPTIONS)
+	// Registrar transportes HTTP
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
 
-	// Caché y extensiones recomendadas
+	// Cache y extensiones recomendadas
 	srv.SetQueryCache(lru.New[*ast.QueryDocument](1000))
 	srv.Use(extension.Introspection{})
 	srv.Use(extension.AutomaticPersistedQuery{Cache: lru.New[string](100)})
@@ -72,9 +59,14 @@ func main() {
 		log.Fatalf("Error al configurar proxies: %v", err)
 	}
 
+	router.Static("/Frontend", "./Frontend")
+
+	// Home de la web
 	router.GET("/", func(c *gin.Context) {
 		playground.Handler("GraphQL playground", "/query").ServeHTTP(c.Writer, c.Request)
+		c.File("./Frontend/html/index.html")
 	})
+
 	router.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")

@@ -8,12 +8,39 @@ import (
 	"main/graph/model"
 )
 
+// Trabajadores lista de los trabajadores
+func (r *queryResolver) Trabajadores(ctx context.Context, limit *int32, offset *int32) ([]*model.Trabajador, error) {
+
+	rows, err := r.DB.QueryContext(ctx, "SELECT id_trabajador, nombre, login, password, admin FROM trabajador LIMIT ? OFFSET ?", limit, offset)
+	if err != nil {
+		log.Printf("Trabajadores DB error: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var clientes []*model.Trabajador
+	for rows.Next() {
+		var cliente model.Trabajador
+		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Login, &cliente.Password, &cliente.Admin)
+		if err != nil {
+			log.Printf("Trabajadores scan error: %v", err)
+			return nil, err
+		}
+		clientes = append(clientes, &cliente)
+	}
+	if err = rows.Err(); err != nil {
+		log.Printf("Trabajadores rows error: %v", err)
+		return nil, err
+	}
+	return clientes, nil
+}
+
 // FindTrabajador is the resolver for the findTrabajador field.
 func (r *queryResolver) FindTrabajador(ctx context.Context, id string) ([]*model.Trabajador, error) {
-	log.Printf("FindCliente llamado con id: %s", id)
+	log.Printf("FindTrabajador llamado con id: %s", id)
 
 	var trabajador model.Trabajador
-	query := `SELECT id_cliente, nombre, email, telefono, login, password, codigo_seguridad FROM cliente WHERE id_cliente = ?`
+	query := `SELECT id_trabajador, nombre, login, password, admin FROM trabajador WHERE id_trabajador = ?`
 	err := r.DB.QueryRowContext(ctx, query, id).Scan(
 		&trabajador.ID, &trabajador.Nombre, &trabajador.Login, &trabajador.Password, &trabajador.Admin,
 	)

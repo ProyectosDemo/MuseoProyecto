@@ -4,142 +4,36 @@
     <meta charset="UTF-8">
     <title>Obra | Museo Aurora</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/style.css">
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/obra.css">
 </head>
 <body>
 
-<header>
-    <h1>Museo Aurora</h1>
-    <nav id="navMenu">
-        <a href="index.html">Inicio</a>
-        <a href="#">Exposiciones</a>
-        <a href="#">Artistas</a>
-        <a href="login.html" id="loginButton">Iniciar Sesión</a>
-    </nav>
-</header>
+    <section class="obra-container">
+        <div class="foto-boton">
+            <img id="obraFoto" src="" alt="Foto de la obra">
+        </div>
 
-<section class="obra-container">
-    <img id="obraFoto" src="" alt="Foto de la obra">
-    <div class="obra-info">
-        <div><span>Nombre:</span> <span id="obraNombre"></span></div>
-        <div><span>Artista:</span> <span id="obraArtista"></span></div>
-        <div><span>Género:</span> <span id="obraGenero"></span></div>
-        <div><span>Precio:</span> <span id="obraPrecio"></span></div>
-        <div><span>Fecha de creación:</span> <span id="obraFecha"></span></div>
-        <div><span>Estatus:</span> <span id="obraEstatus"></span></div>
-        <div><span>Material:</span> <span id="obraMaterial"></span></div>
-        <div><span>Peso:</span> <span id="obraPeso"></span></div>
-        <div><span>Dimensiones:</span> <span id="obraDimensiones"></span></div>
-    </div>
-</section>
+        <div class="obra-info">
+            <div><span>Nombre:</span> <span id="obraNombre"></span></div>
+            <div><span>Artista:</span> <span id="obraArtista"></span></div>
+            <div><span>Género:</span> <span id="obraGenero"></span></div>
+            <div><span>Precio:</span> <span id="obraPrecio"></span></div>
+            <div><span>Fecha de creación:</span> <span id="obraFecha"></span></div>
+            <div><span>Estatus:</span> <span id="obraEstatus"></span></div>
+            
+            <div id="divMaterial"><span>Material:</span> <span id="obraMaterial"></span></div>
+            <div id="divPeso"><span>Peso:</span> <span id="obraPeso"></span></div>
+            <div id="divDimensiones"><span>Dimensiones:</span> <span id="obraDimensiones"></span></div>
+        </div>
+    </section>
+    <footer>
+       © 2026 Museo de Arte Contemporáneo | Todos los derechos reservados
+    </footer>
 
-<script>
-const navMenu = document.getElementById("navMenu");
-const loginButton = document.getElementById("loginButton");
-
-// Manejo de sesionnnnn
-const nombreCliente = localStorage.getItem("clienteNombre");
-const nombreTrabajador = localStorage.getItem("trabajadorNombre");
-const esAdmin = localStorage.getItem("trabajadorAdmin") === "true";
-let userType = "";
-
-if (nombreCliente) {
-    loginButton.textContent = `Bienvenido, ${nombreCliente}`;
-    loginButton.href = "#";
-    userType = "cliente";
-} else if (nombreTrabajador) {
-    loginButton.textContent = `Bienvenido, ${nombreTrabajador}`;
-    loginButton.href = "#";
-    userType = esAdmin ? "admin" : "trabajador";
-}
-
-if (userType) {
-    const logoutBtn = document.createElement("a");
-    logoutBtn.href = "#";
-    logoutBtn.textContent = "Cerrar Sesión";
-    logoutBtn.style.marginLeft = "10px";
-    logoutBtn.addEventListener("click", () => {
-        if (userType === "cliente") {
-            localStorage.removeItem("clienteNombre");
-            localStorage.removeItem("clienteId");
-        } else {
-            localStorage.removeItem("trabajadorNombre");
-            localStorage.removeItem("trabajadorId");
-            localStorage.removeItem("trabajadorAdmin");
-        }
-        location.reload();
-    });
-    navMenu.appendChild(logoutBtn);
-
-    if (esAdmin) {
-        const adminBtn = document.createElement("a");
-        adminBtn.href = "admin.html";
-        adminBtn.textContent = "Administración";
-        adminBtn.style.marginLeft = "10px";
-        navMenu.appendChild(adminBtn);
-    }
-}
-
-// Obtener ID de la obra desde query string
-const params = new URLSearchParams(window.location.search);
-const obraId = params.get("id");
-
-if (!obraId) {
-    //alert("No se especifico la obra");
-} else {
-    const query = `
-        query FindObra($id: ID!) {
-            findObra(id: $id) {
-                id
-                nombre
-                artista { nombre }
-                genero { nombre }
-                precio
-                fecha_creacion
-                status
-                foto
-                material
-                peso
-                dimensiones
-            }
-        }
-    `;
-
-    fetch("http://localhost:8080/query", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            query,
-            variables: { id: String(obraId) } // importante: ID como string
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        console.log("GraphQL response:", data);
-        if (!data.data || !data.data.findObra || data.data.findObra.length === 0) {
-            //alert("Obra no encontrada");
-            return;
-        }
-
-        const obra = data.data.findObra[0];
-
-        document.getElementById("obraFoto").src = obra.foto;
-        document.getElementById("obraNombre").textContent = obra.nombre;
-        document.getElementById("obraArtista").textContent = obra.artista ? obra.artista.nombre : "";
-        document.getElementById("obraGenero").textContent = obra.genero ? obra.genero.nombre : "";
-        document.getElementById("obraPrecio").textContent = "$" + obra.precio;
-        document.getElementById("obraFecha").textContent = obra.fecha_creacion;
-        document.getElementById("obraEstatus").textContent = obra.status;
-        document.getElementById("obraMaterial").textContent = obra.material;
-        document.getElementById("obraPeso").textContent = obra.peso + " kg";
-        document.getElementById("obraDimensiones").textContent = obra.dimensiones;
-    })
-    .catch(err => {
-        console.error(err);
-        alert("Error cargando la obra");
-    });
-}
-</script>
+    <script src="../js/menu_superior.js" defer></script>
+    <script src="../js/obra.js" defer></script>
 
 </body>
 </html>

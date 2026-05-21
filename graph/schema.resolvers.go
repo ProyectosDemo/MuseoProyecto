@@ -17,7 +17,28 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
+
+// UpdateArtistaGenero implements [MutationResolver].
+func (r *mutationResolver) UpdateArtistaGenero(ctx context.Context, input model.UpdateArtistaGenero) (*model.ArtistaGenero, error) {
+	panic("unimplemented")
+}
+
 type queryResolver struct{ *Resolver }
+
+// FindArtistaGeneroByArtista implements [QueryResolver].
+func (r *queryResolver) FindArtistaGeneroByArtista(ctx context.Context, idArtista string) ([]*model.ArtistaGenero, error) {
+	panic("unimplemented")
+}
+
+// FindMembresiasByCliente implements [QueryResolver].
+func (r *queryResolver) FindMembresiasByCliente(ctx context.Context, idCliente string) ([]*model.Membresia, error) {
+	panic("unimplemented")
+}
+
+// FindMembresiasByTarjeta implements [QueryResolver].
+func (r *queryResolver) FindMembresiasByTarjeta(ctx context.Context, idTarjeta string) ([]*model.Membresia, error) {
+	panic("unimplemented")
+}
 
 // GetObra implements [QueryResolver].
 func (r *queryResolver) GetObra(ctx context.Context, id string) (*model.Obra, error) {

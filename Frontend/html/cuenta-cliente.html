@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Cuenta - Cliente</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/cuenta-cliente.css">
+</head>
+<body>
+    <header>
+        <h1>Museo de Arte Contemporáneo</h1>
+        <nav id="navMenu">
+            <a href="index.html">Inicio</a>
+            <a href="#" id="loginButton">Iniciar Sesión</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="login-section">
+            <h2>Verificación de Contraseña</h2>
+            <form id="login-form">
+                <label for="login">Usuario:</label>
+                <input type="text" id="login" required required autocomplete="off">
+
+                <label for="password">Contraseña Actual:</label>
+                <input type="password" id="password" required required autocomplete="off">
+
+                <button type="submit">Verificar</button>
+            </form>
+            <p id="login-error" class="error"></p>
+        </section>
+
+        <section id="edit-section" style="display:none;">
+            <h2>Editar Información</h2>
+            <form id="edit-form">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" required required autocomplete="off">
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" required required autocomplete="off">
+
+                <label for="telefono">Teléfono:</label>
+                <input type="text" id="telefono" required required autocomplete="off">
+
+                <label for="password-new">Nueva Contraseña (opcional):</label>
+                <input type="password" id="password-new" required autocomplete="off">
+
+                <label>Código de Seguridad:</label>
+                <button type="button" id="recuperar-codigo">Recuperar código de seguridad</button>
+                <div id="codigo-display" style="margin-top:5px; color:green;"></div>
+
+                <button type="submit">Guardar Cambios</button>
+            </form>
+
+            <section id="preguntas-section" style="display:none; margin-top:10px;">
+                <h3>Responde las 3 preguntas de seguridad</h3>
+                <form id="preguntas-form" required autocomplete="off">
+                    <div id="preguntas-container"></div>
+                    <button type="submit">Verificar Respuestas</button>
+                </form>
+                <p id="preguntas-error" class="error"></p>
+            </section>
+
+            <p id="edit-success" class="success"></p>
+            <p id="edit-error" class="error"></p>
+        </section>
+    </main>
+
+    <footer>
+       © 2026 Museo de Arte Contemporáneo | Todos los derechos reservados
+    </footer>
+
+    <script src="../js/cuenta-cliente.js" defer></script> <!-- carga primero el DOM luego el script -->
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Consultas y Facturación | Museo de Arte Contemporáneo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/consultas.css">
+    <link rel="stylesheet" href="../css/menu-lateral.css">
+</head>
+<body>
+    <header>
+        <h1>Museo de Arte Contemporáneo - Consultas y Facturación</h1>
+        <nav id="navMenu">
+            <a href="index.html">Inicio</a>
+            <a href="reservas.html">Reservas</a>
+            <a href="admin.html">Administración</a>
+        </nav>
+    </header>
+
+    <div class="admin-panel">
+
+        <aside class="side-menu">
+            <h3>Consultas</h3>
+            <ul>
+                <li><a href="#" id="menuOrdenes">Órdenes Concretadas</a></li>
+                <li><a href="#" id="menuClientes">Reporte de Clientes</a></li>
+                <li><a href="#" id="menuObras">Obras Vendidas</a></li>
+                <li><a href="#" id="menuFacturas">Reportes de Facturas</a></li>
+                <li><a href="admin.html" id="menuAdmin">Administración</a></li>
+                <li><a href="reservas.html" id="menuReserva">Reservas</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+
+            <div class="panel" id="ordenesPanel">
+                <h2>Órdenes Concretadas</h2>
+                <div id="ordenesContainer"></div>
+            </div>
+
+            <div class="panel" id="clientesPanel" hidden>
+                <h2>Reporte de Clientes</h2>
+                <div class="filtro-membresias">
+                    <label>Desde: <input type="date" id="fechaInicio"></label>
+                    <label>Hasta: <input type="date" id="fechaFin"></label>
+                    <button id="btnFiltrarMembresias">Filtrar</button>
+                </div>
+                <div id="clientesContainer">
+                    <p>Consulta de clientes aquí.</p>
+                </div>
+                <div id="resumenMembresias"></div>
+            </div>
+
+            <div class="panel" id="obrasPanel" hidden>
+                <h2>Obras Vendidas por Fecha</h2>
+                <div class="filtro-reportes">
+                    <label>Desde: <input type="date" id="fechaObrasInicio"></label>
+                    <label>Hasta: <input type="date" id="fechaObrasFin"></label>
+                    <button id="btnFiltrarObras">Filtrar</button>
+                </div>
+                <div id="obrasContainer">
+                    <p>Selecciona un periodo para ver las obras vendidas.</p>
+                </div>
+            </div>
+
+            <div class="panel" id="facturasPanel" hidden>
+                <h2>Reportes de Facturas</h2>
+                <div class="filtro-reportes">
+                    <label>Desde: <input type="date" id="fechaFacturasInicio"></label>
+                    <label>Hasta: <input type="date" id="fechaFacturasFin"></label>
+                    <button id="btnFiltrarFacturas">Filtrar</button>
+                </div>
+                <div id="facturasContainer">
+                    <p>Selecciona un periodo para ver las facturas.</p>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+    <footer>
+       © 2026 Museo de Arte Contemporáneo | Todos los derechos reservados
+    </footer>
+
+    <script src="../js/consultas.js" defer></script>
+</body>
+</html>

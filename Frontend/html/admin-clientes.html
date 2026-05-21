@@ -2,291 +2,63 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>CRUD Clientes | Museo Aurora</title>
+    <title>Gestión de Clientes | Museo de Arte Contemporáneo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/menu-lateral.css">
 </head>
 <body>
-<header>
-    <h1>Gestión de Clientes</h1>
-    <nav>
-        <button onclick="location.href='admin.html'">Volver al Dashboard</button>
-    </nav>
-</header>
 
-<main>
-    <!-- Menu de acciones -->
-    <div class="accionesClientes">
-        <button id="btnCrear">Crear</button>
-        <button id="btnEditar">Editar</button>
-        <button id="btnEliminar">Eliminar</button>
-        <button id="btnObtener">Obtener</button>
+    <header>
+        <h1>Gestión de Clientes</h1>
+        <nav id="navMenu">
+            <a href="index.html">Inicio</a>
+            <a href="login.html" id="loginButton">Iniciar Sesión</a>
+        </nav>
+    </header>
+
+    <div class="admin-panel">
+
+        <aside class="side-menu" id="menuLateral" hidden>
+            <h3>Clientes</h3>
+            <ul>
+               <li><a href="admin-clientes.html">Clientes</a></li>
+                <li><a href="admin-trabajadores.html">Trabajadores</a></li>
+                <li><a href="admin-obras.html">Obras</a></li>
+                <li><a href="admin-artistas.html">Artistas</a></li>
+                <li><a href="admin-generos.html">Géneros</a></li>
+                <li><a href="admin-artista_genero.html">Artista-Genero</a></li>
+                <li><a href="admin-membresias.html">Membresías</a></li>
+                <li><a href="admin-tarjetas.html">Tarjetas</a></li>
+                <li><a href="admin-preguntas.html">Preguntas</a></li>
+                <li><a href="admin.html">Panel de Control</a></li>
+            </ul>
+        </aside>
+
+        <div class="main-content">
+            <div class="action-buttons-container">
+                <div class="action-buttons">
+                    <button id="btnCrear">Crear</button>
+                    <button id="btnEditar">Editar</button>
+                    <button id="btnEliminar">Eliminar</button>
+                    <button id="btnObtener">Obtener</button>
+                </div>
+            </div>
+
+            <div class="content-container">
+                <div id="contenidoClientes"></div>
+            </div>
+        </div>
+
     </div>
 
-    <div id="contenidoClientes"></div>
-</main>
+    <footer>
+        © 2026 Museo de Arte Contemporáneo | Todos los derechos reservados
+    </footer>
 
-<script>
-const contenido = document.getElementById("contenidoClientes");
-
-function limpiar() {
-    contenido.innerHTML = "";
-}
-
-// --- Crear Cliente ---
-document.getElementById("btnCrear").addEventListener("click", () => {
-    limpiar();
-    contenido.innerHTML = `
-        <h3>Crear Cliente</h3>
-        <form id="formCrear">
-            <input type="text" id="nombre" placeholder="Nombre" required>
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="text" id="telefono" placeholder="Teléfono" required>
-            <input type="text" id="login" placeholder="Login" required>
-            <input type="text" id="password" placeholder="Contraseña" required>
-            <input type="text" id="codigo_seguridad" placeholder="Código Seguridad" required>
-            <button type="submit">Guardar</button>
-            <button type="button" id="cancelarCrear">Cancelar</button>
-        </form>
-    `;
-    document.getElementById("formCrear").addEventListener("submit", async e => {
-        e.preventDefault();
-        const query = `
-            mutation {
-                crearCliente(
-                    nombre: "${document.getElementById("nombre").value}",
-                    email: "${document.getElementById("email").value}",
-                    telefono: "${document.getElementById("telefono").value}",
-                    login: "${document.getElementById("login").value}",
-                    password: "${document.getElementById("password").value}",
-                    codigo_seguridad: "${document.getElementById("codigo_seguridad").value}"
-                ) { id_cliente nombre }
-            }
-        `;
-        const res = await fetch("http://localhost:8080/graphql", {
-            method: "POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify({query})
-        });
-        const data = await res.json();
-        console.log("Cliente creado:", data);
-        alert("Cliente creado");
-        limpiar();
-    });
-    document.getElementById("cancelarCrear").addEventListener("click", limpiar);
-});
-
-// --- Eliminar Cliente ---
-document.getElementById("btnEliminar").addEventListener("click", async () => {
-    limpiar();
-
-    try {
-        // 1. Obtener todos los clientes
-        const query = `
-            query {
-                cliente {
-                    id_cliente
-                    nombre
-                }
-            }
-        `;
-        const res = await fetch("http://localhost:8080/graphql", {
-            method: "POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify({query})
-        });
-        const data = await res.json();
-        console.log("Respuesta de clientes:", data);
-
-        const clientes = data.data.cliente;
-        if (!clientes || clientes.length === 0) {
-            contenido.innerHTML = "<p>No hay clientes disponibles para eliminar.</p>";
-            return;
-        }
-
-        // 2. Crear el select con los clientes
-        let opciones = clientes.map(c => `<option value="${c.id_cliente}">${c.nombre}</option>`).join('');
-        contenido.innerHTML = `
-            <h3>Eliminar Cliente</h3>
-            <select id="selectCliente">
-                ${opciones}
-            </select>
-            <button id="btnConfirmarEliminar">Eliminar</button>
-            <button id="cancelarEliminar">Cancelar</button>
-        `;
-
-        // 3. Manejar la eliminacion
-        document.getElementById("btnConfirmarEliminar").addEventListener("click", async () => {
-            const id = Number(document.getElementById("selectCliente").value);
-            const mutation = `
-                mutation {
-                    eliminarCliente(id_cliente: ${id}) { id_cliente nombre }
-                }
-            `;
-            const resEliminar = await fetch("http://localhost:8080/graphql", {
-                method: "POST",
-                headers: {"Content-Type":"application/json"},
-                body: JSON.stringify({query: mutation})
-            });
-            const dataEliminar = await resEliminar.json();
-            console.log("Cliente eliminado:", dataEliminar);
-            alert("Cliente eliminado");
-            limpiar();
-        });
-
-        document.getElementById("cancelarEliminar").addEventListener("click", limpiar);
-
-    } catch (error) {
-        console.error("Error al obtener clientes:", error);
-        contenido.innerHTML = "<p>Error al cargar los clientes.</p>";
-    }
-});
-
-// --- Editar Cliente ---
-document.getElementById("btnEditar").addEventListener("click", async () => {
-    limpiar();
-
-    try {
-        // Obtener todos los clientes para seleccionar cuál editar
-        const query = `
-            query {
-                cliente {
-                    id_cliente
-                    nombre
-                    email
-                    telefono
-                    login
-                    password
-                    codigo_seguridad
-                }
-            }
-        `;
-        const res = await fetch("http://localhost:8080/graphql", {
-            method: "POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify({query})
-        });
-        const data = await res.json();
-        const clientes = data.data.cliente;
-        if (!clientes || clientes.length === 0) {
-            contenido.innerHTML = "<p>No hay clientes disponibles para editar.</p>";
-            return;
-        }
-
-        // Select para elegir cliente a editar
-        let opciones = clientes.map(c => `<option value="${c.id_cliente}">${c.nombre}</option>`).join('');
-        contenido.innerHTML = `
-            <h3>Editar Cliente</h3>
-            <select id="selectCliente">
-                ${opciones}
-            </select>
-            <div id="formEditarContainer"></div>
-            <button id="cancelarEditar">Cancelar</button>
-        `;
-
-        const formContainer = document.getElementById("formEditarContainer");
-
-        function mostrarFormulario(cliente) {
-            formContainer.innerHTML = `
-                <form id="formEditar">
-                    <input type="text" id="nombre" value="${cliente.nombre}" required>
-                    <input type="email" id="email" value="${cliente.email}" required>
-                    <input type="text" id="telefono" value="${cliente.telefono}" required>
-                    <input type="text" id="login" value="${cliente.login}" required>
-                    <input type="text" id="password" value="${cliente.password}" required>
-                    <input type="text" id="codigo_seguridad" value="${cliente.codigo_seguridad}" required>
-                    <button type="submit">Actualizar</button>
-                </form>
-            `;
-            document.getElementById("formEditar").addEventListener("submit", async e => {
-                e.preventDefault();
-                const mutation = `
-                    mutation {
-                        actualizarCliente(
-                            id_cliente: ${cliente.id_cliente},
-                            nombre: "${document.getElementById("nombre").value}",
-                            email: "${document.getElementById("email").value}",
-                            telefono: "${document.getElementById("telefono").value}",
-                            login: "${document.getElementById("login").value}",
-                            password: "${document.getElementById("password").value}",
-                            codigo_seguridad: "${document.getElementById("codigo_seguridad").value}"
-                        ) { id_cliente nombre }
-                    }
-                `;
-                const res = await fetch("http://localhost:8080/graphql", {
-                    method: "POST",
-                    headers: {"Content-Type":"application/json"},
-                    body: JSON.stringify({query: mutation})
-                });
-                const dataActualizar = await res.json();
-                console.log("Cliente actualizado:", dataActualizar);
-                alert("Cliente actualizado");
-                limpiar();
-            });
-        }
-
-        // Mostrar formulario del primer cliente al cargar
-        mostrarFormulario(clientes[0]);
-
-        // Cambiar cliente seleccionado
-        document.getElementById("selectCliente").addEventListener("change", e => {
-            const clienteId = Number(e.target.value);
-            const clienteSeleccionado = clientes.find(c => c.id_cliente === clienteId);
-            if (clienteSeleccionado) mostrarFormulario(clienteSeleccionado);
-        });
-
-        document.getElementById("cancelarEditar").addEventListener("click", limpiar);
-
-    } catch (error) {
-        console.error("Error al obtener clientes para editar:", error);
-        contenido.innerHTML = "<p>Error al cargar clientes.</p>";
-    }
-});
-
-// --- Obtener Cliente ---
-document.getElementById("btnObtener").addEventListener("click", async () => {
-    limpiar();
-    try {
-        const query = `
-            query {
-                cliente {
-                    id_cliente
-                    nombre
-                    email
-                    telefono
-                    login
-                    codigo_seguridad
-                }
-            }
-        `;
-        const res = await fetch("http://localhost:8080/graphql", {
-            method: "POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify({query})
-        });
-        const data = await res.json();
-        const clientes = data.data.cliente;
-
-        if (!clientes || clientes.length === 0) {
-            contenido.innerHTML = "<p>No hay clientes registrados.</p>";
-            return;
-        }
-
-        let listaHTML = '<div class="listaClientes"><ul>';
-        clientes.forEach(c => {
-            listaHTML += `<li>
-                <span>${c.nombre}</span> | Email: ${c.email} | Tel: ${c.telefono} | Login: ${c.login} | Código: ${c.codigo_seguridad}
-            </li>`;
-        });
-        listaHTML += '</ul></div>';
-
-        contenido.innerHTML = '<h3>Clientes Registrados</h3>' + listaHTML;
-    } catch (error) {
-        console.error("Error al obtener clientes:", error);
-        contenido.innerHTML = "<p>Error al cargar los clientes.</p>";
-    }
-});
-</script>
+    <script src="../js/admin-clientes.js" defer></script>
 
 </body>
 </html>

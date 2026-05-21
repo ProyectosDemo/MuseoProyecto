@@ -1,0 +1,20 @@
+.hero {
+    height: 80vh;
+    background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+                url('../html/images/photo-1549880338-65ddcdfd017b.jpg') center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.hero h2 {
+    font-size: 56px;
+    color: white;
+    max-width: 800px;
+}
+
+@media (max-width: 768px) {
+    .hero h2 { font-size: 38px; }
+}

@@ -1,0 +1,76 @@
+{
+  "$jsonSchema": {
+    "title": "obra",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "objectId"
+      },
+      "idObra": {
+        "bsonType": "int"
+      },
+      "nombre": {
+        "bsonType": "string"
+      },
+      "idArtista": {
+        "bsonType": [
+          "int",
+          "null"
+        ]
+      },
+      "idGenero": {
+        "bsonType": [
+          "int",
+          "null"
+        ]
+      },
+      "precioObra": {
+        "bsonType": [
+          "int",
+          "null"
+        ]
+      },
+      "fechaCreacion": {
+        "bsonType": [
+          "date",
+          "null"
+        ]
+      },
+      "status": {
+        "bsonType": "string"
+      },
+      "foto": {
+        "bsonType": [
+          "string",
+          "null"
+        ]
+      },
+      "escultura": {
+        "bsonType": "object",
+        "properties": {
+          "idObra": {
+            "bsonType": "int"
+          },
+          "peso": {
+            "bsonType": [
+              "int",
+              "null"
+            ]
+          },
+          "dimensiones": {
+            "bsonType": [
+              "string",
+              "null"
+            ]
+          },
+          "material": {
+            "bsonType": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
