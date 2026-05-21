@@ -3,14 +3,15 @@ package main
 import (
 	"log"
 	"main/graph"
-	"main/mysql"
 	"main/mongodb"
+	"main/mysql"
 	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	gqlparser "github.com/vektah/gqlparser/v2"
@@ -36,7 +37,7 @@ func main() {
 	}
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
-			DB:      mysql.GetBD(),      // MySQL
+			DB:      mysql.GetBD(),        // MySQL
 			MongoDB: mongodb.GetMongoDB(), // MongoDB
 		},
 		Schema: schemaAst,
@@ -62,7 +63,7 @@ func main() {
 
 	// Home de la web
 	router.GET("/", func(c *gin.Context) {
-		//playground.Handler("GraphQL playground", "/query").ServeHTTP(c.Writer, c.Request)
+		playground.Handler("GraphQL playground", "/query").ServeHTTP(c.Writer, c.Request)
 		c.File("./Frontend/html/index.html")
 	})
 

@@ -159,3 +159,114 @@ func (r *mutationResolver) KillObra(ctx context.Context, id string) (bool, error
 	res, err := mongodb.GetMongoDB().Collection("obra_ultimate").DeleteOne(ctx, bson.M{"_id": int32(idNumerico)})
 	return res.DeletedCount > 0, err
 }
+
+func enviarAGraphql(ctx context.Context, limit *int32, offset *int32, pipeline mongo.Pipeline) ([]*model.Obra, error) {
+	// si se ingresa un offset o limit
+	if offset != nil {
+		pipeline = append(pipeline, bson.D{{Key: "$skip", Value: *offset}})
+	}
+	if limit != nil {
+		pipeline = append(pipeline, bson.D{{Key: "$limit", Value: *limit}})
+	}
+
+	// conectamos con OBRA ULTIMATE HUMONGOSAURIO
+	// y cargamos el pipeline con ordenamiento por precio
+	cursor, err := mongodb.GetMongoDB().Collection("obra_ultimate").Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	// blablabla metemos los resultado a graphql
+	var resultados []models_mongodb.ObraMongo
+	if err := cursor.All(ctx, &resultados); err != nil {
+		return nil, err
+	}
+
+	var obras []*model.Obra
+	for _, mo := range resultados {
+		obras = append(obras, toGraphQLObra(&mo))
+	}
+
+	return obras, nil
+}
+
+func (r *queryResolver) ObrasPorPrecio(ctx context.Context, limit *int32, offset *int32) ([]*model.Obra, error) {
+	// pipeline para ordenar por precio
+	pipeline := mongo.Pipeline{
+		bson.D{{Key: "$sort", Value: bson.D{{Key: "precio_obra", Value: 1}}}},
+		bson.D{{Key: "$project", Value: bson.D{
+			{Key: "_id", Value: 1},
+			{Key: "nombre", Value: 1},
+			{Key: "precio_obra", Value: 1},
+			{Key: "foto", Value: 1},
+		}}},
+	}
+
+	obras, err := enviarAGraphql(ctx, limit, offset, pipeline)
+	if err != nil {
+		return nil, err
+	}
+
+	return obras, nil
+}
+
+func (r *queryResolver) ObrasPorPrecioDesc(ctx context.Context, limit *int32, offset *int32) ([]*model.Obra, error) {
+	// pipeline para ordenar por precio
+	pipeline := mongo.Pipeline{
+		bson.D{{Key: "$sort", Value: bson.D{{Key: "precio_obra", Value: -1}}}},
+		bson.D{{Key: "$project", Value: bson.D{
+			{Key: "_id", Value: 1},
+			{Key: "nombre", Value: 1},
+			{Key: "precio_obra", Value: 1},
+			{Key: "foto", Value: 1},
+		}}},
+	}
+
+	obras, err := enviarAGraphql(ctx, limit, offset, pipeline)
+	if err != nil {
+		return nil, err
+	}
+
+	return obras, nil
+}
+
+func (r *queryResolver) ObrasPorGenero(ctx context.Context, idGenero string, limit *int32, offset *int32) ([]*model.Obra, error) {
+	// pipeline para filtrar por genero
+	pipeline := mongo.Pipeline{
+		bson.D{{Key: "$match", Value: bson.D{{Key: "id_genero", Value: idGenero}}}},
+		bson.D{{Key: "$project", Value: bson.D{
+			{Key: "_id", Value: 1},
+			{Key: "nombre", Value: 1},
+			{Key: "precio_obra", Value: 1},
+			{Key: "foto", Value: 1},
+		}}},
+	}
+
+	obras, err := enviarAGraphql(ctx, limit, offset, pipeline)
+	if err != nil {
+		return nil, err
+	}
+
+	return obras, nil
+}
+
+func (r *queryResolver) ObrasPorDisponibilidad(ctx context.Context, limit *int32, offset *int32) ([]*model.Obra, error) {
+	// pipeline para filtrar por status
+	pipeline := mongo.Pipeline{
+		bson.D{{Key: "$match", Value: bson.D{{Key: "status", Value: "DISPONIBLE"}}}},
+		bson.D{{Key: "$project", Value: bson.D{
+			{Key: "_id", Value: 1},
+			{Key: "nombre", Value: 1},
+			{Key: "precio_obra", Value: 1},
+			{Key: "foto", Value: 1},
+		}}},
+	}	
+
+	obras, err := enviarAGraphql(ctx, limit, offset, pipeline)
+	if err != nil {
+		return nil, err
+	}	
+
+	return obras, nil
+}
