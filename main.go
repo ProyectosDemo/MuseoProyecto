@@ -2,10 +2,10 @@ package main
 
 import (
 	"log"
-	"main/cassandra"
+	"main/data_bases/cassandra"
 	"main/graph"
-	"main/mongodb"
-	"main/mysql"
+	"main/data_bases/mongodb"
+	"main/data_bases/mysql"
 	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -28,7 +28,6 @@ func main() {
 
 	mongodb.ConectarMongo()
 	
-	// 2. INICIALIZA CASSANDRA
 	cassandra.ConectarCassandra() 
 	defer cassandra.GetCassandra().Close()
 

@@ -25,6 +25,17 @@ type ArtistaGenero struct {
 	Genero    *Genero  `json:"genero"`
 }
 
+type BitacoraObra struct {
+	IDObra             string `json:"id_obra"`
+	FechaEvento        string `json:"fecha_evento"`
+	IDEvento           string `json:"id_evento"`
+	TipoEvento         string `json:"tipo_evento"`
+	Descripcion        string `json:"descripcion"`
+	UsuarioResponsable string `json:"usuario_responsable"`
+	EstatusAnterior    string `json:"estatus_anterior"`
+	EstatusNuevo       string `json:"estatus_nuevo"`
+}
+
 type Cliente struct {
 	ID              string `json:"id"`
 	Nombre          string `json:"nombre"`
@@ -41,6 +52,20 @@ type Escultura struct {
 	Material    string `json:"material"`
 	Peso        int32  `json:"peso"`
 	Dimensiones string `json:"dimensiones"`
+}
+
+type FacturaHistorica struct {
+	Periodo       string  `json:"periodo"`
+	FechaFactura  string  `json:"fecha_factura"`
+	IDOrden       string  `json:"id_orden"`
+	IDCliente     string  `json:"id_cliente"`
+	ClienteNombre string  `json:"cliente_nombre"`
+	IDObra        string  `json:"id_obra"`
+	ObraNombre    string  `json:"obra_nombre"`
+	Precio        float64 `json:"precio"`
+	Iva           float64 `json:"iva"`
+	Total         float64 `json:"total"`
+	GananciaMuseo float64 `json:"ganancia_museo"`
 }
 
 type Genero struct {
@@ -84,6 +109,15 @@ type NewArtista struct {
 type NewArtistaGenero struct {
 	IDArtista string `json:"id_artista"`
 	IDGenero  string `json:"id_genero"`
+}
+
+type NewBitacoraObra struct {
+	IDObra             string `json:"id_obra"`
+	TipoEvento         string `json:"tipo_evento"`
+	Descripcion        string `json:"descripcion"`
+	UsuarioResponsable string `json:"usuario_responsable"`
+	EstatusAnterior    string `json:"estatus_anterior"`
+	EstatusNuevo       string `json:"estatus_nuevo"`
 }
 
 type NewCliente struct {

@@ -6,7 +6,7 @@ import (
 	"log"
 	"main/graph/model"
 	"main/graph/models_mongodb"
-	"main/mongodb"
+	"main/data_bases/mongodb"
 	"strconv"
 
 	"go.mongodb.org/mongo-driver/bson"

@@ -289,6 +289,41 @@ input UpdateArtistaGenero {
   nuevo_id_genero: ID
 }
 
+type FacturaHistorica {
+  periodo: String!
+  fecha_factura: String!
+  id_orden: ID!
+  id_cliente: ID!
+  cliente_nombre: String!
+  id_obra: ID!
+  obra_nombre: String!
+  precio: Float!
+  iva: Float!
+  total: Float!
+  ganancia_museo: Float!
+}
+
+type BitacoraObra {
+  id_obra: ID!
+  fecha_evento: String!
+  id_evento: ID!
+  tipo_evento: String!
+  descripcion: String!
+  usuario_responsable: String!
+  estatus_anterior: String!
+  estatus_nuevo: String!
+}
+
+# Inputs para registrar eventos desde el Backend
+input NewBitacoraObra {
+  id_obra: ID!
+  tipo_evento: String!
+  descripcion: String!
+  usuario_responsable: String!
+  estatus_anterior: String!
+  estatus_nuevo: String!
+}
+
 # Queries
 type Query {
   Clientes(limit: Int, offset: Int): [Cliente!]!
@@ -324,6 +359,13 @@ type Query {
   getObra(id: ID!): Obra
   loginCliente(login: String!, password: String!): LoginResponseCliente!
   loginTrabajador(login: String!, password: String!): LoginResponseTrabajador!
+
+
+  # Consulta masiva de reportes financieros por periodo (Ej: "2026-05")
+  obtenerReporteFacturas(periodo: String!): [FacturaHistorica!]!
+  
+  # Consulta de auditoría inmutable de una obra por su ID
+  obtenerBitacoraObra(id_obra: ID!): [BitacoraObra!]!
 }
 
 # Mutations
@@ -370,4 +412,19 @@ type Mutation {
 
   createEscultura(input: NewEscultura!): Escultura!
   updateEscultura(input: UpdateEscultura!): Escultura!
+
+  # Registra manualmente una factura en Cassandra desnormalizando los datos
+  emitirFacturaHistorica(
+    periodo: String!
+    fecha_factura: String!
+    id_orden: ID!
+    id_cliente: ID!
+    cliente_nombre: String!
+    id_obra: ID!
+    obra_nombre: String!
+    precio: Float!
+  ): FacturaHistorica!
+
+  # Registra un evento inmutable en la bitacora de seguridad/estatus
+  registrarEventoObra(input: NewBitacoraObra!): BitacoraObra!
 }
