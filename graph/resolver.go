@@ -2,7 +2,7 @@ package graph
 
 import (
 	"database/sql"
-
+	"github.com/gocql/gocql"
 	"go.mongodb.org/mongo-driver/mongo" // NUEVO: Importamos el driver de MongoDB
 )
 
@@ -14,4 +14,5 @@ import (
 type Resolver struct {
 	DB      *sql.DB         // Tu conexión de MySQL
 	MongoDB *mongo.Database // NUEVO: Inyectamos la conexión a MongoDB Atlas
+	Cassandra *gocql.Session
 }

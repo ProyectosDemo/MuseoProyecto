@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"main/cassandra"
 	"main/graph"
 	"main/mongodb"
 	"main/mysql"
@@ -19,13 +20,17 @@ import (
 )
 
 func main() {
-	// inicializar BD
+	// inicializar BDs
 	mysql.ConectarBD()
 	if err := mysql.GetBD().Ping(); err != nil {
-		log.Fatalf("Error al conectar a la base de datos: %v", err)
+		log.Fatalf("Error al conectar a la base de datos MySQL: %v", err)
 	}
 
 	mongodb.ConectarMongo()
+	
+	// 2. INICIALIZA CASSANDRA
+	cassandra.ConectarCassandra() 
+	defer cassandra.GetCassandra().Close()
 
 	schemaBytes, err := os.ReadFile("graph/schema.graphqls")
 	if err != nil {
@@ -35,10 +40,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error al parsear schema.graphqls: %v", err)
 	}
+	
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
-			DB:      mysql.GetBD(),        // MySQL
-			MongoDB: mongodb.GetMongoDB(), // MongoDB
+			DB:        mysql.GetBD(),      // MySQL
+			MongoDB:   mongodb.GetMongoDB(), // MongoDB
+			Cassandra: cassandra.GetCassandra(), // Cassandra
 		},
 		Schema: schemaAst,
 	}))
