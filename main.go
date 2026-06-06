@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"log"
 	"main/data_bases/cassandra"
-	"main/graph"
 	"main/data_bases/mongodb"
 	"main/data_bases/mysql"
+	"main/data_bases/neo4j"
+	"main/graph"
 	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -20,7 +22,9 @@ import (
 )
 
 func main() {
-	// inicializar BDs
+	ctx := context.Background() // Contexto necesario para el ciclo de vida del driver de Neo4j
+
+	// Inicializar BDs relacionales y NoSQL operativas
 	mysql.ConectarBD()
 	if err := mysql.GetBD().Ping(); err != nil {
 		log.Fatalf("Error al conectar a la base de datos MySQL: %v", err)
@@ -31,6 +35,11 @@ func main() {
 	cassandra.ConectarCassandra() 
 	defer cassandra.GetCassandra().Close()
 
+	// Inicializar y asegurar el cierre ordenado de Neo4j
+	neo4j.ConectarNeo4j()
+	defer neo4j.GetNeo4j().Close(ctx) 
+
+	// Carga y parseo del esquema de GraphQL
 	schemaBytes, err := os.ReadFile("graph/schema.graphqls")
 	if err != nil {
 		log.Fatalf("No se pudo leer schema.graphqls: %v", err)
@@ -40,26 +49,28 @@ func main() {
 		log.Fatalf("Error al parsear schema.graphqls: %v", err)
 	}
 	
+	// Configuracion del servidor GraphQL inyectando todas las dbs
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
-			DB:        mysql.GetBD(),      // MySQL
-			MongoDB:   mongodb.GetMongoDB(), // MongoDB
+			DB:        mysql.GetBD(),        // MySQL
+			MongoDB:   mongodb.GetMongoDB(),   // MongoDB
 			Cassandra: cassandra.GetCassandra(), // Cassandra
+			Neo4j:     neo4j.GetNeo4j(),     // Neo4j
 		},
 		Schema: schemaAst,
 	}))
 
-	// Registrar transportes HTTP
+	// Registrar transportes HTTP obligatorios para gqlgen
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
 
-	// Cache y extensiones recomendadas
+	// Cache y extensiones del servidor de GraphQL
 	srv.SetQueryCache(lru.New[*ast.QueryDocument](1000))
 	srv.Use(extension.Introspection{})
 	srv.Use(extension.AutomaticPersistedQuery{Cache: lru.New[string](100)})
 
-	// Crear router Gin y exponer endpoints
+	// Crear router Gin y exponer los recursos del Frontend
 	router := gin.Default()
 	if err := router.SetTrustedProxies(nil); err != nil {
 		log.Fatalf("Error al configurar proxies: %v", err)
@@ -67,12 +78,12 @@ func main() {
 
 	router.Static("/Frontend", "./Frontend")
 
-	// Home de la web
 	router.GET("/", func(c *gin.Context) {
 		playground.Handler("GraphQL playground", "/query").ServeHTTP(c.Writer, c.Request)
 		c.File("./Frontend/html/index.html")
 	})
 
+	// Middleware global para el manejo de CORS de llamadas fetch
 	router.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")

@@ -2,7 +2,9 @@ package graph
 
 import (
 	"database/sql"
+
 	"github.com/gocql/gocql"
+	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 	"go.mongodb.org/mongo-driver/mongo" // NUEVO: Importamos el driver de MongoDB
 )
 
@@ -12,7 +14,8 @@ import (
 // here.
 
 type Resolver struct {
-	DB      *sql.DB         // Tu conexión de MySQL
-	MongoDB *mongo.Database // NUEVO: Inyectamos la conexión a MongoDB Atlas
+	DB      *sql.DB
+	MongoDB *mongo.Database
 	Cassandra *gocql.Session
+	Neo4j     neo4j.DriverWithContext
 }
