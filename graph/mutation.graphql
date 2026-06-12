@@ -1,0 +1,6 @@
+
+
+
+mutation {
+  generarObrasMasivas(cantidad: 100)
+}

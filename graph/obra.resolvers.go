@@ -3,6 +3,10 @@ package graph
 import (
 	"context"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
 	"main/graph/model"
 	"main/graph/models_mongodb"
 	"main/data_bases/mongodb"
@@ -244,4 +248,125 @@ func (r *queryResolver) ObrasPorDisponibilidad(ctx context.Context, limit *int32
 	}	
 
 	return obras, nil
+}
+
+
+// Funcion auxiliar para descargar una imagen de internet y guardarla localmente
+func descargarFotoLocal(url string, nombreArchivo string) error {
+	// Asegurar que la ruta de carpetas images/obras exista
+	carpeta := filepath.Join("images", "obras")
+	if err := os.MkdirAll(carpeta, os.ModePerm); err != nil {
+		return err
+	}
+
+	// Crear el archivo local vacio
+	rutaCompleta := filepath.Join(carpeta, nombreArchivo)
+	archivo, err := os.Create(rutaCompleta)
+	if err != nil {
+		return err
+	}
+	defer archivo.Close()
+
+	// Hacer la peticion HTTP para bajar la imagen
+	respuesta, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer respuesta.Body.Close()
+
+	if respuesta.StatusCode != http.StatusOK {
+		return fmt.Errorf("error al descargar: status %s", respuesta.Status)
+	}
+
+	// Copiar el contenido de la respuesta de internet al archivo local
+	_, err = io.Copy(archivo, respuesta.Body)
+	return err
+}
+
+// GenerarObrasMasivas inyecta N cantidad de documentos y descarga sus fotos automaticamente
+func (r *mutationResolver) GenerarObrasMasivas(ctx context.Context, cantidad int32) (string, error) {
+	if cantidad <= 0 {
+		return "", fmt.Errorf("la cantidad debe ser mayor a cero")
+	}
+	cantidad_int := int(cantidad)
+	db := mongodb.GetMongoDB()
+
+	// 1. Traer todos los artistas existentes de la base de datos
+	cursorArtistas, err := db.Collection("artista").Find(ctx, bson.D{})
+	if err != nil {
+		return "", fmt.Errorf("error al buscar artistas: %v", err)
+	}
+	var artistas []models_mongodb.ArtistaMongo
+	if err := cursorArtistas.All(ctx, &artistas); err != nil || len(artistas) == 0 {
+		return "", fmt.Errorf("necesitas tener al menos un artista creado en Atlas")
+	}
+
+	// 2. Traer todos los generos existentes de la base de datos
+	cursorGeneros, err := db.Collection("genero").Find(ctx, bson.D{})
+	if err != nil {
+		return "", fmt.Errorf("error al buscar generos: %v", err)
+	}
+	var generos []models_mongodb.GeneroMongo
+	if err := cursorGeneros.All(ctx, &generos); err != nil || len(generos) == 0 {
+		return "", fmt.Errorf("necesitas tener al menos un genero creado en Atlas")
+	}
+
+	// 3. Buscar el ultimo ID correlativo de obra_ultimate
+	opts := options.FindOne().SetSort(bson.D{{Key: "_id", Value: -1}})
+	var ultimaObra struct{ ID int32 `bson:"_id"` }
+	var siguienteID int32 = 1
+	if err := db.Collection("obra_ultimate").FindOne(ctx, bson.D{}, opts).Decode(&ultimaObra); err == nil {
+		siguienteID = ultimaObra.ID + 1
+	}
+
+	tiposObra := []string{"Pintura", "Retrato", "Mural", "Boceto", "Fotografia"}
+	variantes := []string{"Alpha", "Beta", "Gamma", "Delta", "Omega", "Neon", "Abstracta", "Prime"}
+
+	var nuevosDocumentos []interface{}
+
+	for i := 0; i < cantidad_int; i++ {
+		artistaSeleccionado := artistas[i%len(artistas)]
+		generoSeleccionado := generos[i%len(generos)]
+
+		tipo := tiposObra[i%len(tiposObra)]
+		variante := variantes[(i+1)%len(variantes)]
+		
+		nombreObra := fmt.Sprintf("%s %s %d", tipo, variante, siguienteID)
+		precio := int32(1500 + (i * 35) % 8500) 
+		anio := 1850 + (i % 176) 
+
+		// Definir el nombre real del archivo en disco (ej: Pintura101.jpg)
+		nombreArchivoFoto := fmt.Sprintf("%s%d.jpg", tipo, siguienteID)
+
+		// URL de una imagen aleatoria de internet (600x400 pixeles)
+		// Le agregamos ?random=ID para que internet nos de una foto diferente cada vez
+		urlImagenInternet := fmt.Sprintf("https://picsum.photos/600/400?random=%d", siguienteID)
+
+		// Go se encarga de descargarla y guardarla en tu carpeta local automaticamente
+		_ = descargarFotoLocal(urlImagenInternet, nombreArchivoFoto)
+
+		doc := models_mongodb.ObraMongo{
+			ID:            siguienteID,
+			Nombre:        nombreObra,
+			IDArtista:     artistaSeleccionado.ID,
+			IDGenero:      generoSeleccionado.ID,
+			PrecioObra:    precio,
+			FechaCreacion: fmt.Sprintf("%d-05-15", anio),
+			Status:        "DISPONIBLE",
+			Foto:          fmt.Sprintf("images\\obras\\%s", nombreArchivoFoto),
+			Artista:       artistaSeleccionado,
+			Genero:        generoSeleccionado,
+		}
+
+		nuevosDocumentos = append(nuevosDocumentos, doc)
+		siguienteID++
+	}
+
+	// 5. Insercion masiva a MongoDB Atlas
+	resultado, err := db.Collection("obra_ultimate").InsertMany(ctx, nuevosDocumentos)
+	if err != nil {
+		return "", fmt.Errorf("error en la insercion masiva: %v", err)
+	}
+
+	return fmt.Sprintf("Se insertaron %d obras y se descargaron sus imagenes", len(resultado.InsertedIDs)), nil
 }
