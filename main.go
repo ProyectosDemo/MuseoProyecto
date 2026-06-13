@@ -101,6 +101,14 @@ func main() {
 		port = "8080"
 	}
 
+	go func() {
+		log.Println("Poblando red de grafos analítica...")
+		err := graph.SincronizarGrafoSprint3(ctx, mysql.GetBD(), mongodb.GetMongoDB(), neo4j.GetNeo4j())
+		if err != nil {
+			log.Printf("Aviso: No se pudo actualizar el grafo en este arranque: %v", err)
+		}
+	}()
+
 	log.Printf("Servidor GraphQL corriendo en http://localhost:%s/", port)
 	log.Fatal(router.Run(":" + port))
 }

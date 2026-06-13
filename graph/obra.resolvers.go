@@ -410,7 +410,7 @@ func (r *mutationResolver) SincronizarFotosImgBBMasivo(ctx context.Context) (str
 		}
 	}
 
-	// Compilar regex para buscar EXACTAMENTE 3 números seguidos antes de la extensión de la imagen
+	// Compilar regex para buscar EXACTAMENTE 3 numeros seguidos antes de la extensión de la imagen
 	reTresCifras := regexp.MustCompile(`[0-9]{3}\.[a-zA-Z]+$`)
 
 	// 3. Filtrar el archivo TXT para separar los enlaces NUEVOS y el grupo de RECICLAJE (3 cifras)
@@ -423,18 +423,18 @@ func (r *mutationResolver) SincronizarFotosImgBBMasivo(ctx context.Context) (str
 			continue
 		}
 
-		// Si cumple con tener un número de 3 cifras al final, entra al pool de reciclaje
+		// Si cumple con tener un numero de 3 cifras al final, entra al pool de reciclaje
 		if reTresCifras.MatchString(l) {
 			poolReciclajeTresCifras = append(poolReciclajeTresCifras, l)
 		}
 
-		// Si además no ha sido usado, se usa como cartucho prioritario
+		// Si ademas no ha sido usado, se usa como cartucho prioritario
 		if !enlacesUsados[l] {
 			enlacesNuevosDisponibles = append(enlacesNuevosDisponibles, l)
 		}
 	}
 
-	log.Printf("=== INICIANDO MIGRACIÓN CON RECICLAJE FILTRADO ===")
+	log.Printf(" INICIANDO MIGRACIÓN CON RECICLAJE FILTRADO ")
 	log.Printf("Obras por arreglar: %d", len(obrasPendientes))
 	log.Printf("Enlaces nuevos disponibles: %d", len(enlacesNuevosDisponibles))
 	log.Printf("Enlaces elegibles para reciclaje (3 cifras): %d", len(poolReciclajeTresCifras))
@@ -451,7 +451,7 @@ func (r *mutationResolver) SincronizarFotosImgBBMasivo(ctx context.Context) (str
 		var urlNubeAsignada string
 
 		if i < len(enlacesNuevosDisponibles) {
-			// Usamos los últimos cartuchos limpios que queden
+			// Usamos los ultimos cartuchos limpios que queden
 			urlNubeAsignada = enlacesNuevosDisponibles[i]
 		} else {
 			// Bucle circular sobre el pool de 3 cifras usando el operador residuo (%)
@@ -468,6 +468,6 @@ func (r *mutationResolver) SincronizarFotosImgBBMasivo(ctx context.Context) (str
 		}
 	}
 
-	log.Printf("=== FIN: Se forzó la nube en las %d obras rezagadas ===", actualizadas)
-	return fmt.Sprintf("¡Operación exitosa! Se pasaron %d obras a la nube reciclando las fotos de 3 cifras.", actualizadas), nil
+	log.Printf(" FIN: Se forzo la nube en las %d obras rezagadas ", actualizadas)
+	return fmt.Sprintf("¡Operacion exitosa! Se pasaron %d obras a la nube reciclando las fotos de 3 cifras.", actualizadas), nil
 }
