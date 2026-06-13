@@ -123,40 +123,42 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateArtista          func(childComplexity int, input model.NewArtista) int
-		CreateArtistaGenero    func(childComplexity int, input model.NewArtistaGenero) int
-		CreateCliente          func(childComplexity int, input model.NewCliente) int
-		CreateEscultura        func(childComplexity int, input model.NewEscultura) int
-		CreateGenero           func(childComplexity int, nombre string) int
-		CreateMembresia        func(childComplexity int, input model.NewMembresia) int
-		CreateObra             func(childComplexity int, input model.NewObra) int
-		CreateOrden            func(childComplexity int, input model.NewOrden) int
-		CreatePreguntas        func(childComplexity int, input model.NewPreguntas) int
-		CreateTarjetaCliente   func(childComplexity int, input model.NewTarjetaCliente) int
-		CreateTrabajador       func(childComplexity int, input model.NewTrabajador) int
-		EmitirFacturaHistorica func(childComplexity int, periodo string, fechaFactura string, idOrden string, idCliente string, clienteNombre string, idObra string, obraNombre string, precio float64) int
-		KillArtista            func(childComplexity int, id string) int
-		KillArtistaGenero      func(childComplexity int, idArtista string, idGenero string) int
-		KillCliente            func(childComplexity int, id string) int
-		KillGenero             func(childComplexity int, id string) int
-		KillMembresia          func(childComplexity int, idMembresia string) int
-		KillObra               func(childComplexity int, id string) int
-		KillOrden              func(childComplexity int, id string) int
-		KillPreguntas          func(childComplexity int, id string) int
-		KillTarjetaCliente     func(childComplexity int, idTarjeta string) int
-		KillTrabajador         func(childComplexity int, id string) int
-		RegistrarEventoObra    func(childComplexity int, input model.NewBitacoraObra) int
-		UpdateArtista          func(childComplexity int, input model.UpdateArtista) int
-		UpdateArtistaGenero    func(childComplexity int, input model.UpdateArtistaGenero) int
-		UpdateCliente          func(childComplexity int, input model.UpdateCliente) int
-		UpdateEscultura        func(childComplexity int, input model.UpdateEscultura) int
-		UpdateGenero           func(childComplexity int, input model.UpdateGenero) int
-		UpdateMembresia        func(childComplexity int, input model.UpdateMembresia) int
-		UpdateObra             func(childComplexity int, input model.UpdateObra) int
-		UpdateOrden            func(childComplexity int, input model.UpdateOrden) int
-		UpdatePreguntas        func(childComplexity int, input model.UpdatePreguntas) int
-		UpdateTarjetaCliente   func(childComplexity int, input model.UpdateTarjetaCliente) int
-		UpdateTrabajador       func(childComplexity int, input model.UpdateTrabajador) int
+		CreateArtista                    func(childComplexity int, input model.NewArtista) int
+		CreateArtistaGenero              func(childComplexity int, input model.NewArtistaGenero) int
+		CreateCliente                    func(childComplexity int, input model.NewCliente) int
+		CreateEscultura                  func(childComplexity int, input model.NewEscultura) int
+		CreateGenero                     func(childComplexity int, nombre string) int
+		CreateMembresia                  func(childComplexity int, input model.NewMembresia) int
+		CreateObra                       func(childComplexity int, input model.NewObra) int
+		CreateOrden                      func(childComplexity int, input model.NewOrden) int
+		CreatePreguntas                  func(childComplexity int, input model.NewPreguntas) int
+		CreateTarjetaCliente             func(childComplexity int, input model.NewTarjetaCliente) int
+		CreateTrabajador                 func(childComplexity int, input model.NewTrabajador) int
+		EmitirFacturaHistorica           func(childComplexity int, periodo string, fechaFactura string, idOrden string, idCliente string, clienteNombre string, idObra string, obraNombre string, precio float64) int
+		GenerarObrasMasivas              func(childComplexity int, cantidad int32) int
+		KillArtista                      func(childComplexity int, id string) int
+		KillArtistaGenero                func(childComplexity int, idArtista string, idGenero string) int
+		KillCliente                      func(childComplexity int, id string) int
+		KillGenero                       func(childComplexity int, id string) int
+		KillMembresia                    func(childComplexity int, idMembresia string) int
+		KillObra                         func(childComplexity int, id string) int
+		KillOrden                        func(childComplexity int, id string) int
+		KillPreguntas                    func(childComplexity int, id string) int
+		KillTarjetaCliente               func(childComplexity int, idTarjeta string) int
+		KillTrabajador                   func(childComplexity int, id string) int
+		LlenarAtributosEsculturasMasivas func(childComplexity int) int
+		RegistrarEventoObra              func(childComplexity int, input model.NewBitacoraObra) int
+		UpdateArtista                    func(childComplexity int, input model.UpdateArtista) int
+		UpdateArtistaGenero              func(childComplexity int, input model.UpdateArtistaGenero) int
+		UpdateCliente                    func(childComplexity int, input model.UpdateCliente) int
+		UpdateEscultura                  func(childComplexity int, input model.UpdateEscultura) int
+		UpdateGenero                     func(childComplexity int, input model.UpdateGenero) int
+		UpdateMembresia                  func(childComplexity int, input model.UpdateMembresia) int
+		UpdateObra                       func(childComplexity int, input model.UpdateObra) int
+		UpdateOrden                      func(childComplexity int, input model.UpdateOrden) int
+		UpdatePreguntas                  func(childComplexity int, input model.UpdatePreguntas) int
+		UpdateTarjetaCliente             func(childComplexity int, input model.UpdateTarjetaCliente) int
+		UpdateTrabajador                 func(childComplexity int, input model.UpdateTrabajador) int
 	}
 
 	Obra struct {
@@ -264,6 +266,8 @@ type MutationResolver interface {
 	CreateObra(ctx context.Context, input model.NewObra) (*model.Obra, error)
 	UpdateObra(ctx context.Context, input model.UpdateObra) (*model.Obra, error)
 	KillObra(ctx context.Context, id string) (bool, error)
+	GenerarObrasMasivas(ctx context.Context, cantidad int32) (string, error)
+	LlenarAtributosEsculturasMasivas(ctx context.Context) (string, error)
 	CreateOrden(ctx context.Context, input model.NewOrden) (*model.Orden, error)
 	UpdateOrden(ctx context.Context, input model.UpdateOrden) (*model.Orden, error)
 	KillOrden(ctx context.Context, id string) (bool, error)
@@ -814,6 +818,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.EmitirFacturaHistorica(childComplexity, args["periodo"].(string), args["fecha_factura"].(string), args["id_orden"].(string), args["id_cliente"].(string), args["cliente_nombre"].(string), args["id_obra"].(string), args["obra_nombre"].(string), args["precio"].(float64)), true
+	case "Mutation.generarObrasMasivas":
+		if e.ComplexityRoot.Mutation.GenerarObrasMasivas == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_generarObrasMasivas_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.GenerarObrasMasivas(childComplexity, args["cantidad"].(int32)), true
 	case "Mutation.killArtista":
 		if e.ComplexityRoot.Mutation.KillArtista == nil {
 			break
@@ -924,6 +939,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.KillTrabajador(childComplexity, args["id"].(string)), true
+	case "Mutation.llenarAtributosEsculturasMasivas":
+		if e.ComplexityRoot.Mutation.LlenarAtributosEsculturasMasivas == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Mutation.LlenarAtributosEsculturasMasivas(childComplexity), true
 	case "Mutation.registrarEventoObra":
 		if e.ComplexityRoot.Mutation.RegistrarEventoObra == nil {
 			break
@@ -1948,6 +1969,17 @@ func (ec *executionContext) field_Mutation_emitirFacturaHistorica_args(ctx conte
 		return nil, err
 	}
 	args["precio"] = arg7
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_generarObrasMasivas_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "cantidad", ec.unmarshalNInt2int32)
+	if err != nil {
+		return nil, err
+	}
+	args["cantidad"] = arg0
 	return args, nil
 }
 
@@ -5181,6 +5213,76 @@ func (ec *executionContext) fieldContext_Mutation_killObra(ctx context.Context, 
 	if fc.Args, err = ec.field_Mutation_killObra_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_generarObrasMasivas(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_generarObrasMasivas,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().GenerarObrasMasivas(ctx, fc.Args["cantidad"].(int32))
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_generarObrasMasivas(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_generarObrasMasivas_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_llenarAtributosEsculturasMasivas(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_llenarAtributosEsculturasMasivas,
+		func(ctx context.Context) (any, error) {
+			return ec.Resolvers.Mutation().LlenarAtributosEsculturasMasivas(ctx)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_llenarAtributosEsculturasMasivas(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
 	}
 	return fc, nil
 }
@@ -12705,6 +12807,20 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "killObra":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_killObra(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "generarObrasMasivas":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_generarObrasMasivas(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "llenarAtributosEsculturasMasivas":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_llenarAtributosEsculturasMasivas(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++

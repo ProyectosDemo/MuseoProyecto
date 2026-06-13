@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"main/data_bases/mongodb"
 	"main/graph/model"
 	"main/graph/models_mongodb"
-	"main/data_bases/mongodb"
 	"strconv"
+	
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -200,4 +201,60 @@ func (r *mutationResolver) UpdateEscultura(ctx context.Context, input model.Upda
 	}
 
 	return toGraphQLEscultura(&me, &mo), nil
+}
+
+func (r *mutationResolver) LlenarAtributosEsculturasMasivas(ctx context.Context) (string, error) {
+	db := mongodb.GetMongoDB()
+	collEscultura := db.Collection("escultura")
+
+	// 1. Traer todas las esculturas que ya existen
+	cursor, err := collEscultura.Find(ctx, bson.M{})
+	if err != nil {
+		return "", fmt.Errorf("error al leer la colección escultura: %v", err)
+	}
+	defer cursor.Close(ctx)
+
+	var todasLasEsculturas []bson.M
+	if err := cursor.All(ctx, &todasLasEsculturas); err != nil {
+		return "", err
+	}
+
+	// Listas de datos variados para que cada escultura tenga valores diferentes
+	materiales := []string{"Madera", "Bronce", "Mármol", "Arcilla", "Piedra", "Hierro"}
+	
+	editados := 0
+
+	// 2. Recorrer y actualizar cada documento existente
+	for i, esc := range todasLasEsculturas {
+		idEscultura := esc["_id"]
+
+		// Variamos los valores matemáticamente usando el índice 'i' para que sean distintos
+		pesoDinamico := int32(800 + (i*230)%4500) // Pesos variados entre 800 y 5300
+		
+		alto := 50 + (i*12)%150
+		ancho := 30 + (i*7)%80
+		fondo := 30 + (i*5)%60
+		dimensionesDinamicas := fmt.Sprintf("%dx%dx%d", alto, ancho, fondo) // Ej: "120x50x40"
+		
+		materialDinamico := materiales[i%len(materiales)]
+
+		// 3. USAMOS bson.D PARA FORZAR EL ORDEN EXACTO DE LOS CAMPOS
+		actualizacion := bson.D{
+			{Key: "$set", Value: bson.D{
+				{Key: "peso", Value: pesoDinamico},
+				{Key: "dimensiones", Value: dimensionesDinamicas},
+				{Key: "material", Value: materialDinamico},
+			}},
+		}
+
+		// 4. Ejecutar la actualización en MongoDB Atlas
+		_, errUpdate := collEscultura.UpdateOne(ctx, bson.M{"_id": idEscultura}, actualizacion)
+		if errUpdate != nil {
+			log.Printf("Error al actualizar ID %v: %v", idEscultura, errUpdate)
+			continue
+		}
+		editados++
+	}
+
+	return fmt.Sprintf("¡Éxito! Se editaron %d documentos respetando el orden exacto: peso, dimensiones y material.", editados), nil
 }

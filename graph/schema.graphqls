@@ -389,6 +389,8 @@ type Mutation {
   createObra(input: NewObra!): Obra!
   updateObra(input: UpdateObra!): Obra!
   killObra(id: ID!): Boolean!
+  generarObrasMasivas(cantidad: Int!): String!
+  llenarAtributosEsculturasMasivas: String!
 
   createOrden(input: NewOrden!): Orden!
   updateOrden(input: UpdateOrden!): Orden!
