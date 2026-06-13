@@ -148,6 +148,7 @@ type ComplexityRoot struct {
 		KillTrabajador                   func(childComplexity int, id string) int
 		LlenarAtributosEsculturasMasivas func(childComplexity int) int
 		RegistrarEventoObra              func(childComplexity int, input model.NewBitacoraObra) int
+		SincronizarFotosImgBBMasivo      func(childComplexity int) int
 		UpdateArtista                    func(childComplexity int, input model.UpdateArtista) int
 		UpdateArtistaGenero              func(childComplexity int, input model.UpdateArtistaGenero) int
 		UpdateCliente                    func(childComplexity int, input model.UpdateCliente) int
@@ -268,6 +269,7 @@ type MutationResolver interface {
 	KillObra(ctx context.Context, id string) (bool, error)
 	GenerarObrasMasivas(ctx context.Context, cantidad int32) (string, error)
 	LlenarAtributosEsculturasMasivas(ctx context.Context) (string, error)
+	SincronizarFotosImgBBMasivo(ctx context.Context) (string, error)
 	CreateOrden(ctx context.Context, input model.NewOrden) (*model.Orden, error)
 	UpdateOrden(ctx context.Context, input model.UpdateOrden) (*model.Orden, error)
 	KillOrden(ctx context.Context, id string) (bool, error)
@@ -956,6 +958,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Mutation.RegistrarEventoObra(childComplexity, args["input"].(model.NewBitacoraObra)), true
+	case "Mutation.SincronizarFotosImgBBMasivo":
+		if e.ComplexityRoot.Mutation.SincronizarFotosImgBBMasivo == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Mutation.SincronizarFotosImgBBMasivo(childComplexity), true
 	case "Mutation.updateArtista":
 		if e.ComplexityRoot.Mutation.UpdateArtista == nil {
 			break
@@ -5275,6 +5283,35 @@ func (ec *executionContext) _Mutation_llenarAtributosEsculturasMasivas(ctx conte
 }
 
 func (ec *executionContext) fieldContext_Mutation_llenarAtributosEsculturasMasivas(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_SincronizarFotosImgBBMasivo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_SincronizarFotosImgBBMasivo,
+		func(ctx context.Context) (any, error) {
+			return ec.Resolvers.Mutation().SincronizarFotosImgBBMasivo(ctx)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_SincronizarFotosImgBBMasivo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -12821,6 +12858,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "llenarAtributosEsculturasMasivas":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_llenarAtributosEsculturasMasivas(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "SincronizarFotosImgBBMasivo":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_SincronizarFotosImgBBMasivo(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++

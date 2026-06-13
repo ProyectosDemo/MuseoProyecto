@@ -8,7 +8,7 @@ async function manejarExposiciones() {
 
 
 async function obtenerCatalogoCompleto() {
-    const query = `{ Obras(limit: 500, offset: 0) { id nombre foto precio status artista { id nombre } genero { id nombre } } }`;
+    const query = `{ Obras(limit: 250, offset: 0) { id nombre foto precio status artista { id nombre } genero { id nombre } } }`;
     try {
         const res = await fetch("http://localhost:8080/query", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }) });
         const data = await res.json();
@@ -20,7 +20,7 @@ async function obtenerCatalogoCompleto() {
 }
 
 async function cargarObrasPorPrecioAsc()  {
-    const query = `{ ObrasPorPrecio(limit:500, offset:0) { id nombre precio foto artista { id nombre } genero { id nombre } } }`;
+    const query = `{ ObrasPorPrecio(limit:250, offset:0) { id nombre precio foto artista { id nombre } genero { id nombre } } }`;
     try {
         const res = await fetch("http://localhost:8080/query", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }) });
         const data = await res.json();
@@ -32,7 +32,7 @@ async function cargarObrasPorPrecioAsc()  {
 }
 
 async function cargarObrasPorPrecioDesc() {
-    const query = `{ ObrasPorPrecioDesc(limit:500, offset:0) { id nombre precio foto artista { id nombre } genero { id nombre } } }`;
+    const query = `{ ObrasPorPrecioDesc(limit:250, offset:0) { id nombre precio foto artista { id nombre } genero { id nombre } } }`;
     try {
         const res = await fetch("http://localhost:8080/query", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }) });
         const data = await res.json();
@@ -46,7 +46,7 @@ async function cargarObrasPorPrecioDesc() {
 async function cargarObrasPorGenero(idGenero) {
     console.log("cargando genero"); // original
     
-    const query = `{ ObrasPorGenero(idGenero: ${idGenero}, limit:500, offset:0) { id nombre precio foto artista { id nombre } genero { id nombre } } }`;
+    const query = `{ ObrasPorGenero(idGenero: ${idGenero}, limit:250, offset:0) { id nombre precio foto artista { id nombre } genero { id nombre } } }`;
     try {
         const res = await fetch("http://localhost:8080/query", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }) });
         const data = await res.json();
@@ -58,7 +58,7 @@ async function cargarObrasPorGenero(idGenero) {
 }
 
 async function cargarObrasPorDisponibilidad() {
-    const query = `{ ObrasPorDisponibilidad(limit:500, offset:0) { id nombre precio foto status artista { id nombre } genero { id nombre } } }`;
+    const query = `{ ObrasPorDisponibilidad(limit:250, offset:0) { id nombre precio foto status artista { id nombre } genero { id nombre } } }`;
     try {
         const res = await fetch("http://localhost:8080/query", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }) });
         const data = await res.json();
@@ -72,8 +72,8 @@ async function cargarObrasPorDisponibilidad() {
 
 // Cargar filtros de artista y género
 async function cargarFiltros() {
-    const artistasQuery = `query { Artistas(limit:500, offset:0) { id nombre } }`;
-    const generosQuery = `query { Genero(limit:500, offset:0) { id nombre } }`;
+    const artistasQuery = `query { Artistas(limit:250, offset:0) { id nombre } }`;
+    const generosQuery = `query { Genero(limit:250, offset:0) { id nombre } }`;
 
     try {
         const [artistasRes, generosRes] = await Promise.all([

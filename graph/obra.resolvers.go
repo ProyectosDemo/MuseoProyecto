@@ -4,15 +4,20 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
+	"main/data_bases/mongodb"
+	"main/graph/model"
+	"main/graph/models_mongodb"
 	"net/http"
 	"os"
 	"path/filepath"
-	"main/graph/model"
-	"main/graph/models_mongodb"
-	"main/data_bases/mongodb"
+	"regexp"
+
 	"strconv"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/bson"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -369,4 +374,100 @@ func (r *mutationResolver) GenerarObrasMasivas(ctx context.Context, cantidad int
 	}
 
 	return fmt.Sprintf("Se insertaron %d obras y se descargaron sus imagenes", len(resultado.InsertedIDs)), nil
+}
+
+func (r *mutationResolver) SincronizarFotosImgBBMasivo(ctx context.Context) (string, error) {
+	db := mongodb.GetMongoDB()
+	collObra := db.Collection("obra_ultimate")
+
+	// 1. Leer todas las líneas de enlaces.txt
+	contenido, err := os.ReadFile("enlaces.txt")
+	if err != nil {
+		return "", fmt.Errorf("no se pudo abrir el archivo enlaces.txt: %v", err)
+	}
+
+	// 2. Traer todas las obras para mapear el estado actual en Atlas
+	cursorTodos, err := collObra.Find(ctx, bson.M{})
+	if err != nil {
+		return "", fmt.Errorf("error al mapear enlaces existentes: %v", err)
+	}
+	defer cursorTodos.Close(ctx)
+
+	enlacesUsados := make(map[string]bool)
+	var obrasPendientes []bson.M
+
+	for cursorTodos.Next(ctx) {
+		var obra bson.M
+		if err := cursorTodos.Decode(&obra); err != nil {
+			continue
+		}
+
+		fotoStr := fmt.Sprintf("%v", obra["foto"])
+		if strings.HasPrefix(strings.ToLower(fotoStr), "http") {
+			enlacesUsados[strings.TrimSpace(fotoStr)] = true
+		} else if strings.HasPrefix(strings.ToLower(fotoStr), "images") {
+			obrasPendientes = append(obrasPendientes, obra)
+		}
+	}
+
+	// Compilar regex para buscar EXACTAMENTE 3 números seguidos antes de la extensión de la imagen
+	reTresCifras := regexp.MustCompile(`[0-9]{3}\.[a-zA-Z]+$`)
+
+	// 3. Filtrar el archivo TXT para separar los enlaces NUEVOS y el grupo de RECICLAJE (3 cifras)
+	var enlacesNuevosDisponibles []string
+	var poolReciclajeTresCifras []string
+
+	for _, l := range strings.Split(string(contenido), "\n") {
+		l = strings.TrimSpace(l)
+		if l == "" {
+			continue
+		}
+
+		// Si cumple con tener un número de 3 cifras al final, entra al pool de reciclaje
+		if reTresCifras.MatchString(l) {
+			poolReciclajeTresCifras = append(poolReciclajeTresCifras, l)
+		}
+
+		// Si además no ha sido usado, se usa como cartucho prioritario
+		if !enlacesUsados[l] {
+			enlacesNuevosDisponibles = append(enlacesNuevosDisponibles, l)
+		}
+	}
+
+	log.Printf("=== INICIANDO MIGRACIÓN CON RECICLAJE FILTRADO ===")
+	log.Printf("Obras por arreglar: %d", len(obrasPendientes))
+	log.Printf("Enlaces nuevos disponibles: %d", len(enlacesNuevosDisponibles))
+	log.Printf("Enlaces elegibles para reciclaje (3 cifras): %d", len(poolReciclajeTresCifras))
+
+	if len(poolReciclajeTresCifras) == 0 {
+		return "", fmt.Errorf("error: no se encontraron enlaces con nombres de 3 cifras al final en enlaces.txt")
+	}
+
+	actualizadas := 0
+
+	// 4. Inyectar enlaces priorizando los nuevos, y reciclando los de 3 cifras si se acaban
+	for i, obra := range obrasPendientes {
+		idObra := obra["_id"]
+		var urlNubeAsignada string
+
+		if i < len(enlacesNuevosDisponibles) {
+			// Usamos los últimos cartuchos limpios que queden
+			urlNubeAsignada = enlacesNuevosDisponibles[i]
+		} else {
+			// Bucle circular sobre el pool de 3 cifras usando el operador residuo (%)
+			indiceReciclado := (i - len(enlacesNuevosDisponibles)) % len(poolReciclajeTresCifras)
+			urlNubeAsignada = poolReciclajeTresCifras[indiceReciclado]
+		}
+
+		_, errUpdate := collObra.UpdateOne(ctx, 
+			bson.M{"_id": idObra}, 
+			bson.M{"$set": bson.M{"foto": urlNubeAsignada}},
+		)
+		if errUpdate == nil {
+			actualizadas++
+		}
+	}
+
+	log.Printf("=== FIN: Se forzó la nube en las %d obras rezagadas ===", actualizadas)
+	return fmt.Sprintf("¡Operación exitosa! Se pasaron %d obras a la nube reciclando las fotos de 3 cifras.", actualizadas), nil
 }
