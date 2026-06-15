@@ -227,6 +227,7 @@ type ComplexityRoot struct {
 		ObrasPorPrecio             func(childComplexity int, limit *int32, offset *int32) int
 		ObrasPorPrecioDesc         func(childComplexity int, limit *int32, offset *int32) int
 		ObtenerBitacoraObra        func(childComplexity int, idObra string) int
+		ObtenerRecomendaciones     func(childComplexity int, idCliente string) int
 		ObtenerReporteFacturas     func(childComplexity int, periodo string) int
 		Ordenes                    func(childComplexity int, limit *int32, offset *int32) int
 		Preguntas                  func(childComplexity int, limit *int32, offset *int32) int
@@ -324,6 +325,7 @@ type QueryResolver interface {
 	GetObra(ctx context.Context, id string) (*model.Obra, error)
 	LoginCliente(ctx context.Context, login string, password string) (*model.LoginResponseCliente, error)
 	LoginTrabajador(ctx context.Context, login string, password string) (*model.LoginResponseTrabajador, error)
+	ObtenerRecomendaciones(ctx context.Context, idCliente string) ([]*model.Obra, error)
 	ObtenerReporteFacturas(ctx context.Context, periodo string) ([]*model.FacturaHistorica, error)
 	ObtenerBitacoraObra(ctx context.Context, idObra string) ([]*model.BitacoraObra, error)
 }
@@ -1570,6 +1572,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Query.ObtenerBitacoraObra(childComplexity, args["id_obra"].(string)), true
+	case "Query.obtenerRecomendaciones":
+		if e.ComplexityRoot.Query.ObtenerRecomendaciones == nil {
+			break
+		}
+
+		args, err := ec.field_Query_obtenerRecomendaciones_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.ObtenerRecomendaciones(childComplexity, args["idCliente"].(string)), true
 	case "Query.obtenerReporteFacturas":
 		if e.ComplexityRoot.Query.ObtenerReporteFacturas == nil {
 			break
@@ -2710,6 +2723,17 @@ func (ec *executionContext) field_Query_obtenerBitacoraObra_args(ctx context.Con
 		return nil, err
 	}
 	args["id_obra"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_obtenerRecomendaciones_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "idCliente", ec.unmarshalNID2string)
+	if err != nil {
+		return nil, err
+	}
+	args["idCliente"] = arg0
 	return args, nil
 }
 
@@ -8955,6 +8979,69 @@ func (ec *executionContext) fieldContext_Query_loginTrabajador(ctx context.Conte
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_obtenerRecomendaciones(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_obtenerRecomendaciones,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().ObtenerRecomendaciones(ctx, fc.Args["idCliente"].(string))
+		},
+		nil,
+		ec.marshalNObra2ᚕᚖmainᚋgraphᚋmodelᚐObraᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_obtenerRecomendaciones(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Obra_id(ctx, field)
+			case "nombre":
+				return ec.fieldContext_Obra_nombre(ctx, field)
+			case "id_artista":
+				return ec.fieldContext_Obra_id_artista(ctx, field)
+			case "artista":
+				return ec.fieldContext_Obra_artista(ctx, field)
+			case "id_genero":
+				return ec.fieldContext_Obra_id_genero(ctx, field)
+			case "genero":
+				return ec.fieldContext_Obra_genero(ctx, field)
+			case "precio":
+				return ec.fieldContext_Obra_precio(ctx, field)
+			case "fecha_creacion":
+				return ec.fieldContext_Obra_fecha_creacion(ctx, field)
+			case "status":
+				return ec.fieldContext_Obra_status(ctx, field)
+			case "foto":
+				return ec.fieldContext_Obra_foto(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Obra", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_obtenerRecomendaciones_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_obtenerReporteFacturas(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -13964,6 +14051,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_loginTrabajador(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "obtenerRecomendaciones":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_obtenerRecomendaciones(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

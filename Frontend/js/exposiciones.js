@@ -184,3 +184,48 @@ function mostrarObras(obras) {
         gallery.appendChild(artCard);
     });
 }
+
+// Agrega esta llamada al final de tu función inicial ya existente
+async function manejarExposiciones() {
+    const catalogoInicial = await obtenerCatalogoCompleto();
+    mostrarObras(catalogoInicial);
+    await cargarFiltros();
+    
+    // NUEVO: Verificación automática de compras al cargar la vista
+    await verificarYMostrarBotonRecomendaciones();
+}
+
+async function verificarYMostrarBotonRecomendaciones() {
+    const idCliente = localStorage.getItem("clienteId");
+    const boton = document.getElementById("botonRecomendaciones");
+    
+    // Validaciones iniciales
+    if (!idCliente || !boton) return;
+
+    // Consulta GraphQL para verificar si el usuario tiene recomendaciones
+    const query = `{ obtenerRecomendaciones(idCliente: ${idCliente}) { id } }`;
+
+    try {
+        const res = await fetch("http://localhost:8080/query", { 
+            method: "POST", 
+            headers: { "Content-Type": "application/json" }, 
+            body: JSON.stringify({ query }) 
+        });
+        
+        const data = await res.json();
+        const recomendaciones = data.data?.obtenerRecomendaciones || [];
+
+        // Lógica de visualización: solo activamos si hay datos
+        if (recomendaciones.length > 0) {
+            boton.textContent = "Recomendaciones";
+            // Asignamos la clase CSS (esto aplica todos los estilos: hover, borde, color, etc.)
+            boton.classList.add("btn-filtro");
+            boton.style.display = "inline-flex";
+        } else {
+            // Opcional: asegurar que esté oculto si no hay recomendaciones
+            boton.style.display = "none";
+        }
+    } catch (err) {
+        console.error("Error al consultar recomendaciones:", err);
+    }
+}

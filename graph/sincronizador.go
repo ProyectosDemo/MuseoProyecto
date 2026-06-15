@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 
+
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,7 +22,7 @@ func SincronizarGrafoSprint3(ctx context.Context, dbMySQL *sql.DB, dbMongo *mong
 
 	log.Println("[NEO4J] Iniciando sincronizacion ")
 
-	//TRAER LOS CLIENTES
+	// 1. TRAER LOS CLIENTES
 	rowsClientes, err := dbMySQL.QueryContext(ctx, "SELECT id_cliente, nombre FROM cliente")
 	if err != nil {
 		return err
@@ -48,7 +49,7 @@ func SincronizarGrafoSprint3(ctx context.Context, dbMySQL *sql.DB, dbMongo *mong
 		log.Printf("[NEO4J] Error procesando clientes: %v", err)
 	}
 
-	// TRAER LAS OBRAS
+	// 2. TRAER LAS OBRAS
 	collObra := dbMongo.Collection("obra_ultimate")
 	cursorObras, err := collObra.Find(ctx, bson.M{})
 	if err == nil {
@@ -76,7 +77,7 @@ func SincronizarGrafoSprint3(ctx context.Context, dbMySQL *sql.DB, dbMongo *mong
 					nombreGenero = fmt.Sprintf("%v", generoDocNormal["nombre"])
 				}
 
-				// Query de Cypher que mapea la red completa aprovechando que todo viene en un solo documento
+				// CORRECCIÓN CYPHER: Guardamos la propiedad status en el nodo Obra
 				queryMapeoCatalogo := `
 					MERGE (g:Género {id: $idGenero})
 					SET g.nombre = $nombreGenero
@@ -85,7 +86,7 @@ func SincronizarGrafoSprint3(ctx context.Context, dbMySQL *sql.DB, dbMongo *mong
 					SET a.nombre = $nombreArtista
 
 					MERGE (o:Obra {id: $idObra})
-					SET o.nombre = $nombreObra, o.foto = $fotoObra
+					SET o.nombre = $nombreObra, o.foto = $fotoObra, o.status = $statusObra
 
 					MERGE (a)-[:TRABAJA_EN]->(g)
 					MERGE (a)-[:CREÓ]->(o)
@@ -93,19 +94,20 @@ func SincronizarGrafoSprint3(ctx context.Context, dbMySQL *sql.DB, dbMongo *mong
 
 				tx.Run(ctx, queryMapeoCatalogo, map[string]interface{}{
 					"idGenero":     obra["id_genero"],
-					"nombreGenero": nombreGenero, // Nombre extraído del objeto embebido
+					"nombreGenero": nombreGenero, 
 					"idArtista":    obra["id_artista"],
-					"nombreArtista": nombreArtista, // Nombre extraído del objeto embebido
+					"nombreArtista": nombreArtista, 
 					"idObra":       obra["_id"],
 					"nombreObra":   obra["nombre"],
 					"fotoObra":     obra["foto"],
+					"statusObra":   obra["status"], // <-- CORRECCIÓN: Le pasamos el status de Mongo
 				})
 			}
 			return nil, nil
 		})
 	}
 
-	//RELACIONES DE COMPRA
+	// 3. RELACIONES DE COMPRA
 	rowsCompras, err := dbMySQL.QueryContext(ctx, "SELECT id_cliente, id_obra FROM orden")
 	if err == nil {
 		defer rowsCompras.Close()
@@ -129,6 +131,32 @@ func SincronizarGrafoSprint3(ctx context.Context, dbMySQL *sql.DB, dbMongo *mong
 			}
 			return nil, nil
 		})
+	}
+
+	// 4. GENERAR RECOMENDACIONES DE GÉNERO
+    log.Println("[NEO4J] Generando máximo 25 sugerencias por cliente...")
+    _, err = session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (interface{}, error) {
+        querySugerencias := `
+            // Buscamos clientes que compraron y sus géneros preferidos
+            MATCH (c:Comprador)-[:COMPRÓ]->(obraComprada:Obra)<-[:CREÓ]-(:Artista)-[:TRABAJA_EN]->(g:Género)
+            
+            // Buscamos obras sugeridas del mismo género
+            MATCH (g)<-[:TRABAJA_EN]-(:Artista)-[:CREÓ]->(obraSugerida:Obra)
+            WHERE NOT (c)-[:COMPRÓ]->(obraSugerida)
+            
+            // Agrupamos por cliente para poder limitar el resultado
+            WITH c, obraSugerida
+            ORDER BY rand() // Mezcla las obras aleatoriamente
+            WITH c, collect(obraSugerida)[0..25] AS sugerencias // Toma solo 25
+            
+            UNWIND sugerencias AS obra
+            MERGE (c)-[:SUGERIDA_POR_GENERO]->(obra)
+        `
+        _, txErr := tx.Run(ctx, querySugerencias, nil)
+        return nil, txErr
+    })
+	if err != nil {
+		log.Printf("[NEO4J] Error al generar sugerencias: %v", err)
 	}
 
 	log.Println("[NEO4J] Sincronización finalizada con exito sin duplicados.")

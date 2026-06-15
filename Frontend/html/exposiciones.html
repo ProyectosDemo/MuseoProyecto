@@ -12,6 +12,8 @@
     <section class="section">
         <h2>Todas las Obras</h2>
 
+        <div id="contenedorRecomendaciones" style="margin-bottom: 1.5rem;"></div>
+
         <div class="filters">
             <select id="filtroArtista">
                 <option value="">Todos los artistas</option>
@@ -26,22 +28,25 @@
                 <option value="asc">Menor a mayor</option>
                 <option value="desc">Mayor a menor</option>
             </select>
+
             <select id="filtroDisponibilidad">
                 <option value="">Disponibilidad</option>
                 <option value="disponible">Disponibles</option>
                 <option value="no_disponible">No disponibles</option>
             </select>
+
+            <a href="recomendaciones.html" id="botonRecomendaciones" style="display: none;">Recomendaciones</a>
         </div>
 
         <div class="gallery" id="gallery"></div>
     </section>
 
     <footer>
-       © 2026 Museo de Arte Contemporáneo | Todos los derechos reservados
+        © 2026 Museo de Arte Contemporáneo | Todos los derechos reservados
     </footer>
 
-    <script src="../js/menu_superior.js" defer></script> <!-- primero los scripts de menu, ya despues puedes cargar los especificos de la pagina-->
-    <script src="../js/exposiciones.js" defer></script> <!-- carga primero el DOM luego el script -->
+    <script src="../js/menu_superior.js" defer></script>
+    <script src="../js/exposiciones.js" defer></script>
 
 </body>
 </html>

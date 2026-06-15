@@ -359,6 +359,7 @@ type Query {
   getObra(id: ID!): Obra
   loginCliente(login: String!, password: String!): LoginResponseCliente!
   loginTrabajador(login: String!, password: String!): LoginResponseTrabajador!
+  obtenerRecomendaciones(idCliente: ID!): [Obra!]!
 
 
   # Consulta masiva de reportes financieros por periodo (Ej: "2026-05")

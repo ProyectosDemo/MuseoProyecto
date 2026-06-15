@@ -63,3 +63,27 @@
     box-shadow: 0 0 5px rgba(85,26,139,0.5);
     outline: none;
 }
+
+.filters .btn-filtro {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background-color: white;
+    color: #333;
+    text-decoration: none;
+    font-family: inherit;
+    box-sizing: border-box;
+    vertical-align: middle;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filters .btn-filtro:hover {
+    border-color: #551a8b;
+    box-shadow: 0 0 5px rgba(85,26,139,0.5);
+    outline: none;
+}

@@ -9,7 +9,7 @@ import (
 	"context"
 
 	"main/graph/model"
-	
+
 )
 
 // Mutation returns MutationResolver implementation.
@@ -19,8 +19,6 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
-
-
 
 // UpdateArtistaGenero implements [MutationResolver].
 func (r *mutationResolver) UpdateArtistaGenero(ctx context.Context, input model.UpdateArtistaGenero) (*model.ArtistaGenero, error) {
@@ -48,3 +46,4 @@ func (r *queryResolver) FindMembresiasByTarjeta(ctx context.Context, idTarjeta s
 func (r *queryResolver) GetObra(ctx context.Context, id string) (*model.Obra, error) {
 	panic("unimplemented")
 }
+
