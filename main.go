@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"main/data_bases/cassandra"
 	"main/data_bases/mongodb"
@@ -9,7 +10,11 @@ import (
 	"main/data_bases/neo4j"
 	"main/graph"
 	"os"
+	"strings"
 
+	"time"
+
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
@@ -59,7 +64,46 @@ func main() {
 		},
 		Schema: schemaAst,
 	}))
+// Middleware definitivo en tu main.go
+	srv.AroundFields(func(ctx context.Context, next graphql.Resolver) (res interface{}, err error) {
+		fieldContext := graphql.GetFieldContext(ctx)
+		
+		if fieldContext.Object == "Query" || fieldContext.Object == "Mutation" {
+			start := time.Now()
+			
+			res, err = next(ctx)
+			
+			duracion := time.Since(start).Milliseconds()
+			// Pasamos a minúsculas para que coincida perfectamente sin importar cómo venga escrito
+			nombreCampo := strings.ToLower(fieldContext.Field.Name)
 
+			dbType := ""
+			switch nombreCampo {
+			// === MONGODB (obra.resolvers.go) ===
+			case "obras", "obrasporprecio", "obrasporpreciodesc", "obrasporgenero", "obraspordisponibilidad", "findobra", "createobra", "updateobra", "killobra":
+				dbType = "mongodb"
+
+			// === CASSANDRA (cassandra_resolvers.go) ===
+			case "obtenerreportefacturas", "obtenerbitacoraobra", "emitirfacturahistorica", "registrareventoobra":
+				dbType = "cassandra"
+
+			// === NEO4J (sincronizador.go / consultas analíticas) ===
+			case "obtenerrecomendaciones":
+				dbType = "neo4j"
+
+			// === MYSQL (Por defecto el resto: clientes, artistas, trabajadores, ordenes, etc.) ===
+			default:
+				dbType = "mysql"
+			}
+
+			// Registramos la extensión exacta que intercepta monitor.js
+			graphql.RegisterExtension(ctx, "db_latency_"+dbType, fmt.Sprintf("%dms", duracion))
+			
+			return res, err
+		}
+		
+		return next(ctx)
+	})
 	// Registrar transportes HTTP obligatorios para gqlgen
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
