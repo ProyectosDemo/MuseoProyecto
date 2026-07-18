@@ -47,15 +47,30 @@ async function fetchGraphQL(query, variables = {}) {
 }
 
 // CREAR
-document.getElementById("btnCrear").addEventListener("click", () => {
+document.getElementById("btnCrear").addEventListener("click", async () => {
     limpiar();
+
+
+    const queryArtistas = `query { Artistas(limit: 250, offset: 0) { id nombre } }`;
+    const queryGeneros = `query { Genero(limit: 250, offset: 0) { id nombre } }`;
+
+    const [resArtistas, resGeneros] = await Promise.all([
+        fetchGraphQL(queryArtistas),
+        fetchGraphQL(queryGeneros)
+    ]);        
 
     contenido.innerHTML = `
         <form id="formCrear" class="form-container">
 
-            <input type="text" id="nombre" placeholder="Nombre" required>
-            <input type="text" id="idArtista" placeholder="ID Artista" required>
-            <input type="text" id="idGenero" placeholder="ID Género" required>
+            <input type="text" id="nombre" placeholder="Nombre de la obra" required>
+            <select id="idArtista" required>
+                <option value="">Seleccionar Artista</option>
+                ${resArtistas?.data?.Artistas?.map(artista => `<option value="${artista.id}">${artista.nombre}</option>`).join('')}
+            </select>
+            <select id="idGenero" required>
+                <option value="">Seleccionar Género</option>
+                ${resGeneros?.data?.Genero?.map(genero => `<option value="${genero.id}">${genero.nombre}</option>`).join('')}
+            </select>
             <input type="number" id="precio" placeholder="Precio" required>
 
             <input type="date" id="fechaCreacion" required>
@@ -66,7 +81,7 @@ document.getElementById("btnCrear").addEventListener("click", () => {
                 <option value="VENDIDA">VENDIDA</option>
             </select>
 
-            <input type="text" id="foto" placeholder="Foto URL" required>
+            <input type="text" id="foto" placeholder="URL de la imagen" required>
 
             <label style="margin-top:10px;">
                 <input type="checkbox" id="esEscultura">

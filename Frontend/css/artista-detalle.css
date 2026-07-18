@@ -57,7 +57,7 @@
 /* Contenedor de obras */
 .obras-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* filas de 2 obras */
+    grid-template-columns: repeat(4, 1fr); /* filas de 2 obras */
     gap: 20px;
 }
 

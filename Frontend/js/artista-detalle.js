@@ -51,7 +51,7 @@ async function cargarDetalleArtista() {
 
         const queryObras = `
         query {
-            Obras(limit: 100, offset: 0) {
+            Obras(limit: 10000, offset: 0) {
                 id
                 nombre
                 foto

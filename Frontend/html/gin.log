@@ -1,0 +1,21 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /Frontend/*filepath       --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] HEAD   /Frontend/*filepath       --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (3 handlers)
+[GIN-debug] GET    /                         --> main.main.func1 (3 handlers)
+[GIN-debug] GET    /query                    --> main.main.WrapH.func4 (4 handlers)
+[GIN-debug] POST   /query                    --> main.main.WrapH.func4 (4 handlers)
+[GIN-debug] PUT    /query                    --> main.main.WrapH.func4 (4 handlers)
+[GIN-debug] PATCH  /query                    --> main.main.WrapH.func4 (4 handlers)
+[GIN-debug] HEAD   /query                    --> main.main.WrapH.func4 (4 handlers)
+[GIN-debug] OPTIONS /query                    --> main.main.WrapH.func4 (4 handlers)
+[GIN-debug] DELETE /query                    --> main.main.WrapH.func4 (4 handlers)
+[GIN-debug] CONNECT /query                    --> main.main.WrapH.func4 (4 handlers)
+[GIN-debug] TRACE  /query                    --> main.main.WrapH.func4 (4 handlers)
+[GIN-debug] Listening and serving HTTP on :8080
+[GIN] 2026/07/18 - 09:49:09 | 204 |            0s |             ::1 | OPTIONS  "/query"
+[GIN] 2026/07/18 - 09:49:09 | 200 |     86.2521ms |             ::1 | POST     "/query"
