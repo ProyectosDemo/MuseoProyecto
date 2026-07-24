@@ -1,89 +1,181 @@
-.section { padding: 100px 8%; }
-.section h3 { text-align: center; font-size: 40px; margin-bottom: 60px; font-weight: 500; }
-
-.gallery {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px; /* Bajamos de 40px a 20px */
+/* ==========================================
+   1. LAYOUT PRINCIPAL (FILTROS + GALERÍA)
+   ========================================== */
+.section { 
+    padding: 30px 3%;
+    max-width: 1440px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-.art-card {
-    background: white;
+.section h3 { 
+    font-size: 1.8rem; 
+    margin-bottom: 20px; 
+    font-weight: 700; 
+    color: #0f172a;
+    letter-spacing: -0.02em;
+}
+
+/* Transformamos el contenedor en un Grid de 2 columnas: Sidebar + Galería */
+.section {
+    display: grid;
+    grid-template-columns: 240px 1fr; /* 240px para filtros, el resto para la galería */
+    gap: 24px;
+    align-items: start;
+}
+
+/* El título abarcará todo el ancho arriba */
+.section h3 {
+    grid-column: 1 / -1;
+}
+
+/* ==========================================
+   2. FILTROS LATERALES (SIDEBAR)
+   ========================================== */
+.filters {
+    display: flex;
+    flex-direction: column; /* Coloca los filtros uno debajo del otro */
+    gap: 12px;
+    background-color: #ffffff;
+    padding: 20px;
     border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    position: sticky;
+    top: 20px; /* Se queda fijo si la página principal hace scroll */
+}
+
+.filters select,
+.filters .btn-filtro {
+    width: 100%; /* Ocupan todo el ancho de la columna lateral */
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 0.85rem;
+    font-weight: 500;
+    background-color: #ffffff;
+    color: #334155;
+    text-decoration: none;
+    font-family: inherit;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.filters select:hover,
+.filters .btn-filtro:hover {
+    border-color: #2e1065;
+    color: #2e1065;
+    background-color: #f8fafc;
+}
+
+.filters select:focus {
+    border-color: #2e1065;
+    box-shadow: 0 0 0 3px rgba(46, 16, 101, 0.12);
+    outline: none;
+}
+
+/* ==========================================
+   3. GALERÍA EN CUADRÍCULA CON SCROLL INTERNO
+   ========================================== */
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5 columnas en el espacio restante */
+    gap: 16px;
+    
+    /* Scroll interno independiente */
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 8px; /* Margen para no tapar contenido con la barra */
+}
+
+/* Barra de scroll bonita */
+.gallery::-webkit-scrollbar {
+    width: 6px;
+}
+
+.gallery::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 8px;
+}
+
+.gallery::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 8px;
+}
+
+.gallery::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ==========================================
+   4. TARJETAS DE OBRAS
+   ========================================== */
+.art-card {
+    background: #ffffff;
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.25s ease;
 }
 
 .art-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 25px 45px rgba(0,0,0,0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08);
+    border-color: #e2e8f0;
 }
 
 .art-card img {
     width: 100%;
-    height: 220px;
+    height: 150px;
     object-fit: cover;
 }
+
 .art-info {
-    padding: 15px 20px;
-}
-.art-info a {
-    text-decoration: underline; /* mantiene el subrayado */
+    padding: 10px 12px;
 }
 
 .art-info h4 {
-    font-size: 20px;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #551a8b;
-}
-.art-info p { font-size: 14px; color: #666; }
-
-/* Contenedor de filtros */
-.filters {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 30px;
-    justify-content: center;
-    flex-wrap: wrap;
+    font-size: 0.88rem;
+    margin: 0 0 4px 0;
+    font-weight: 700;
+    color: #2e1065;
 }
 
-.filters select {
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    background-color: white;
-    transition: border 0.3s ease, box-shadow 0.3s ease;
+.art-info p { 
+    font-size: 0.78rem; 
+    color: #64748b; 
+    margin: 0;
 }
 
-.filters select:focus {
-    border-color: #551a8b;
-    box-shadow: 0 0 5px rgba(85,26,139,0.5);
-    outline: none;
+/* ==========================================
+   5. RESPONSIVIDAD (Móviles y Tablets)
+   ========================================== */
+@media (max-width: 1100px) {
+    .gallery { grid-template-columns: repeat(3, 1fr); }
 }
 
-.filters .btn-filtro {
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    background-color: white;
-    color: #333;
-    text-decoration: none;
-    font-family: inherit;
-    box-sizing: border-box;
-    vertical-align: middle;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: border 0.3s ease, box-shadow 0.3s ease;
-}
+@media (max-width: 768px) {
+    /* En tablets/móviles el layout vuelve a ser vertical para no apretar espacio */
+    .section {
+        grid-template-columns: 1fr;
+    }
+    
+    .filters {
+        position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
 
-.filters .btn-filtro:hover {
-    border-color: #551a8b;
-    box-shadow: 0 0 5px rgba(85,26,139,0.5);
-    outline: none;
+    .filters select,
+    .filters .btn-filtro {
+        width: auto;
+    }
+
+    .gallery { grid-template-columns: repeat(2, 1fr); }
 }

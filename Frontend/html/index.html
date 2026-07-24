@@ -5,9 +5,10 @@
     <title>Museo de Arte Contemporáneo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Se quitó gallery.css para que no interfiera en la vista principal -->
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/hero.css">
-    <link rel="stylesheet" href="../css/gallery.css">
+    <link rel="stylesheet" href="../css/index.css">
 </head>
 <body>
     <!-- ya no es necesario poner un header, el menu lo genera si no existe -->
@@ -16,9 +17,10 @@
         <h2>Donde el Arte Cobra Vida</h2>
     </section>
 
-    <section class="section">
-        <h3>Obras Destacadas</h3>
-        <div class="gallery" id="gallery"></div>
+    <!-- Sección de Obras Destacadas con su propio contenedor -->
+    <section class="seccion-destacadas">
+        <h2>Obras Destacadas</h2>
+        <div class="grid-destacadas" id="destacadas-container"></div>
     </section>
 
     <footer>

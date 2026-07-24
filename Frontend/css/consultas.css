@@ -1,127 +1,219 @@
+/* ==========================================
+   1. LAYOUT PRINCIPAL Y PANELES
+   ========================================== */
 .admin-panel {
     display: flex;
-    gap: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f9f9f9;
+    gap: 24px;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: #f4f6f8;
     min-height: 100vh;
-    padding: 20px;
+    padding: 24px;
+    color: #334155;
+    box-sizing: border-box;
 }
 
 .main-content {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
 }
 
 .panel {
-    background: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    transition: transform 0.2s, box-shadow 0.2s;
+    background: #ffffff;
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .panel:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
 }
 
 .panel h2 {
     margin-top: 0;
-    color: #1f2a38;
+    margin-bottom: 20px;
+    color: #0f172a;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
 }
 
+/* ==========================================
+   2. GRILLA EN FILAS DE 3 (CONTENEDOR GLOBAL)
+   ========================================== */
+#ordenesContainer {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important; /* Forzar 3 columnas */
+    gap: 24px;
+    width: 100%;
+}
+
+/* Wrapper contenedor de cada Orden + Factura */
 .orden-factura-wrapper {
     display: flex;
-    gap: 20px;
-    align-items: stretch;
-    flex-wrap: wrap;
-}
-
-.orden-card {
-    background: #f5f7fa;
-    padding: 15px 20px;
-    border-radius: 10px;
-    border-left: 4px solid #1f2a38;
-    width: 280px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    transition: box-shadow 0.3s;
-    display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 16px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-sizing: border-box;
+    width: 100%;
 }
 
-.orden-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+.orden-factura-wrapper:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
 }
 
+/* ==========================================
+   3. TARJETAS INTERNAS (ORDEN Y FACTURA)
+   ========================================== */
+.orden-card, 
 .factura-card {
-    background: #fff8e1;
-    padding: 15px 20px;
+    width: 100%;
+    box-sizing: border-box;
     border-radius: 10px;
-    border-left: 4px solid #ffb74d;
-    width: 360px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    transition: box-shadow 0.3s;
+    padding: 16px;
+}
+
+/* Tarjeta de Orden */
+.orden-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 5px solid #3b82f6; /* Azul moderno */
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    gap: 8px;
 }
 
-.factura-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+.orden-card p {
+    margin: 4px 0;
+    font-size: 0.9rem;
 }
 
-/* Botones */
+/* Tarjeta de Factura */
+.factura-card {
+    background: #ffffff;
+    border: 1px dashed #10b981; /* Verde esmeralda */
+    border-left: 5px solid #10b981;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+}
+
+.factura-card p {
+    margin: 3px 0;
+    font-size: 0.88rem;
+}
+
+/* Etiqueta decorativa superior */
+.factura-card::before {
+    content: "FACTURA";
+    position: absolute;
+    top: 12px;
+    right: -25px;
+    background: #ecfdf5;
+    color: #059669;
+    font-size: 0.6rem;
+    font-weight: 800;
+    padding: 3px 25px;
+    transform: rotate(45deg);
+    letter-spacing: 1px;
+}
+
+/* ==========================================
+   4. BOTONES
+   ========================================== */
 button {
-    background: #1f2a38;
-    color: #fff;
+    background: #0f172a;
+    color: #ffffff;
     border: none;
-    border-radius: 6px;
-    padding: 8px 16px;
+    border-radius: 8px;
+    padding: 10px 16px;
     cursor: pointer;
     font-weight: 600;
-    transition: all 0.3s;
+    font-size: 0.88rem;
+    margin-top: 8px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 button:hover {
-    background: #2e3b4e;
+    background: #1e293b;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
 }
 
+button:active {
+    transform: translateY(0);
+}
+
+/* ==========================================
+   5. TABLAS
+   ========================================== */
 table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     margin-top: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
 }
 
 table th, table td {
-    padding: 10px 12px;
+    padding: 12px 16px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
 }
 
 table th {
-    background-color: #1f2a38;
-    color: #fff;
-    font-weight: 600;
+    background-color: #f8fafc;
+    color: #475569;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e2e8f0;
 }
 
-table tr:hover {
-    background-color: #f1f3f6;
+table td {
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.95rem;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
+table tr:last-child td {
+    border-bottom: none;
+}
+
+table tr:hover td {
+    background-color: #f8fafc;
+}
+
+/* ==========================================
+   6. RESPONSIVE
+   ========================================== */
+@media (max-width: 1200px) {
+    #ordenesContainer {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important; /* 2 columnas en pantallas medianas */
+    }
+}
+
+@media (max-width: 768px) {
     .admin-panel {
         flex-direction: column;
+        padding: 16px;
     }
 
-    .orden-factura-wrapper {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .orden-card, .factura-card {
-        width: 100%;
+    #ordenesContainer {
+        grid-template-columns: 1fr !important; /* 1 columna en celulares */
     }
 }

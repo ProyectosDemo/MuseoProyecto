@@ -35,8 +35,34 @@ function actualizarSelects() {
     });
 }
 
+function aplicarValidacionesEnInputs() {
+    const inputNombre = document.getElementById("nombre");
+    const inputTelefono = document.getElementById("telefono");
+    const inputTarjeta = document.getElementById("numero_tarjeta");
+
+    // 1. Nombre: Solo letras y espacios (bloquea números y símbolos)
+    inputNombre?.addEventListener("input", (e) => {
+        e.target.value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+    });
+
+    // 2. Teléfono: Solo números
+    inputTelefono?.addEventListener("input", (e) => {
+        e.target.value = e.target.value.replace(/\D/g, "");
+    });
+
+    // 3. Tarjeta: Solo números y máximo 4 dígitos
+    inputTarjeta?.addEventListener("input", (e) => {
+        let valor = e.target.value.replace(/\D/g, ""); // elimina no-numéricos
+        if (valor.length > 4) {
+            valor = valor.slice(0, 4); // recorta a 4 caracteres
+        }
+        e.target.value = valor;
+    });
+}
+
 async function manejarRegistro() {
     actualizarSelects();
+    aplicarValidacionesEnInputs(); // <--- Activamos las reglas de restricción
 
     selectsPreguntas.forEach(select => select.addEventListener("change", actualizarSelects));
 
@@ -54,6 +80,12 @@ async function manejarRegistro() {
 
         const numeroTarjeta = document.getElementById("numero_tarjeta").value.trim();
         const tipo = document.getElementById("tipo").value;
+
+        // Validación preventiva antes de enviar la petición
+        if (numeroTarjeta.length !== 4) {
+            alert("El número de tarjeta debe tener exactamente 4 dígitos.");
+            return;
+        }
 
         try {
             // cliente

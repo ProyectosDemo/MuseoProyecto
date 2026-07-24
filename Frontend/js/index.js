@@ -1,10 +1,9 @@
-
 document.addEventListener('DOMContentLoaded', cargarObras);
 
 async function cargarObras() {
     const query = `
         query {
-            Obras(limit:4, offset:0) {
+            Obras(limit:6, offset:0) {
                 id
                 nombre
                 foto
@@ -23,33 +22,41 @@ async function cargarObras() {
         });
 
         const data = await res.json();
-        const gallery = document.getElementById("gallery");
-        gallery.innerHTML = "";
+        const container = document.getElementById("destacadas-container");
+        if (!container) return;
+        
+        container.innerHTML = "";
 
-        const obras = data.data.Obras;
+        const obras = data.data?.Obras;
         if (!obras || obras.length === 0) {
-            gallery.innerHTML = "<p>No hay obras disponibles</p>";
+            container.innerHTML = "<p>No hay obras destacadas disponibles</p>";
             return;
         }
 
         obras.forEach(ob => {
             const artCard = document.createElement("div");
-            artCard.className = "art-card";
+            artCard.className = "art-card-destacada";
 
+            // Imagen arriba a ancho completo, luego bloque de información
             artCard.innerHTML = `
+                <a href="obra.html?id=${ob.id}">
+                    <img src="${ob.foto}" alt="${ob.nombre}">
+                </a>
                 <div class="art-info">
                     <a href="obra.html?id=${ob.id}">
-                        <img src="${ob.foto}" alt="${ob.nombre}">
                         <h4>${ob.nombre}</h4>
                     </a>
-                <p>${ob.artista ? ob.artista.nombre : ""}</p>
+                    <p>${ob.artista ? ob.artista.nombre : "Artista Desconocido"}</p>
                 </div>
             `;
-            gallery.appendChild(artCard);
+            container.appendChild(artCard);
         });
 
     } catch (err) {
-        console.error(err);
-        document.getElementById("gallery").innerHTML = "<p>Error cargando obras</p>";
+        console.error("Error al cargar obras destacadas:", err);
+        const container = document.getElementById("destacadas-container");
+        if (container) {
+            container.innerHTML = "<p>Error al cargar las obras destacadas</p>";
+        }
     }
 }
